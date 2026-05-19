@@ -31,13 +31,14 @@ export default function UserBookingsPage() {
         </div>
       </nav>
 
-      <div className="pt-16">
-        <div className="container-main py-8">
-          <h1 className="text-2xl font-bold mb-6">My Bookings</h1>
-          <div className="space-y-4 max-w-3xl">
-          {bookings.map((b, i) => (
-            <motion.div key={b.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
-              className="rounded-2xl border border-[var(--border)] bg-[var(--bg-primary)] p-5 card-hover">
+      <div style={{ paddingTop: '5.5rem' }}>
+        <div className="container-main py-8 flex flex-col items-center">
+          <div className="w-full max-w-3xl">
+            <h1 className="text-2xl font-bold mb-6">My Bookings</h1>
+            <div className="space-y-4">
+              {bookings.map((b, i) => (
+                <motion.div key={b.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
+                  className="rounded-2xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 card-hover">
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="font-semibold">{b.service}</h3>
@@ -63,6 +64,7 @@ export default function UserBookingsPage() {
             </motion.div>
           ))}
         </div>
+      </div>
       </div>
       </div>
     </main>

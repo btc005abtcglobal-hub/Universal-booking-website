@@ -7,36 +7,27 @@ export function ThemeToggle() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' | null;
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.setAttribute('data-theme', savedTheme);
-    } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-      setTheme('light');
-      document.documentElement.setAttribute('data-theme', 'light');
+    const saved = localStorage.getItem('theme') as 'dark' | 'light' | null;
+    if (saved) {
+      setTheme(saved);
+      document.documentElement.setAttribute('data-theme', saved);
     }
   }, []);
 
-  const toggleTheme = () => {
-    const nextTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(nextTheme);
-    localStorage.setItem('theme', nextTheme);
-    document.documentElement.setAttribute('data-theme', nextTheme);
+  const toggle = () => {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    localStorage.setItem('theme', next);
+    document.documentElement.setAttribute('data-theme', next);
   };
 
   return (
     <button
-      onClick={toggleTheme}
-      className="relative p-2 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] transition-all duration-200 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer flex items-center justify-center overflow-hidden group"
+      onClick={toggle}
+      className="p-2 rounded-lg hover:bg-[var(--surface-variant)]/10 transition-all text-[var(--on-surface-variant)] hover:text-[var(--primary)] cursor-pointer"
       aria-label="Toggle Theme"
     >
-      <div className="relative w-[18px] h-[18px]">
-        {theme === 'dark' ? (
-          <Sun size={18} className="text-amber-400 group-hover:rotate-45 transition-transform duration-300" />
-        ) : (
-          <Moon size={18} className="text-indigo-500 group-hover:-rotate-12 transition-transform duration-300" />
-        )}
-      </div>
+      {theme === 'dark' ? <Sun size={20} strokeWidth={1.5} /> : <Moon size={20} strokeWidth={1.5} />}
     </button>
   );
 }

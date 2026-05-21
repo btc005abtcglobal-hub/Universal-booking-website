@@ -203,6 +203,10 @@ h1, h2, h3, h4, h5, h6 {
   &::-webkit-scrollbar { display: none; }
 }
 
+@utility safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
 /* ============================================================
    ANIMATIONS
    ============================================================ */

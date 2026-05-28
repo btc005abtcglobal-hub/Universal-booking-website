@@ -2,71 +2,126 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { Calendar, Clock, MapPin, QrCode, CheckCircle2, XCircle, ArrowLeft, ChevronRight } from 'lucide-react';
+import { Calendar, Clock, MapPin, QrCode, CheckCircle2, XCircle, ArrowLeft, ChevronRight, AlertCircle, Sparkles } from 'lucide-react';
 import { ThemeToggle } from '../../../components/ThemeToggle';
-
-const bookings = [
-  { id: '1', ref: 'BK-A1B2C3', service: 'Premium Haircut', merchant: 'Style Studio', date: '2026-05-20', time: '10:00 AM', status: 'CONFIRMED', amount: 599 },
-  { id: '2', ref: 'BK-D4E5F6', service: 'Yoga Class', merchant: 'ZenFit', date: '2026-05-22', time: '7:00 AM', status: 'CONFIRMED', amount: 499 },
-  { id: '3', ref: 'BK-G7H8I9', service: 'Table Reservation', merchant: 'The Grand', date: '2026-05-15', time: '8:00 PM', status: 'COMPLETED', amount: 1200 },
-];
+import { useBookingFlowStore } from '../../../lib/store';
+import { TopNav } from '../../../components/TopNav';
+import { SideNav } from '../../../components/SideNav';
+import { BottomNav } from '../../../components/BottomNav';
 
 export default function UserBookingsPage() {
-  return (
-    <main className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] transition-colors duration-300">
-      {/* Sticky header */}
-      <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-[var(--border-subtle)]">
-        <div className="container-main flex items-center justify-between h-16">
-          <div className="flex items-center gap-4">
-            <Link href="/" className="btn-ghost p-2">
-              <ArrowLeft size={20} />
-            </Link>
-            <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
-              <Link href="/" className="hover:text-[var(--text-primary)] transition-colors">Home</Link>
-              <ChevronRight size={14} />
-              <span className="text-[var(--text-primary)]">My Bookings</span>
-            </div>
-          </div>
-          <ThemeToggle />
-        </div>
-      </nav>
+  const { bookings, cancelBooking } = useBookingFlowStore();
 
-      <div style={{ paddingTop: '5.5rem' }}>
-        <div className="container-main py-8 flex flex-col items-center">
-          <div className="w-full max-w-3xl">
-            <h1 className="text-2xl font-bold mb-6">My Bookings</h1>
-            <div className="space-y-4">
-              {bookings.map((b, i) => (
-                <motion.div key={b.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
-                  className="rounded-2xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 card-hover">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="font-semibold">{b.service}</h3>
-                  <p className="text-sm text-[var(--text-muted)] flex items-center gap-1 mt-1"><MapPin className="h-3.5 w-3.5" /> {b.merchant}</p>
-                </div>
-                <span className={`badge ${b.status === 'CONFIRMED' ? 'badge-success' : 'badge-primary'}`}>
-                  <CheckCircle2 className="h-3.5 w-3.5" /> {b.status}
-                </span>
+  const handleCancel = (id: string, ref: string) => {
+    const doubleCheck = confirm(`Are you sure you want to cancel reservation ${ref}?`);
+    if (doubleCheck) {
+      cancelBooking(id);
+    }
+  };
+
+  return (
+    <>
+      <TopNav />
+      <div className="hidden lg:block">
+        <SideNav />
+      </div>
+      
+      <main className="page-content-with-sidenav px-4 md:px-8 lg:pr-8">
+        <div className="mx-auto max-w-4xl py-6 sm:py-8">
+          <div className="w-full">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.28em] text-[color:var(--color-outline)] font-semibold">Reservations</p>
+                <h1 className="text-2xl md:text-3xl font-black text-[color:var(--color-on-surface)] tracking-tight">My Bookings</h1>
               </div>
-              <div className="mt-3 flex flex-wrap gap-4 text-sm text-[var(--text-secondary)]">
-                <span className="flex items-center gap-1"><Calendar className="h-4 w-4" /> {b.date}</span>
-                <span className="flex items-center gap-1"><Clock className="h-4 w-4" /> {b.time}</span>
-                <span className="font-semibold">₹{b.amount}</span>
+              <span className="text-xs bg-[color:var(--color-surface-container-high)] border border-[color:var(--color-outline-variant)]/40 px-3 py-1.5 rounded-full font-bold text-[color:var(--color-on-surface)] shadow-sm">
+                Total: {bookings.length}
+              </span>
+            </div>
+
+            {bookings.length === 0 ? (
+              <div className="rounded-2xl border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)]/80 p-12 text-center card-glass">
+                <AlertCircle className="h-12 w-12 text-[color:var(--color-outline)]/40 mx-auto mb-4" />
+                <h3 className="text-lg font-bold text-[color:var(--color-on-surface)]">No bookings found</h3>
+                <p className="text-sm text-[color:var(--color-on-surface-variant)] mt-1.5 max-w-sm mx-auto">You haven't confirmed any appointments yet. Head back to the search portal to book services.</p>
+                <Link href="/search" className="mt-6 inline-block rounded-xl bg-[color:var(--color-primary)] px-5 py-3 text-xs font-bold text-[color:var(--color-on-primary)] shadow-lg shadow-[color:var(--color-primary)]/10">
+                  Book Now
+                </Link>
               </div>
-              <div className="mt-3 flex items-center justify-between">
-                <span className="text-xs text-[var(--text-muted)] font-mono">{b.ref}</span>
-                {b.status === 'CONFIRMED' && (
-                  <Link href={`/booking/success?ref=${b.ref}`} className="flex items-center gap-1 rounded-lg bg-[var(--primary)]/10 px-3 py-1.5 text-xs font-semibold text-[var(--primary)]">
-                    <QrCode className="h-3.5 w-3.5" /> View QR
-                  </Link>
-                )}
+            ) : (
+              <div className="space-y-4">
+                {bookings.map((b, i) => (
+                  <motion.div
+                    key={b.id}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: Math.min(i * 0.05, 0.4) }}
+                    className="rounded-2xl border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)]/80 p-5 card-glass flex flex-col md:flex-row gap-4 justify-between items-start md:items-center"
+                  >
+                    <div className="space-y-2 flex-1">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <h3 className="font-bold text-base text-[color:var(--color-on-surface)]">{b.serviceName}</h3>
+                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border tracking-wider uppercase ${
+                          b.status === 'CONFIRMED' 
+                            ? 'border-green-500/30 bg-green-500/10 text-green-400' 
+                            : b.status === 'COMPLETED'
+                            ? 'border-[color:var(--color-primary)]/30 bg-[color:var(--color-primary)]/10 text-[color:var(--color-primary)]'
+                            : 'border-red-500/30 bg-red-500/10 text-red-400'
+                        }`}>
+                          {b.status}
+                        </span>
+                      </div>
+                      
+                      <div className="text-xs text-[color:var(--color-on-surface-variant)] flex flex-wrap gap-x-4 gap-y-1.5 items-center">
+                        <span className="flex items-center gap-1 font-semibold text-[color:var(--color-on-surface)]"><MapPin className="h-3.5 w-3.5 text-[color:var(--color-primary)]" /> {b.merchantName} {b.city ? `· ${b.city}` : ''}</span>
+                        <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5 text-[color:var(--color-primary)]" /> {b.date}</span>
+                        <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5 text-[color:var(--color-primary)]" /> {b.time}</span>
+                        {b.durationMinutes && <span className="text-[color:var(--color-outline)] font-medium">({b.durationMinutes} min duration)</span>}
+                      </div>
+                      
+                      <div className="text-[11px] font-mono text-[color:var(--color-outline)]">
+                        Reference: <span className="font-bold text-[color:var(--color-on-surface)]">{b.ref}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 w-full md:w-auto justify-end pt-3 border-t border-[color:var(--color-outline-variant)]/10 md:pt-0 md:border-t-0 shrink-0">
+                      <span className="font-black text-[color:var(--color-primary)] text-lg mr-2">₹{b.amount}</span>
+                      
+                      {b.status === 'CONFIRMED' ? (
+                        <>
+                          <button
+                            onClick={() => handleCancel(b.id, b.ref)}
+                            className="rounded-xl border border-red-500/30 bg-red-500/8 px-4 py-2.5 text-xs font-bold text-red-400 hover:bg-red-500/15 active:scale-[0.97] transition-all cursor-pointer"
+                          >
+                            Cancel
+                          </button>
+                          
+                          <Link
+                            href={`/booking/success?ref=${b.ref}`}
+                            className="flex items-center gap-1.5 rounded-xl bg-[color:var(--color-primary)]/10 border border-[color:var(--color-primary)]/30 px-4 py-2.5 text-xs font-bold text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/20 active:scale-[0.97] transition-all"
+                          >
+                            <QrCode className="h-3.5 w-3.5" /> View Ticket
+                          </Link>
+                        </>
+                      ) : b.status === 'CANCELLED' ? (
+                        <span className="text-xs text-[color:var(--color-outline)] font-semibold border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-dim)]/40 px-3.5 py-2.5 rounded-xl">
+                          Cancelled
+                        </span>
+                      ) : (
+                        <span className="text-xs text-green-400 font-semibold border border-green-500/20 bg-green-500/5 px-3.5 py-2.5 rounded-xl flex items-center gap-1">
+                          <CheckCircle2 className="h-3.5 w-3.5" /> Checked In
+                        </span>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
               </div>
-            </motion.div>
-          ))}
+            )}
+          </div>
         </div>
-      </div>
-      </div>
-      </div>
-    </main>
+      </main>
+      
+      <BottomNav />
+    </>
   );
 }

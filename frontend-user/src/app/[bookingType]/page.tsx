@@ -1,129 +1,136 @@
 'use client';
 
-import { use } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ChevronRight, MapPin } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import { ThemeToggle } from '../../components/ThemeToggle';
+import { useLocationStore } from '../../lib/store';
+import { getProvidersByCategory } from '../../lib/mockData';
 
 const CATEGORY_DATA: Record<string, {
   name: string; emoji: string; gradient: string; desc: string;
   categories: { name: string; emoji: string; slug: string; desc: string }[];
 }> = {
-  appointments: {
-    name: 'Appointments', emoji: '🏥', gradient: 'from-indigo-500 to-purple-600',
-    desc: 'Book appointments with healthcare professionals and specialists',
+  'travel-transport': {
+    name: 'Travel & Transport', emoji: '🌍', gradient: 'from-blue-500 to-cyan-400',
+    desc: 'All movement and travel-related bookings, including public transit and personal rentals',
     categories: [
-      { name: 'Dental Clinics', emoji: '🦷', slug: 'dental', desc: 'Checkups, cleanings & treatments' },
-      { name: 'Hospitals', emoji: '🏥', slug: 'hospitals', desc: 'General & specialist consultations' },
-      { name: 'Eye Clinics', emoji: '👁️', slug: 'eye-clinics', desc: 'Vision tests & eye care' },
-      { name: 'Fitness Trainers', emoji: '🏋️', slug: 'fitness', desc: 'Personal training sessions' },
-      { name: 'Veterinary', emoji: '🐾', slug: 'veterinary', desc: 'Pet care & checkups' },
-      { name: 'Physiotherapy', emoji: '🧘', slug: 'physiotherapy', desc: 'Rehab & pain management' },
-      { name: 'Mental Health', emoji: '🧠', slug: 'mental-health', desc: 'Counseling & therapy' },
-      { name: 'Dermatology', emoji: '💆', slug: 'dermatology', desc: 'Skin care & treatments' },
+      { name: 'Flight Booking', emoji: '✈️', slug: 'flights', desc: 'Book domestic and international flight tickets' },
+      { name: 'Train Booking', emoji: '🚆', slug: 'trains', desc: 'Book express and passenger train tickets' },
+      { name: 'Bus Booking', emoji: '🚌', slug: 'buses', desc: 'Book intercity and local sleeper/seated bus tickets' },
+      { name: 'Ferry / Boat Booking', emoji: '⛴️', slug: 'ferry', desc: 'Book passenger ferry and boat tickets' },
+      { name: 'Shuttle / Van Booking', emoji: '🚐', slug: 'shuttle', desc: 'Shared shuttle and passenger van transfers' },
+      { name: 'Helicopter Booking (Premium)', emoji: '🚁', slug: 'helicopter', desc: 'Premium private helicopter transfers & tours' },
+      { name: 'Cab / Taxi Booking', emoji: '🚖', slug: 'cabs', desc: 'Book local on-demand cabs and outstation taxis' },
+      { name: 'Bike Rental', emoji: '🛵', slug: 'bike-rental', desc: 'Hourly or daily two-wheeler and scooter rentals' },
+      { name: 'Self-Drive Car Rental', emoji: '🚗', slug: 'car-rental', desc: 'Rent a self-drive car for trips and commutes' },
     ],
   },
-  beauty: {
-    name: 'Beauty & Wellness', emoji: '✨', gradient: 'from-pink-500 to-orange-400',
-    desc: 'Salons, spas, and wellness centers near you',
+  'stay-accommodation': {
+    name: 'Stay & Accommodation', emoji: '🏨', gradient: 'from-amber-400 to-amber-600',
+    desc: 'Hotels, resorts, luxury villas, homestays, and outdoor camping experiences',
     categories: [
-      { name: 'Hair Salons', emoji: '💇', slug: 'hair-salons', desc: 'Haircuts, styling & coloring' },
-      { name: 'Nail Art', emoji: '💅', slug: 'nail-art', desc: 'Manicures, pedicures & designs' },
-      { name: 'Spas', emoji: '🛁', slug: 'spas', desc: 'Massages & relaxation' },
-      { name: 'Bridal', emoji: '👰', slug: 'bridal', desc: 'Complete bridal packages' },
-      { name: 'Makeup Artists', emoji: '💄', slug: 'makeup', desc: 'Events & special occasions' },
-      { name: 'Tattoo Studios', emoji: '🎨', slug: 'tattoo', desc: 'Custom tattoo & piercing' },
+      { name: 'Hotel Booking', emoji: '🏨', slug: 'hotels', desc: 'Book premium, boutique, and budget hotels' },
+      { name: 'Resort Booking', emoji: '🏖️', slug: 'resorts', desc: 'Luxury beachfront, hill, and forest resorts' },
+      { name: 'Homestay / Villa', emoji: '🏡', slug: 'villas', desc: 'Book private villas, homestays, and estates' },
+      { name: 'Hostel Booking', emoji: '🛌', slug: 'hostels', desc: 'Shared rooms and budget hostel stays' },
+      { name: 'Camping Booking', emoji: '🏕️', slug: 'camping', desc: 'Rent campsites, tents, and glamping spots' },
     ],
   },
-  automotive: {
-    name: 'Automotive', emoji: '🚗', gradient: 'from-blue-500 to-cyan-400',
-    desc: 'Car wash, service centers, and vehicle maintenance',
+  'entertainment-events': {
+    name: 'Entertainment & Events', emoji: '🎬', gradient: 'from-pink-500 to-rose-600',
+    desc: 'Movies, concerts, live plays, festivals, workshops, and gaming slots',
     categories: [
-      { name: 'Car Wash', emoji: '🫧', slug: 'car-wash', desc: 'Full wash, foam & detailing' },
-      { name: 'Bike Wash', emoji: '🛵', slug: 'bike-wash', desc: 'Two-wheeler cleaning' },
-      { name: 'Service Centers', emoji: '🔧', slug: 'service-centers', desc: 'Servicing & repairs' },
-      { name: 'Tyres & Wheels', emoji: '⚙️', slug: 'tyres', desc: 'Tyre fitting & alignment' },
-      { name: 'Detailing', emoji: '✨', slug: 'detailing', desc: 'Premium interior & exterior' },
-      { name: 'EV Charging', emoji: '⚡', slug: 'ev-charging', desc: 'Electric vehicle stations' },
+      { name: 'Cinema / Movie Tickets', emoji: '🎥', slug: 'movies', desc: 'Book tickets for the latest cinema releases' },
+      { name: 'Theatre Shows', emoji: '🎭', slug: 'theatre', desc: 'Book live plays and drama theatre acts' },
+      { name: 'Concert Tickets', emoji: '🎤', slug: 'concerts', desc: 'Live music concerts, DJs, and music events' },
+      { name: 'Events & Festivals', emoji: '🎪', slug: 'events', desc: 'Festivals, stand-up comedy, and cultural events' },
+      { name: 'Exhibition Entry', emoji: '🎟️', slug: 'exhibitions', desc: 'Art galleries, trade expos, and museum passes' },
+      { name: 'Workshops / Classes', emoji: '🎨', slug: 'workshops', desc: 'Interactive classes in arts, crafts, and hobbies' },
+      { name: 'Gaming Arena Booking', emoji: '🎮', slug: 'gaming', desc: 'Reserve console, PC, and VR gaming slots' },
     ],
   },
-  'home-services': {
-    name: 'Home Services', emoji: '🏠', gradient: 'from-emerald-500 to-blue-500',
-    desc: 'Plumbing, electrical, cleaning and more at your doorstep',
+  'sports-turf': {
+    name: 'Sports & Turf', emoji: '⚽', gradient: 'from-emerald-500 to-teal-600',
+    desc: 'Sports turfs, courts, grounds, swimming, and indoor recreation zones',
     categories: [
-      { name: 'Cleaning', emoji: '🧹', slug: 'cleaning', desc: 'Deep & regular cleaning' },
-      { name: 'Plumbing', emoji: '🔩', slug: 'plumbing', desc: 'Leaks, pipes & installation' },
-      { name: 'Electrical', emoji: '⚡', slug: 'electrical', desc: 'Wiring & appliances' },
-      { name: 'Pest Control', emoji: '🪲', slug: 'pest-control', desc: 'Safe & effective treatment' },
-      { name: 'AC Service', emoji: '❄️', slug: 'ac-service', desc: 'Servicing & gas refilling' },
-      { name: 'Painting', emoji: '🎨', slug: 'painting', desc: 'Interior & exterior painting' },
-      { name: 'Carpentry', emoji: '🪚', slug: 'carpentry', desc: 'Furniture & woodwork' },
+      { name: 'Football Turf', emoji: '⚽', slug: 'football-turf', desc: 'Book slots for 5-a-side and 7-a-side turfs' },
+      { name: 'Cricket Ground', emoji: '🏏', slug: 'cricket-ground', desc: 'Reserve net practice slots and full grounds' },
+      { name: 'Badminton Court', emoji: '🏸', slug: 'badminton', desc: 'Book indoor synthetic and wooden courts' },
+      { name: 'Tennis Court', emoji: '🎾', slug: 'tennis', desc: 'Reserve clay and hard-court tennis slots' },
+      { name: 'Basketball Court', emoji: '🏀', slug: 'basketball', desc: 'Book half or full court indoor/outdoor slots' },
+      { name: 'Swimming Pool Slots', emoji: '🏊', slug: 'swimming', desc: 'Reserve hourly lap swimming pool slots' },
+      { name: 'Indoor Play Arena', emoji: '🧗', slug: 'play-arena', desc: 'Book trampoline parks, bowling, and climbing slots' },
     ],
   },
-  entertainment: {
-    name: 'Entertainment', emoji: '🎬', gradient: 'from-amber-500 to-red-500',
-    desc: 'Movies, events, concerts, and experiences',
+  'lifestyle-local': {
+    name: 'Lifestyle & Local Services', emoji: '🍽️', gradient: 'from-purple-500 to-pink-500',
+    desc: 'Restaurant reservations, wellness appointments, clinical care, and home utilities',
     categories: [
-      { name: 'Movie Tickets', emoji: '🎫', slug: 'movies', desc: 'Latest films & showtimes' },
-      { name: 'Concerts', emoji: '🎵', slug: 'concerts', desc: 'Live music & performances' },
-      { name: 'Sports Events', emoji: '🏆', slug: 'sports-events', desc: 'Cricket, football & more' },
-      { name: 'Theme Parks', emoji: '🎡', slug: 'theme-parks', desc: 'Rides & attractions' },
-      { name: 'Gaming Zones', emoji: '🎮', slug: 'gaming', desc: 'Arcades & gaming lounges' },
-      { name: 'Comedy Shows', emoji: '😂', slug: 'comedy', desc: 'Stand-up & improv shows' },
+      { name: 'Restaurant Table Reservation', emoji: '🍴', slug: 'dining', desc: 'Reserve tables at top-rated local dining spots' },
+      { name: 'Salon / Spa Appointment', emoji: '💇', slug: 'salons', desc: 'Book haircuts, spa therapies, and massages' },
+      { name: 'Gym / Yoga Slot Booking', emoji: '🧘', slug: 'gym-yoga', desc: 'Book daily or monthly slots at gyms and yoga studios' },
+      { name: 'Doctor Appointment', emoji: '🏥', slug: 'doctor', desc: 'Schedule check-ups at dental and medical clinics' },
+      { name: 'Electrician Booking', emoji: '🧾', slug: 'electrician', desc: 'Book verified electricians for home repairs' },
+      { name: 'Plumber Booking', emoji: '🔧', slug: 'plumber', desc: 'Schedule plumber visits for leakages and fittings' },
+      { name: 'Cleaning Service', emoji: '🧹', slug: 'cleaning', desc: 'Book deep home, kitchen, and bathroom cleaning' },
+      { name: 'Technician Service', emoji: '🛠️', slug: 'technician', desc: 'Book AC repairs, appliances fix, and technicians' },
+      { name: 'Studio Booking', emoji: '📸', slug: 'studio', desc: 'Rent photo studios, equipment, and production sets' },
     ],
   },
-  sports: {
-    name: 'Sports & Fitness', emoji: '💪', gradient: 'from-red-500 to-orange-500',
-    desc: 'Gyms, sports courts, swimming pools, and fitness classes',
+  'business-professional': {
+    name: 'Business & Professional', emoji: '🏢', gradient: 'from-indigo-500 to-violet-600',
+    desc: 'Workspaces, professional podcast studios, conference halls, and training sessions',
     categories: [
-      { name: 'Gyms', emoji: '🏋️', slug: 'gyms', desc: 'Weights, cardio & classes' },
-      { name: 'Yoga Classes', emoji: '🧘', slug: 'yoga', desc: 'All levels & styles' },
-      { name: 'Swimming Pools', emoji: '🏊', slug: 'swimming', desc: 'Lap swimming & lessons' },
-      { name: 'Cricket Ground', emoji: '🏏', slug: 'cricket', desc: 'Box & ground booking' },
-      { name: 'Football Turf', emoji: '⚽', slug: 'football', desc: '5-a-side & 7-a-side' },
-      { name: 'Badminton', emoji: '🏸', slug: 'badminton', desc: 'Court booking by hour' },
+      { name: 'Co-working Space', emoji: '🧑‍💻', slug: 'coworking', desc: 'Reserve hot desks and dedicated office space' },
+      { name: 'Meeting Room', emoji: '🏛️', slug: 'meeting-room', desc: 'Book professional meeting rooms with screens' },
+      { name: 'Podcast Studio', emoji: '🎙️', slug: 'podcast', desc: 'Reserve audio-isolated recording studios' },
+      { name: 'Conference Hall', emoji: '📽️', slug: 'conference', desc: 'Book large halls for corporate events' },
+      { name: 'Training Sessions', emoji: '🏫', slug: 'training', desc: 'Book dynamic corporate training spaces' },
     ],
   },
-  education: {
-    name: 'Education', emoji: '🎓', gradient: 'from-violet-500 to-indigo-500',
-    desc: 'Tutors, coaching classes, workshops, and courses',
+  'religious-government': {
+    name: 'Religious & Government Services', emoji: '🛕', gradient: 'from-orange-500 to-amber-500',
+    desc: 'Temple darshan passes, pooja bookings, passport, RTO, and official appointments',
     categories: [
-      { name: 'Tutors', emoji: '📚', slug: 'tutors', desc: 'School & college subjects' },
-      { name: 'Music Classes', emoji: '🎸', slug: 'music', desc: 'Guitar, piano & vocals' },
-      { name: 'Dance Classes', emoji: '💃', slug: 'dance', desc: 'Classical, hip-hop & more' },
-      { name: 'Art & Craft', emoji: '🖼️', slug: 'art', desc: 'Painting, pottery & craft' },
-      { name: 'Language', emoji: '🌐', slug: 'language', desc: 'English, French & more' },
-      { name: 'Coding', emoji: '💻', slug: 'coding', desc: 'Web, app & data courses' },
+      { name: 'Temple Darshan Booking', emoji: '🛕', slug: 'darshan', desc: 'Book special darshan passes and entry tickets' },
+      { name: 'Pooja Slot Booking', emoji: '🪔', slug: 'pooja', desc: 'Book slots for specific temple rituals and poojas' },
+      { name: 'Pilgrimage Packages', emoji: '🚕', slug: 'pilgrimage', desc: 'Book specialized travel packages for pilgrimage sites' },
+      { name: 'Exam Slot Booking', emoji: '🎓', slug: 'exams', desc: 'Schedule exams, tests, and certification slots' },
+      { name: 'Passport Appointment', emoji: '🪪', slug: 'passport', desc: 'Book appointments at local passport offices' },
+      { name: 'RTO Appointment', emoji: '🚘', slug: 'rto', desc: 'Schedule appointments for license, registration, and RTO visits' },
+      { name: 'Government Office Appointment', emoji: '🏛️', slug: 'gov-office', desc: 'Schedule appointments at district offices and secretariats' },
     ],
   },
-  professional: {
-    name: 'Professional Services', emoji: '💼', gradient: 'from-slate-500 to-slate-700',
-    desc: 'Lawyers, accountants, consultants, and more',
+  'rental-equipment': {
+    name: 'Rental & Equipment Booking', emoji: '🛍️', gradient: 'from-teal-500 to-cyan-600',
+    desc: 'Rent cycles, sports bikes, cameras, sound systems, and event items',
     categories: [
-      { name: 'Legal Advice', emoji: '⚖️', slug: 'legal', desc: 'Family, property & business law' },
-      { name: 'Tax & Accounting', emoji: '🧮', slug: 'accounting', desc: 'ITR, GST & audits' },
-      { name: 'Photography', emoji: '📷', slug: 'photography', desc: 'Events & commercial shoots' },
-      { name: 'Consulting', emoji: '📊', slug: 'consulting', desc: 'Business & strategy advice' },
-      { name: 'Event Planning', emoji: '🎉', slug: 'events', desc: 'Weddings & corporate events' },
+      { name: 'Cycle Rental', emoji: '🚲', slug: 'cycle-rental', desc: 'Rent geared, non-geared, and mountain cycles' },
+      { name: 'Sports Bike Rental', emoji: '🏍️', slug: 'sports-bike', desc: 'Rent sports bikes and cruisers for road trips' },
+      { name: 'Camera Rental', emoji: '🎥', slug: 'camera', desc: 'Rent high-end DSLRs, mirrorless cameras, and lenses' },
+      { name: 'Sound System Rental', emoji: '🔊', slug: 'sound-system', desc: 'Rent audio systems, mics, and mixers' },
+      { name: 'Event Equipment Rental', emoji: '🪑', slug: 'event-equip', desc: 'Rent stage setups, chairs, tents, and projectors' },
     ],
   },
-  rentals: {
-    name: 'Rentals', emoji: '🔑', gradient: 'from-sky-500 to-indigo-500',
-    desc: 'Rent vehicles, equipment, spaces and more',
+  'personal-misc': {
+    name: 'Personal & Miscellaneous Services', emoji: '🐶', gradient: 'from-red-500 to-rose-600',
+    desc: 'Grooming, elder care, babysitting, and event planning specialists',
     categories: [
-      { name: 'Bike Rentals', emoji: '🛵', slug: 'bike-rentals', desc: 'Hourly & daily bike hire' },
-      { name: 'Car Rentals', emoji: '🚗', slug: 'car-rentals', desc: 'Self-drive & chauffeur' },
-      { name: 'Hall Booking', emoji: '🏛️', slug: 'halls', desc: 'Banquets & event spaces' },
-      { name: 'Equipment', emoji: '🔧', slug: 'equipment', desc: 'Tools & machinery' },
-      { name: 'Camping Gear', emoji: '⛺', slug: 'camping', desc: 'Tents, bags & gear sets' },
+      { name: 'Pet Grooming Appointment', emoji: '🐶', slug: 'pet-grooming', desc: 'Book professional grooming, spa, and check-ups for pets' },
+      { name: 'Babysitting Service', emoji: '🍼', slug: 'babysitting', desc: 'Book experienced babysitters and nannies' },
+      { name: 'Elder Care Service', emoji: '👴', slug: 'elder-care', desc: 'Book elder care services, medical check-ups, and support' },
+      { name: 'Event Organizer Booking', emoji: '🎂', slug: 'event-organizer', desc: 'Book event planners, birthday organizers, and decorators' },
     ],
   },
 };
 
-export default function CategoryPage({ params }: { params: Promise<{ bookingType: string }> }) {
-  const { bookingType } = use(params);
+export default function CategoryPage() {
+  const params = useParams();
+  const bookingType = params?.bookingType as string;
+  const { city } = useLocationStore();
   const data = CATEGORY_DATA[bookingType];
 
   if (!data) {
@@ -169,7 +176,7 @@ export default function CategoryPage({ params }: { params: Promise<{ bookingType
               <p className="text-white/70 text-lg max-w-xl">{data.desc}</p>
               <div className="flex items-center gap-2 mt-4 text-white/60 text-sm">
                 <MapPin size={14} />
-                <span>Showing providers near your location</span>
+                <span>Showing providers near {city}</span>
               </div>
             </motion.div>
           </div>

@@ -1,237 +1,232 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
-import {
-  Star, Heart, ChevronLeft, ChevronRight, Filter, ArrowUpDown,
-  Search
-} from 'lucide-react';
 import { TopNav } from '../components/TopNav';
-import { SideNav } from '../components/SideNav';
 import { BottomNav } from '../components/BottomNav';
+import { SideNav } from '../components/SideNav';
+import { ShortcutDock } from '../components/shortcuts/ShortcutDock';
+import { ShortcutManagerModal } from '../components/shortcuts/ShortcutManagerModal';
+import { ActionModalManager } from '../components/shortcuts/ActionModalManager';
+import { useBookingFlowStore } from '../lib/store';
 
-/* ================================================================
-   DATA
-   ================================================================ */
-
-const HERO_IMAGES = {
-  main: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAzj3FdlEXTd8TYM-qQAn3qdNGfdN4KBf8460UjDH8VavT7yqT75dGiqu8Y9QSj8Xf3q1lm4bPszlKgCcnLsEY8bTNWnBPllDEM92OPn9ihe_pUDi21ErkJkE_bbem9UNWM3c_69YeG_2GBkpv28QMaIDI_7jmelAzkEXJn6UKts3XvFJ1YyItECTg_QsJzB91TyL_s2EKSl7ag4tEQU_ot2ELTYFKrxYmO0PUAt0UWIoEpu1dzi1HlS_mK_ilC_lu9vYWsaerfXvk',
-  secondary1: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCu9BHplED_9aVDZT5pG8BQTmNA9pqKnp7RC99dfFguYd2NKorWnCM_PZ04pZ0HpayA1QCI8J8PE2PLx91ZSNIjDRqr0jwx0bnd9ZT5vOQ9x5_5DEKmeDrfbjaGAA_28fn8yf-j9yuD9KJCMbcyhgsISoiafbpsoPsXj1jCYb1oinll1pkoVOBkVSffbUqcruoa0wsrHAXRrEaKe62qQIcLPvEIAgWyblnx-442uHuVFSWiYYdjnhsg8W7xhbqioD88kPfLU-HerD0',
-  secondary2: 'https://lh3.googleusercontent.com/aida-public/AB6AXuASevivWfTGfzMb8jeTxMxBipfhml7-8Outcir0j-8GhSzDqUspmZEGZfC7iMsCknrP0ENB9yyHGox-PpdnyMdfF7Jin4RLD1-2wyKbd_dW1nCYEse98rY7rwl-K1z46GfK7pCCQf8SKvvve4Liehkgu2QI44qle5Tkt19TET7Nw-wb7Lsu9DI0ftSy1EcbmTjhVlr7X8YZsi8LiT3QB77lRBluKCS9jDLBKtxtH2hc8nW3M8y16rzuzt1S89-FAAKXfpVZu1PSsIE',
-};
-
-const LISTINGS = [
-  {
-    id: '1', name: 'Azure Sanctuary', location: 'Santorini, Greece',
-    price: '$1,250', rating: 4.9,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAFVs1E6r8_3jyBhZAnDV3aECQgng8jt7wpw_n1cpwds0YethHabxze7B-nt7egrp-vBajWrGYz7SaGwVDiA36ByTH9Xbk7DfA1GaKAhh-TaDJZHI1j2vEEN967LjP5ZrWC3vvmfQOpvtwuUsm7fkfyEFgV9a1WAr05yso5swDnqRIRPW4ZqL13Aq8dEHmVhUj0auLLVhOq5iROh2K7B6w7Lsh_4xfMYD699LXB0oLuX_AsBiuFNat-qTnBNpFK3nvV9cjVka-SnNk',
-  },
-  {
-    id: '2', name: 'Zenith Peak Lodge', location: 'Swiss Alps, Switzerland',
-    price: '$2,800', rating: 5.0,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA0D2x2yxpAAzCSyC-V8GSTGVI2PlUgZbAfTVDNvsz21OlwpSG_Y1F0Zu693LJZqka9ZEs3skugVNoWcVzYcFsutfIKRjKrvryfpr7xVh52h9BKWm8-0CZwB_zMOcdDhhCQdlhg8Mg5FWyiX2c22UAgF6fst1zOMEQa4jtrEh6ynhiH4SF0bmck8kTUJGIIDAH6E_CUyCps3m5RfogUrzYUE303iujNgzS1ViPh2wh31OH_IpcE8T8Drk0p0hZUqgODrJC_oTp6tYY',
-  },
-  {
-    id: '3', name: 'Lumière Terrace', location: 'Paris, France',
-    price: '$950', rating: 4.8,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCPmeuuCCJGO3Vh7_AYNoCDDesp4KL3vRoMvzMCsEKB9YPECFS-ya7T1Zq3uZNWqJnbp5IEEj0bZnkAnqExRJ2pM71TXbzjSvJ_jMY0LOC3fCzWxfeFcfols8DMRsflwTfvSu128n-OvCbDxcMUn538dKtingNtv-NToqRVjcTnFI5y54EBFBVyxeh0aqMRxEcGy5fPkCBv4wokT4DhzEwRHxyoeXbzdAgq2ELcshm3n90Gep1rYeLb87hOjh68j4ZG2AqSNg_Kesk',
-  },
-  {
-    id: '4', name: 'Verdant Retreat', location: 'Ubud, Bali',
-    price: '$1,500', rating: 4.7,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDUWEJnVL91w6tS_1r6RDr9Hp9oXwxuUhBagGDM58kkmb23iw7OpEY87rsRNT1luVe47U_T3aZqdfSODQ2_Fn1N06IwBkWV_vJ6SQXTbsLTokMkv4yqSlj1dNbxnxGQ-oSAhndUBd3SdnxnHBskabDDhA6A47QXJr15d_QDqjQyVLIz88gUQTjPs3MEJVbpEv-rwIfOfIhwKRHd5DEe7lvzzAHt4tZV7OzQvSw9nkhLaubhGrMrfvVw7h2vXJrJUPl3qI_c3nWL9ik',
-  },
+const PRIMARY_CATEGORIES = [
+  { id: 'travel-transport', label: 'Travel & Transport', icon: 'directions_car', from: '#60A5FA', to: '#3B82F6', glow: 'rgba(96,165,250,0.40)', href: '/travel-transport' },
+  { id: 'stay-accommodation', label: 'Stay & Accommodation', icon: 'hotel', from: '#FBBF24', to: '#F59E0B', glow: 'rgba(251,191,36,0.40)', href: '/stay-accommodation' },
+  { id: 'entertainment-events', label: 'Entertainment & Events', icon: 'movie', from: '#F472B6', to: '#EC4899', glow: 'rgba(244,114,182,0.40)', href: '/entertainment-events' },
+  { id: 'sports-turf', label: 'Sports & Turf', icon: 'sports_soccer', from: '#34D399', to: '#10B981', glow: 'rgba(52,211,153,0.40)', href: '/sports-turf' },
+  { id: 'lifestyle-local', label: 'Lifestyle & Local Services', icon: 'restaurant', from: '#A78BFA', to: '#8B5CF6', glow: 'rgba(167,139,250,0.40)', href: '/lifestyle-local' },
+  { id: 'business-professional', label: 'Business & Professional', icon: 'business', from: '#818CF8', to: '#4F46E5', glow: 'rgba(129,140,248,0.40)', href: '/business-professional' },
+  { id: 'religious-government', label: 'Religious & Gov Services', icon: 'account_balance', from: '#F97316', to: '#EA580C', glow: 'rgba(249,115,22,0.40)', href: '/religious-government' },
+  { id: 'rental-equipment', label: 'Rental & Equipment', icon: 'shopping_bag', from: '#2DD4BF', to: '#0D9488', glow: 'rgba(45,212,191,0.40)', href: '/rental-equipment' },
+  { id: 'personal-misc', label: 'Personal & Misc Services', icon: 'pets', from: '#F87171', to: '#EF4444', glow: 'rgba(248,113,113,0.40)', href: '/personal-misc' },
 ];
 
-/* ================================================================
-   COMPONENT
-   ================================================================ */
+function CategoryCard({
+  label,
+  icon,
+  from,
+  to,
+  glow,
+  href,
+}: {
+  label: string;
+  icon: string;
+  from: string;
+  to: string;
+  glow: string;
+  href: string;
+}) {
+  return (
+    <Link href={href} className="w-full group">
+      <div
+        className="relative h-[108px] rounded-2xl flex flex-col items-center justify-center gap-2.5 overflow-hidden border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)] hover:scale-[1.04] active:scale-[0.98] transition-all duration-300 card-glass"
+        style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.35)' }}
+      >
+        <div
+          className="absolute inset-0 opacity-[0.06] group-hover:opacity-[0.12] transition-opacity duration-500"
+          style={{ background: `linear-gradient(145deg, ${from}, ${to})` }}
+        />
+        <div
+          className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          style={{ boxShadow: `inset 0 0 0 1px ${glow}` }}
+        />
+        <div
+          className="category-badge relative z-10"
+          style={{
+            background: `linear-gradient(135deg, ${from}, ${to})`,
+            boxShadow: `0 4px 16px ${glow}, 0 2px 6px rgba(0,0,0,0.6)`,
+          }}
+        >
+          <span className="material-symbols-outlined text-[#0C0C10] text-[21px]" style={{ fontVariationSettings: "'wght' 500" }}>
+            {icon}
+          </span>
+        </div>
+        <span className="relative z-10 text-[12px] font-semibold tracking-wide text-[color:var(--color-on-surface-variant)] group-hover:text-[color:var(--color-on-surface)] transition-colors duration-300">
+          {label}
+        </span>
+      </div>
+    </Link>
+  );
+}
+
+function SectionHeader({ title, sub, href }: { title: string; sub: string; href: string }) {
+  return (
+    <div className="flex items-end justify-between gap-4 mb-5">
+      <div>
+        <h2 className="text-[18px] font-bold text-[color:var(--color-on-surface)] tracking-tight">{title}</h2>
+        <p className="text-[12px] mt-0.5 text-[color:var(--color-outline)]">{sub}</p>
+      </div>
+      <Link
+        href={href}
+        className="flex items-center gap-1 text-[12px] font-semibold text-[color:var(--color-primary)] hover:gap-2 transition-all duration-300 shrink-0"
+      >
+        View All
+        <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
+      </Link>
+    </div>
+  );
+}
+
+function StatCard({
+  label,
+  value,
+  note,
+  icon,
+}: {
+  label: string;
+  value: string;
+  note: string;
+  icon: string;
+}) {
+  return (
+    <div className="card-glass rounded-2xl p-4 md:p-5 bg-[color:var(--color-surface-container)]">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <p className="text-[12px] uppercase tracking-[0.18em] text-[color:var(--color-outline)]">{label}</p>
+          <p className="mt-2 text-[24px] md:text-[28px] font-black text-[color:var(--color-on-surface)] leading-none">{value}</p>
+          <p className="mt-2 text-[12px] text-[color:var(--color-on-surface-variant)]">{note}</p>
+        </div>
+        <div className="h-12 w-12 rounded-2xl bg-[color:var(--color-primary)]/10 flex items-center justify-center border border-[color:var(--color-primary)]/20">
+          <span className="material-symbols-outlined text-[color:var(--color-primary)] text-[22px]" style={{ fontVariationSettings: "'wght' 500" }}>
+            {icon}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function HomePage() {
+  const { bookings } = useBookingFlowStore();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-[color:var(--color-background)]">
+        <div className="h-8 w-8 border-4 border-[color:var(--color-primary)] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  const activeCount = bookings.filter(b => b.status === 'CONFIRMED').length;
+  const activeNote = activeCount === 1 ? '1 active reservation' : `${activeCount} active reservations`;
+
   return (
     <>
+      <ShortcutManagerModal />
+      <ActionModalManager />
       <TopNav />
-      <div className="flex min-h-screen pt-[72px] lg:pt-[84px]">
+      <div className="hidden lg:block">
         <SideNav />
+      </div>
 
-        {/* Main Content */}
-        <main className="flex-1 lg:ml-72 px-5 lg:px-16 xl:px-20 pb-28">
+      <main className="page-content-with-sidenav px-4 md:px-8 lg:pr-8">
+        <div className="mx-auto max-w-7xl">
+          <section className="mb-6 md:mb-8">
+            <div className="card-glass rounded-[28px] p-5 md:p-8 overflow-hidden relative">
+              <div className="absolute inset-0 opacity-[0.06]" style={{ background: 'radial-gradient(circle at top right, rgba(255,215,0,0.55), transparent 42%)' }} />
+              <div className="relative grid gap-6 items-start lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
+                <div>
+                  <p className="text-[11px] uppercase tracking-[0.28em] text-[color:var(--color-outline)]">Dashboard Overview</p>
+                  <h1 className="mt-3 text-[30px] md:text-[42px] font-black tracking-tight text-[color:var(--color-on-surface)] leading-tight">
+                    Book smarter with a cleaner, elegant control center.
+                  </h1>
+                  <p className="mt-4 max-w-2xl text-[14px] md:text-[16px] leading-7 text-[color:var(--color-on-surface-variant)]">
+                    Your homepage now includes a desktop dashboard sidebar for settings, bookings, services, analytics, and account controls while keeping the mobile experience light and fast.
+                  </p>
+                  <div className="mt-6 flex flex-wrap gap-3">
+                    <Link href="/search" className="rounded-xl bg-[color:var(--color-primary)] px-4 py-3 text-sm font-bold text-[color:var(--color-on-primary)] shadow-lg shadow-[rgba(255,215,0,0.18)] transition-transform hover:scale-[1.02]">
+                      Explore Services
+                    </Link>
+                    <Link href="/profile" className="rounded-xl border border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-high)] px-4 py-3 text-sm font-semibold text-[color:var(--color-on-surface)] transition-colors hover:border-[color:var(--color-primary)]/40 hover:bg-[color:var(--color-surface-container-highest)]">
+                      Open Settings
+                    </Link>
+                  </div>
+                </div>
 
-          {/* ═══════════ HERO SECTION ═══════════ */}
-          <section className="mt-6 lg:mt-8 mb-12 lg:mb-16">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 gap-4">
-              <motion.div
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <h2 className="text-[32px] lg:text-[48px] font-semibold leading-[1.15] tracking-[-0.02em] text-[var(--on-surface)] mb-2">
-                  Curated For You
-                </h2>
-                <p className="text-[var(--on-surface-variant)] text-[16px] lg:text-[18px] leading-[28px] max-w-xl">
-                  Exquisite journeys and premier stays, hand-selected for the discerning voyager.
-                </p>
-              </motion.div>
-              <div className="flex gap-3">
-                <button className="btn-outline text-[13px] py-2 px-5">
-                  <Filter size={14} /> Filter
-                </button>
-                <button className="btn-primary text-[13px] py-2 px-5">
-                  <ArrowUpDown size={14} /> Sort By
-                </button>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <StatCard label="Active Bookings" value={String(activeCount)} note={activeNote} icon="calendar_month" />
+                  <StatCard label="Saved Places" value="28" note="Across hotels, events, and services" icon="favorite" />
+                  <StatCard label="Support Score" value="98%" note="Fast response and booking reliability" icon="verified" />
+                </div>
               </div>
-            </div>
-
-            {/* Bento Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6">
-              {/* Primary Feature — large */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-                className="lg:col-span-8 lg:row-span-2 relative overflow-hidden rounded-xl group cursor-pointer h-[280px] lg:h-[560px]"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={HERO_IMAGES.main}
-                  alt="Luxury hotel lobby with golden lighting"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className="card-overlay" />
-                <div className="absolute bottom-6 left-6 lg:bottom-10 lg:left-10 max-w-lg z-10">
-                  <span className="badge-gold mb-4 inline-block">Exclusive Partner</span>
-                  <h3 className="font-['Playfair_Display'] text-[24px] lg:text-[32px] font-semibold leading-[1.2] text-white mb-2">
-                    The Gilded Pavilion, Maldives
-                  </h3>
-                  <p className="text-[var(--on-surface-variant)] text-[14px] lg:text-[16px] leading-relaxed line-clamp-2">
-                    Private overwater villas with 24-hour concierge service and underwater dining experiences.
-                  </p>
-                </div>
-              </motion.div>
-
-              {/* Secondary Feature 1 */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="lg:col-span-4 relative overflow-hidden rounded-xl group cursor-pointer h-[200px] lg:h-[268px]"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={HERO_IMAGES.secondary1}
-                  alt="Private luxury jet cabin"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className="card-overlay-dark" />
-                <div className="absolute inset-0 p-6 lg:p-8 flex flex-col justify-end z-10">
-                  <h4 className="font-['Playfair_Display'] text-[20px] lg:text-[24px] font-medium text-white">
-                    Private Charters
-                  </h4>
-                  <p className="text-[var(--on-surface-variant)] text-[12px] font-semibold tracking-[0.08em]">
-                    Bespoke flight experiences
-                  </p>
-                </div>
-              </motion.div>
-
-              {/* Secondary Feature 2 */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="lg:col-span-4 relative overflow-hidden rounded-xl group cursor-pointer h-[200px] lg:h-[268px]"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={HERO_IMAGES.secondary2}
-                  alt="Elegant champagne in high-end bar"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className="card-overlay-dark" />
-                <div className="absolute inset-0 p-6 lg:p-8 flex flex-col justify-end z-10">
-                  <h4 className="font-['Playfair_Display'] text-[20px] lg:text-[24px] font-medium text-white">
-                    Elite Events
-                  </h4>
-                  <p className="text-[var(--on-surface-variant)] text-[12px] font-semibold tracking-[0.08em]">
-                    Invitation-only access
-                  </p>
-                </div>
-              </motion.div>
             </div>
           </section>
 
-          {/* ═══════════ DISCOVER MORE — Listing Cards ═══════════ */}
-          <section className="mb-16">
-            <div className="flex items-center justify-between mb-8 lg:mb-10">
-              <h3 className="font-['Playfair_Display'] text-[28px] lg:text-[32px] font-semibold text-[var(--on-surface)]">
-                Discover More
-              </h3>
-              <div className="flex gap-3">
-                <button className="p-2.5 border border-[var(--outline-variant)]/20 rounded-full hover:border-[var(--primary)] transition-colors text-[var(--on-surface-variant)] hover:text-[var(--primary)]">
-                  <ChevronLeft size={18} strokeWidth={1.5} />
-                </button>
-                <button className="p-2.5 border border-[var(--outline-variant)]/20 rounded-full hover:border-[var(--primary)] transition-colors text-[var(--on-surface-variant)] hover:text-[var(--primary)]">
-                  <ChevronRight size={18} strokeWidth={1.5} />
-                </button>
+          <section
+            id="ad-banner-hero"
+            data-ad-slot=""
+            aria-label="Advertisement"
+            className="ad-block mt-5 mb-8"
+          >
+            <div
+              className="w-full h-[172px] md:h-[212px] rounded-2xl overflow-hidden relative border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)] card-glass"
+              style={{ boxShadow: 'inset 0 0 0 1px rgba(255,215,0,0.06)' }}
+            >
+              <div className="absolute inset-0 overflow-hidden">
+                <div
+                  className="absolute top-0 bottom-0 w-1/3 animate-shimmer"
+                  style={{ background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.04), transparent)' }}
+                />
+              </div>
+              <div className="relative flex flex-col items-center justify-center h-full gap-3 opacity-35">
+                <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(255,215,0,0.10)' }}>
+                  <span className="material-symbols-outlined text-[color:var(--color-primary)] text-[26px]">ad_group</span>
+                </div>
+                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[color:var(--color-outline)]">
+                  Advertisement
+                </p>
               </div>
             </div>
+          </section>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-6">
-              {LISTINGS.map((listing, i) => (
-                <motion.div
-                  key={listing.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1 + i * 0.08 }}
-                  className="glass-card-hover rounded-xl overflow-hidden cursor-pointer group"
-                >
-                  {/* Image */}
-                  <div className="relative h-56 lg:h-64 overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={listing.image}
-                      alt={listing.name}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                    <button className="absolute top-4 right-4 p-2 bg-black/20 backdrop-blur-md rounded-full text-white hover:text-[var(--primary)] transition-colors z-10">
-                      <Heart size={18} strokeWidth={1.5} />
-                    </button>
-                  </div>
+          <section className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-[15px] font-bold tracking-wide text-[color:var(--color-on-surface)]">
+                Quick Actions
+              </h2>
+              <span className="text-[12px] text-[color:var(--color-outline)]">Manage shortcuts and workflow</span>
+            </div>
+            <div className="card-glass rounded-2xl p-3 md:p-4">
+              <ShortcutDock />
+            </div>
+          </section>
 
-                  {/* Info */}
-                  <div className="p-5 lg:p-6">
-                    <div className="flex justify-between items-start mb-1">
-                      <h5 className="font-['Playfair_Display'] text-[17px] font-medium text-[var(--on-surface)]">
-                        {listing.name}
-                      </h5>
-                      <span className="flex items-center gap-1 text-[var(--primary)] text-[14px] shrink-0">
-                        <Star size={14} fill="currentColor" strokeWidth={0} />
-                        {listing.rating}
-                      </span>
-                    </div>
-                    <p className="text-[var(--on-surface-variant)] text-[14px] tracking-[0.05em] mb-5">
-                      {listing.location}
-                    </p>
-                    <p className="text-[var(--on-surface)] text-[14px] tracking-[0.05em]">
-                      From{' '}
-                      <span className="text-[var(--primary)] font-bold text-[18px]">{listing.price}</span>
-                      {' '}/ night
-                    </p>
-                  </div>
-                </motion.div>
+          <section className="mb-8">
+            <SectionHeader title="Browse Categories" sub="Select a category to start booking services" href="/categories" />
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+              {PRIMARY_CATEGORIES.map((cat) => (
+                <CategoryCard key={cat.id} {...cat} />
               ))}
             </div>
           </section>
-
-          {/* ═══════════ MOBILE SEARCH (lg:hidden) ═══════════ */}
-          <div className="lg:hidden fixed bottom-[76px] right-4 z-40">
-            <button className="w-14 h-14 rounded-full bg-[var(--primary)] text-[var(--on-primary)] flex items-center justify-center shadow-lg shadow-[var(--primary)]/25 hover:shadow-xl transition-all active:scale-95">
-              <Search size={22} />
-            </button>
-          </div>
-        </main>
-      </div>
+        </div>
+      </main>
 
       <BottomNav />
     </>

@@ -1,10 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { Star, Clock, MapPin, Heart, Share2, ChevronLeft, ChevronRight, Check, Users, ArrowLeft } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { Star, Clock, MapPin, Heart, Share2, ChevronLeft, ChevronRight, Check, Users, ArrowLeft, AlertCircle } from 'lucide-react';
 import { ThemeToggle } from '../../../components/ThemeToggle';
+import { api } from '../../../lib/api';
+import { useBookingFlowStore } from '../../../lib/store';
 
 const mockSlots = Array.from({ length: 16 }, (_, i) => ({
   id: `slot-${i}`,
@@ -15,8 +18,58 @@ const mockSlots = Array.from({ length: 16 }, (_, i) => ({
 }));
 
 export default function ServiceDetailPage() {
+  const params = useParams();
+  const id = params?.id as string;
+  const { setSelectedService, setSelectedSlot } = useBookingFlowStore();
+
+  const [service, setService] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState(0);
-  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [localSelectedSlot, setLocalSelectedSlot] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    const fetchService = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const rawService = await api.services.byId(id);
+        if (active) {
+          const mapped = {
+            ...rawService,
+            price: parseFloat(rawService.basePrice),
+            merchant: rawService.merchant.name,
+            city: rawService.merchant.city,
+            duration: rawService.durationMinutes,
+            reviews: rawService.reviewCount,
+            image: rawService.images[0] || '✨',
+            category: rawService.category.name,
+            lat: rawService.merchant.latitude,
+            lng: rawService.merchant.longitude,
+            desc: rawService.description,
+          };
+          setService(mapped);
+        }
+      } catch (err: any) {
+        console.error('Error fetching service details:', err);
+        if (active) {
+          setError(err.message || 'Failed to load service details.');
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    };
+
+    if (id) {
+      fetchService();
+    }
+    return () => {
+      active = false;
+    };
+  }, [id]);
 
   const dates = Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
@@ -24,19 +77,60 @@ export default function ServiceDetailPage() {
     return { day: d.toLocaleDateString('en', { weekday: 'short' }), date: d.getDate(), month: d.toLocaleDateString('en', { month: 'short' }), full: d.toISOString().split('T')[0] };
   });
 
+  const handleBookNow = (e: React.MouseEvent) => {
+    if (!localSelectedSlot || !service) {
+      e.preventDefault();
+      return;
+    }
+    const slotObj = mockSlots.find(s => s.id === localSelectedSlot);
+    setSelectedService(service);
+    setSelectedSlot({
+      date: dates[selectedDate].full,
+      time: slotObj?.time,
+    });
+  };
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-xs text-[var(--text-muted)] uppercase tracking-wider animate-pulse">Loading Service Details...</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (error || !service) {
+    return (
+      <main className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] flex flex-col items-center justify-center p-4">
+        <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-4">
+          <AlertCircle className="h-8 w-8 text-red-500" />
+        </div>
+        <h2 className="text-xl font-bold">Service Not Found</h2>
+        <p className="text-sm text-[var(--text-muted)] mt-1">{error || 'The requested service could not be located.'}</p>
+        <Link href="/search" className="mt-6 btn-primary py-2.5 px-5 text-sm font-semibold rounded-xl">
+          Back to Search
+        </Link>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] transition-colors duration-300">
       {/* Sticky header */}
       <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-[var(--border-subtle)]">
         <div className="container-main flex items-center justify-between h-16">
           <div className="flex items-center gap-4">
-            <Link href="/" className="btn-ghost p-2">
+            <Link href="/search" className="btn-ghost p-2">
               <ArrowLeft size={20} />
             </Link>
             <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
               <Link href="/" className="hover:text-[var(--text-primary)] transition-colors">Home</Link>
               <ChevronRight size={14} />
-              <span className="text-[var(--text-primary)]">Service Details</span>
+              <Link href="/search" className="hover:text-[var(--text-primary)] transition-colors">Search</Link>
+              <ChevronRight size={14} />
+              <span className="text-[var(--text-primary)]">{service.name}</span>
             </div>
           </div>
           <ThemeToggle />
@@ -46,12 +140,12 @@ export default function ServiceDetailPage() {
       <div className="pt-16">
         {/* Image Gallery */}
         <div className="relative h-[300px] sm:h-[400px] bg-gradient-to-br from-indigo-600 to-purple-700">
-        <img src="https://picsum.photos/seed/service-detail/1200/400" alt="Service" className="w-full h-full object-cover opacity-80" />
+        <img src={service.image} alt={service.name} className="w-full h-full object-cover opacity-80" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         <div className="absolute bottom-6 left-6 right-6">
-          <span className="inline-block rounded-full bg-white/20 backdrop-blur-sm px-3 py-1 text-xs font-medium text-white mb-2">Salon & Spa</span>
-          <h1 className="text-3xl font-bold text-white">Premium Haircut & Styling</h1>
-          <p className="text-white/70 mt-1 flex items-center gap-2"><MapPin className="h-4 w-4" /> Style Studio · Chennai</p>
+          <span className="inline-block rounded-full bg-white/20 backdrop-blur-sm px-3 py-1 text-xs font-medium text-white mb-2">{service.category}</span>
+          <h1 className="text-3xl font-bold text-white">{service.name}</h1>
+          <p className="text-white/70 mt-1 flex items-center gap-2"><MapPin className="h-4 w-4" /> {service.merchant} · {service.city}</p>
         </div>
         <div className="absolute top-4 right-4 flex gap-2">
           <button className="rounded-full bg-white/20 backdrop-blur-sm p-2.5 text-white hover:bg-white/30 transition-colors">
@@ -70,9 +164,9 @@ export default function ServiceDetailPage() {
             {/* Stats Row */}
             <div className="flex flex-wrap gap-4">
               {[
-                { icon: Star, value: '4.8', label: '234 reviews', color: 'text-yellow-500' },
-                { icon: Clock, value: '45 min', label: 'Duration', color: 'text-blue-500' },
-                { icon: Users, value: '1,200+', label: 'Bookings', color: 'text-green-500' },
+                { icon: Star, value: `${service.rating}`, label: `${service.reviews} reviews`, color: 'text-yellow-500' },
+                { icon: Clock, value: `${service.duration} min`, label: 'Duration', color: 'text-blue-500' },
+                { icon: Users, value: `${Math.round(service.rating * service.reviews * 1.5)}+`, label: 'Bookings', color: 'text-green-500' },
               ].map((stat) => (
                 <div key={stat.label} className="flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] px-4 py-3">
                   <stat.icon className={`h-5 w-5 ${stat.color} ${stat.icon === Star ? 'fill-yellow-500' : ''}`} />
@@ -88,7 +182,7 @@ export default function ServiceDetailPage() {
             <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-primary)] p-6">
               <h2 className="font-semibold text-lg mb-3">About this service</h2>
               <p className="text-[var(--text-secondary)] leading-relaxed">
-                Experience a premium haircut and styling session at our state-of-the-art salon. Our expert stylists use the latest techniques and premium products to give you the perfect look. The session includes consultation, wash, cut, styling, and finishing touches.
+                {service.desc || service.description || 'No description provided.'}
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 {['Consultation', 'Hair Wash', 'Precision Cut', 'Styling', 'Finishing'].map((item) => (
@@ -128,7 +222,7 @@ export default function ServiceDetailPage() {
           <div className="lg:col-span-1">
             <div className="sticky top-20 rounded-2xl border border-[var(--border)] bg-[var(--bg-primary)] p-6 shadow-lg">
               <div className="text-center mb-6">
-                <div className="text-3xl font-bold text-[var(--primary)]">₹599</div>
+                <div className="text-3xl font-bold text-[var(--primary)]">₹{service.price}</div>
                 <div className="text-sm text-[var(--text-muted)]">per session</div>
               </div>
 
@@ -151,16 +245,20 @@ export default function ServiceDetailPage() {
                 <h3 className="font-semibold text-sm mb-3">Available Slots</h3>
                 <div className="grid grid-cols-3 gap-2">
                   {mockSlots.map((slot) => (
-                    <button key={slot.id} disabled={!slot.available} onClick={() => setSelectedSlot(slot.id)}
-                      className={`rounded-lg py-2 text-sm font-medium transition-all ${!slot.available ? 'bg-[var(--bg-tertiary)] text-[var(--text-muted)] cursor-not-allowed line-through' : selectedSlot === slot.id ? 'bg-[var(--primary)] text-white shadow-md' : 'border border-[var(--border)] hover:border-[var(--primary)] hover:text-[var(--primary)]'}`}>
+                    <button key={slot.id} disabled={!slot.available} onClick={() => setLocalSelectedSlot(slot.id)}
+                      className={`rounded-lg py-2 text-sm font-medium transition-all ${!slot.available ? 'bg-[var(--bg-tertiary)] text-[var(--text-muted)] cursor-not-allowed line-through' : localSelectedSlot === slot.id ? 'bg-[var(--primary)] text-white shadow-md' : 'border border-[var(--border)] hover:border-[var(--primary)] hover:text-[var(--primary)]'}`}>
                       {slot.time}
                     </button>
                   ))}
                 </div>
               </div>
 
-              <Link href="/booking/checkout" className={`flex w-full items-center justify-center gap-2 rounded-xl py-3.5 font-semibold text-white transition-all ${selectedSlot ? 'bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 shadow-lg shadow-indigo-500/25' : 'bg-gray-300 cursor-not-allowed'}`}>
-                Book Now — ₹599
+              <Link
+                href="/booking/checkout"
+                onClick={handleBookNow}
+                className={`flex w-full items-center justify-center gap-2 rounded-xl py-3.5 font-semibold text-white transition-all ${localSelectedSlot ? 'bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 shadow-lg shadow-indigo-500/25' : 'bg-gray-300 cursor-not-allowed pointer-events-none'}`}
+              >
+                Book Now — ₹{service.price}
               </Link>
               <p className="mt-3 text-center text-xs text-[var(--text-muted)]">Free cancellation up to 2 hours before</p>
             </div>

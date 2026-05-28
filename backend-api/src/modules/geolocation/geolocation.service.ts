@@ -39,22 +39,24 @@ export class GeolocationService {
         distance_km: number;
       }>
     >`
-      SELECT
-        id, name, slug, logo_url, cover_image_url,
-        address, city, latitude, longitude,
-        rating, review_count,
-        (
-          6371 * acos(
-            cos(radians(${latitude})) *
-            cos(radians(latitude)) *
-            cos(radians(longitude) - radians(${longitude})) +
-            sin(radians(${latitude})) *
-            sin(radians(latitude))
-          )
-        ) AS distance_km
-      FROM merchants
-      WHERE is_active = true AND deleted_at IS NULL
-      HAVING distance_km <= ${radiusKm}
+      SELECT * FROM (
+        SELECT
+          id, name, slug, logo_url, cover_image_url,
+          address, city, latitude, longitude,
+          rating, review_count,
+          (
+            6371 * acos(
+              cos(radians(${latitude})) *
+              cos(radians(latitude)) *
+              cos(radians(longitude) - radians(${longitude})) +
+              sin(radians(${latitude})) *
+              sin(radians(latitude))
+            )
+          ) AS distance_km
+        FROM merchants
+        WHERE is_active = true AND deleted_at IS NULL
+      ) sub
+      WHERE distance_km <= ${radiusKm}
       ORDER BY distance_km ASC
       LIMIT ${limit} OFFSET ${offset}
     `;

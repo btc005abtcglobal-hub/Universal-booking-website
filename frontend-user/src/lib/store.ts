@@ -4,6 +4,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { MockService, MOCK_SERVICES } from './mockData';
 
 interface UserState {
   user: any | null;
@@ -32,39 +33,143 @@ export const useUserStore = create<UserState>()(
   ),
 );
 
+export interface PersistedBooking {
+  id: string;
+  ref: string;
+  serviceId: string;
+  serviceName: string;
+  merchantName: string;
+  date: string;
+  time: string;
+  amount: number;
+  status: 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
+  city?: string;
+  durationMinutes?: number;
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string;
+  notes?: string;
+  bookedAt?: string;
+}
+
+export interface PersistedMerchant {
+  id: string;
+  name: string;
+  category: string;
+  status: 'ACTIVE' | 'SUSPENDED';
+  email?: string;
+  phone?: string;
+  city?: string;
+  address?: string;
+  description?: string;
+  rating: number;
+  vendorId?: string;
+}
+
 interface BookingFlowState {
   selectedService: any | null;
   selectedSlot: any | null;
   attendeeCount: number;
   notes: string;
   bookingResult: any | null;
+  bookings: PersistedBooking[];
+  services: MockService[];
+  merchants: PersistedMerchant[];
+  commissionRate: number;
+  nextVendorSerial: number;
+  setCommissionRate: (rate: number) => void;
   setSelectedService: (service: any) => void;
   setSelectedSlot: (slot: any) => void;
   setAttendeeCount: (count: number) => void;
   setNotes: (notes: string) => void;
   setBookingResult: (result: any) => void;
+  addBooking: (booking: PersistedBooking) => void;
+  cancelBooking: (bookingId: string) => void;
+  completeBooking: (bookingId: string) => void;
+  addService: (service: MockService) => void;
+  updateService: (service: MockService) => void;
+  deleteService: (serviceId: string) => void;
+  addMerchant: (merchant: PersistedMerchant) => void;
+  toggleMerchantStatus: (merchantId: string) => void;
+  assignVendorId: (merchantId: string, vendorId: string) => void;
   resetFlow: () => void;
 }
 
-export const useBookingFlowStore = create<BookingFlowState>((set) => ({
-  selectedService: null,
-  selectedSlot: null,
-  attendeeCount: 1,
-  notes: '',
-  bookingResult: null,
-  setSelectedService: (service) => set({ selectedService: service }),
-  setSelectedSlot: (slot) => set({ selectedSlot: slot }),
-  setAttendeeCount: (count) => set({ attendeeCount: count }),
-  setNotes: (notes) => set({ notes }),
-  setBookingResult: (result) => set({ bookingResult: result }),
-  resetFlow: () => set({
-    selectedService: null,
-    selectedSlot: null,
-    attendeeCount: 1,
-    notes: '',
-    bookingResult: null,
-  }),
-}));
+export const useBookingFlowStore = create<BookingFlowState>()(
+  persist(
+    (set) => ({
+      selectedService: null,
+      selectedSlot: null,
+      attendeeCount: 1,
+      notes: '',
+      bookingResult: null,
+      bookings: [
+        { id: '1', ref: 'BK-A1B2C3', serviceId: 'svc-1', serviceName: 'Premium Haircut', merchantName: 'Style Studio', date: '2026-05-20', time: '10:00 AM', status: 'CONFIRMED', amount: 599, city: 'Chennai', durationMinutes: 45, customerName: 'Ramesh Kumar', customerEmail: 'ramesh@gmail.com', customerPhone: '+91 99887 76655', notes: 'Needs top styling.', bookedAt: '2026-05-19T10:30:00.000Z' },
+        { id: '2', ref: 'BK-D4E5F6', serviceId: 'svc-2', serviceName: 'Yoga Class', merchantName: 'ZenFit', date: '2026-05-22', time: '7:00 AM', status: 'CONFIRMED', amount: 499, city: 'Chennai', durationMinutes: 60, customerName: 'Priya Raj', customerEmail: 'priya@outlook.com', customerPhone: '+91 91234 56789', notes: 'Prefers morning sunlight.', bookedAt: '2026-05-21T07:15:00.000Z' },
+        { id: '3', ref: 'BK-G7H8I9', serviceId: 'svc-3', serviceName: 'Table Reservation', merchantName: 'The Grand temple Dine', date: '2026-05-15', time: '8:00 PM', status: 'COMPLETED', amount: 1200, city: 'Madurai', durationMinutes: 120, customerName: 'Ananth Subramanian', customerEmail: 'ananth@yahoo.com', customerPhone: '+91 98450 12345', notes: 'Window seat if possible.', bookedAt: '2026-05-14T20:00:00.000Z' },
+      ],
+      services: MOCK_SERVICES,
+      merchants: [
+        { id: '1', name: 'Apollo Dental Care', category: 'Dental & Clinic', status: 'ACTIVE', rating: 4.8, email: 'info@apollodental.com', phone: '+91 98765 43210', city: 'Chennai', address: '42 Anna Nagar Main Road', description: 'Apollo Dental Care is a state-of-the-art dental clinic providing top-tier oral care services.', vendorId: '2026050001' },
+        { id: '2', name: 'ZenFit', category: 'Fitness & Gyms', status: 'ACTIVE', rating: 4.9, email: 'zenfit@fitness.com', phone: '+91 98765 54321', city: 'Chennai', address: '15 T Nagar High Road', description: 'ZenFit is a wellness and fitness club offering personal training and group yoga sessions.', vendorId: '2026050002' },
+        { id: '3', name: 'Style Studio', category: 'Beauty & Salon', status: 'ACTIVE', rating: 4.8, email: 'style@studio.com', phone: '+91 98765 12345', city: 'Chennai', address: '15 T Nagar High Road', description: 'Style Studio is a premium beauty salon for haircuts, styling, and bridal makeups.', vendorId: '2026050003' },
+        { id: '4', name: 'The Grand temple Dine', category: 'Fine Dining', status: 'ACTIVE', rating: 4.7, email: 'dine@grandtemple.com', phone: '+91 98450 12345', city: 'Madurai', address: 'Madurai High Road', description: 'The Grand Temple Dine is an elegant family fine-dining restaurant.', vendorId: '2026050004' }
+      ],
+      commissionRate: 10,
+      nextVendorSerial: 5,
+      setCommissionRate: (rate) => set({ commissionRate: rate }),
+      setSelectedService: (service) => set({ selectedService: service }),
+      setSelectedSlot: (slot) => set({ selectedSlot: slot }),
+      setAttendeeCount: (count) => set({ attendeeCount: count }),
+      setNotes: (notes) => set({ notes }),
+      setBookingResult: (result) => set({ bookingResult: result }),
+      addBooking: (booking) => set((state) => ({ bookings: [booking, ...state.bookings] })),
+      cancelBooking: (bookingId) => set((state) => ({
+        bookings: state.bookings.map((b) => b.id === bookingId ? { ...b, status: 'CANCELLED' as const } : b)
+      })),
+      completeBooking: (bookingId) => set((state) => ({
+        bookings: state.bookings.map((b) => b.id === bookingId ? { ...b, status: 'COMPLETED' as const } : b)
+      })),
+      addService: (service) => set((state) => ({ services: [service, ...state.services] })),
+      updateService: (updated) => set((state) => ({
+        services: state.services.map((s) => s.id === updated.id ? updated : s)
+      })),
+      deleteService: (serviceId) => set((state) => ({
+        services: state.services.filter((s) => s.id !== serviceId)
+      })),
+      addMerchant: (merchant) => set((state) => {
+        let updatedMerchant = { ...merchant };
+        let nextSerial = state.nextVendorSerial;
+        if (!updatedMerchant.vendorId) {
+          const now = new Date();
+          const yyyy = now.getFullYear();
+          const mm = String(now.getMonth() + 1).padStart(2, '0');
+          const serialStr = String(nextSerial).padStart(4, '0');
+          updatedMerchant.vendorId = `${yyyy}${mm}${serialStr}`;
+          nextSerial += 1;
+        }
+        return {
+          merchants: [...state.merchants, updatedMerchant],
+          nextVendorSerial: nextSerial
+        };
+      }),
+      toggleMerchantStatus: (merchantId) => set((state) => ({
+        merchants: state.merchants.map((m) => m.id === merchantId ? { ...m, status: m.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE' } : m)
+      })),
+      assignVendorId: (merchantId, vendorId) => set((state) => ({
+        merchants: state.merchants.map((m) => m.id === merchantId ? { ...m, vendorId } : m)
+      })),
+      resetFlow: () => set({
+        selectedService: null,
+        selectedSlot: null,
+        attendeeCount: 1,
+        notes: '',
+        bookingResult: null,
+      }),
+    }),
+    { name: 'booking-flow-storage' },
+  )
+);
 
 interface UIState {
   theme: 'light' | 'dark';
@@ -84,3 +189,29 @@ export const useUIStore = create<UIState>()(
     { name: 'ui-storage' },
   ),
 );
+
+export interface LocationState {
+  city: string;
+  latitude: number | null;
+  longitude: number | null;
+  status: 'idle' | 'detecting' | 'detected' | 'error';
+  setCity: (city: string) => void;
+  setLocation: (lat: number, lng: number, city: string) => void;
+  setStatus: (status: 'idle' | 'detecting' | 'detected' | 'error') => void;
+}
+
+export const useLocationStore = create<LocationState>()(
+  persist(
+    (set) => ({
+      city: 'Chennai',
+      latitude: 13.0827,
+      longitude: 80.2707,
+      status: 'idle',
+      setCity: (city) => set({ city, status: 'detected' }),
+      setLocation: (latitude, longitude, city) => set({ latitude, longitude, city, status: 'detected' }),
+      setStatus: (status) => set({ status }),
+    }),
+    { name: 'location-storage' },
+  )
+);
+

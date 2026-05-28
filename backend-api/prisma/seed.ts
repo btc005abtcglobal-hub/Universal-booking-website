@@ -191,14 +191,37 @@ const bookingTypes = [
 async function main() {
   console.log('🌱 Seeding BETA Universal Service Marketplace...');
 
-  // Clean existing seed data
+  // Clean existing seed data in correct order to avoid FK conflicts
+  await prisma.payment.deleteMany({});
+  await prisma.review.deleteMany({});
+  await prisma.favorite.deleteMany({});
+  await prisma.notification.deleteMany({});
+  await prisma.booking.deleteMany({});
+  await prisma.bookingSlot.deleteMany({});
+  await prisma.availabilityRule.deleteMany({});
+  await prisma.merchantStaff.deleteMany({});
+  await prisma.service.deleteMany({});
+  await prisma.merchant.deleteMany({});
   await prisma.serviceCategory.deleteMany({});
   await prisma.bookingType.deleteMany({});
+  await prisma.user.deleteMany({});
 
-  // Seed BookingTypes + their ServiceCategories
+  // 1. Create a default owner user
+  const defaultOwner = await prisma.user.create({
+    data: {
+      email: 'owner@beta-booking.com',
+      name: 'Owner Agent',
+      externalAuthId: 'default-owner-auth-id-123',
+    },
+  });
+  console.log('✅ Created default owner user');
+
+  // 2. Seed BookingTypes + their ServiceCategories
+  const bookingTypeInstances: Record<string, any> = {};
   for (const bt of bookingTypes) {
     const { categories, ...btData } = bt;
     const bookingType = await prisma.bookingType.create({ data: btData });
+    bookingTypeInstances[bookingType.slug] = bookingType;
     console.log(`✅ Created BookingType: ${bookingType.name}`);
 
     for (let i = 0; i < categories.length; i++) {
@@ -211,6 +234,179 @@ async function main() {
       });
     }
     console.log(`   ↳ Created ${categories.length} categories`);
+  }
+
+  // Fetch created categories to resolve IDs by slug
+  const allCategories = await prisma.serviceCategory.findMany({});
+  const categoryMap = new Map(allCategories.map(c => [c.slug, c.id]));
+
+  // 3. Seed Merchants
+  const merchantsData = [
+    {
+      name: 'Apollo Dental Care',
+      slug: 'apollo-dental-care',
+      email: 'info@apollodental.com',
+      phone: '+91 98765 43210',
+      city: 'Chennai',
+      address: '42 Anna Nagar Main Road',
+      description: 'Apollo Dental Care is a state-of-the-art dental clinic providing top-tier oral care services.',
+      latitude: 13.085,
+      longitude: 80.275,
+      rating: 4.8,
+      reviewCount: 234,
+      bookingTypeSlug: 'appointments',
+      state: 'Tamil Nadu',
+      postalCode: '600040',
+    },
+    {
+      name: 'ZenFit',
+      slug: 'zenfit',
+      email: 'zenfit@fitness.com',
+      phone: '+91 98765 54321',
+      city: 'Chennai',
+      address: '15 T Nagar High Road',
+      description: 'ZenFit is a wellness and fitness club offering personal training and group yoga sessions.',
+      latitude: 13.078,
+      longitude: 80.268,
+      rating: 4.9,
+      reviewCount: 189,
+      bookingTypeSlug: 'sports',
+      state: 'Tamil Nadu',
+      postalCode: '600017',
+    },
+    {
+      name: 'Style Studio',
+      slug: 'style-studio',
+      email: 'style@studio.com',
+      phone: '+91 98765 12345',
+      city: 'Chennai',
+      address: '15 T Nagar High Road',
+      description: 'Style Studio is a premium beauty salon for haircuts, styling, and bridal makeups.',
+      latitude: 13.0827,
+      longitude: 80.2707,
+      rating: 4.8,
+      reviewCount: 234,
+      bookingTypeSlug: 'beauty',
+      state: 'Tamil Nadu',
+      postalCode: '600017',
+    },
+    {
+      name: 'The Grand temple Dine',
+      slug: 'the-grand-temple-dine',
+      email: 'dine@grandtemple.com',
+      phone: '+91 98450 12345',
+      city: 'Madurai',
+      address: 'Madurai High Road',
+      description: 'The Grand Temple Dine is an elegant family fine-dining restaurant.',
+      latitude: 9.925,
+      longitude: 78.118,
+      rating: 4.7,
+      reviewCount: 156,
+      bookingTypeSlug: 'appointments',
+      state: 'Tamil Nadu',
+      postalCode: '625001',
+    },
+    {
+      name: 'Valley Serenity Spa',
+      slug: 'valley-serenity-spa',
+      email: 'spa@valleyserenity.com',
+      phone: '+91 98765 22334',
+      city: 'Theni',
+      address: 'Valley Road, Theni',
+      description: 'Valley Serenity Spa offers relaxing wellness massages and organic skin therapies.',
+      latitude: 10.012,
+      longitude: 77.478,
+      rating: 4.9,
+      reviewCount: 312,
+      bookingTypeSlug: 'beauty',
+      state: 'Tamil Nadu',
+      postalCode: '625531',
+    },
+  ];
+
+  const merchantInstances: Record<string, any> = {};
+  for (const m of merchantsData) {
+    const { bookingTypeSlug, ...mData } = m;
+    const btId = bookingTypeInstances[bookingTypeSlug]?.id || null;
+    const merchant = await prisma.merchant.create({
+      data: {
+        ...mData,
+        bookingTypeId: btId,
+        ownerId: defaultOwner.id,
+      },
+    });
+    merchantInstances[merchant.slug] = merchant;
+    console.log(`✅ Created Merchant: ${merchant.name} (${merchant.city})`);
+  }
+
+  // 4. Seed Services
+  const servicesData = [
+    {
+      name: 'Premium Haircut',
+      merchantSlug: 'style-studio',
+      categorySlug: 'hair-salons',
+      price: 599,
+      duration: 45,
+      image: 'https://picsum.photos/seed/10/400/250',
+      description: 'Expert haircut, wash, and blow dry by senior stylists.',
+      serviceType: 'APPOINTMENT' as const,
+    },
+    {
+      name: 'Yoga Class',
+      merchantSlug: 'zenfit',
+      categorySlug: 'yoga',
+      price: 499,
+      duration: 60,
+      image: 'https://picsum.photos/seed/11/400/250',
+      description: 'Group Hatha Yoga session focusing on strength, breath, and flexibility.',
+      serviceType: 'CLASS' as const,
+    },
+    {
+      name: 'Table Reservation',
+      merchantSlug: 'the-grand-temple-dine',
+      categorySlug: 'halls',
+      price: 1200,
+      duration: 120,
+      image: 'https://picsum.photos/seed/12/400/250',
+      description: 'Pre-book table dining experience for up to 4 guests.',
+      serviceType: 'RESERVATION' as const,
+    },
+    {
+      name: 'Spa Treatment',
+      merchantSlug: 'valley-serenity-spa',
+      categorySlug: 'spas',
+      price: 1800,
+      duration: 90,
+      image: 'https://picsum.photos/seed/14/400/250',
+      description: 'Signature therapeutic body massage and steam session.',
+      serviceType: 'APPOINTMENT' as const,
+    },
+  ];
+
+  for (const s of servicesData) {
+    const mId = merchantInstances[s.merchantSlug]?.id;
+    const catId = categoryMap.get(s.categorySlug);
+    if (!mId || !catId) {
+      console.warn(`⚠️ Skipped seeding service ${s.name}: Merchant/Category not found.`);
+      continue;
+    }
+    const service = await prisma.service.create({
+      data: {
+        name: s.name,
+        slug: s.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+        description: s.description,
+        shortDescription: s.description.substring(0, 200),
+        durationMinutes: s.duration,
+        basePrice: s.price,
+        merchantId: mId,
+        categoryId: catId,
+        serviceType: s.serviceType,
+        images: [s.image],
+        rating: 4.8,
+        reviewCount: 15,
+      },
+    });
+    console.log(`   ↳ Seeded Service: ${service.name} under ${s.merchantSlug}`);
   }
 
   console.log('\n🎉 Seeding complete!');

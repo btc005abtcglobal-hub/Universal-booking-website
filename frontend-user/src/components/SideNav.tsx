@@ -3,31 +3,23 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  Sparkles, Hotel, Plane, Bus, Film, CalendarDays, TrainFront,
-  Car, FileCheck, Package, MapPin, Shield, Settings, Award
+  Sparkles, Car, Film, Bed, Compass, Heart, Award
 } from 'lucide-react';
 
 const SIDEBAR_ITEMS = [
   { href: '/', label: 'For You', icon: Sparkles },
-  { href: '/appointments', label: 'Hotels', icon: Hotel },
-  { href: '/entertainment', label: 'Flights', icon: Plane },
-  { href: '/automotive', label: 'Bus', icon: Bus },
-  { href: '/entertainment/movies', label: 'Movie', icon: Film },
-  { href: '/entertainment/events', label: 'Event', icon: CalendarDays },
-  { href: '/rentals', label: 'Train', icon: TrainFront },
-  { href: '/services', label: 'Cab', icon: Car },
-  { href: '/professional', label: 'Visa', icon: FileCheck },
-  { href: '/home-services', label: 'Packages', icon: Package },
-  { href: '/beauty', label: 'Local Booking', icon: MapPin },
-  { href: '/sports', label: 'Insurance', icon: Shield },
-  { href: '/education', label: 'Services', icon: Settings },
+  { href: '/transportation', label: 'Transportation', icon: Car },
+  { href: '/accomodation', label: 'Accomodation & Stays', icon: Bed },
+  { href: '/entertainment', label: 'Entertainment', icon: Film },
+  { href: '/activities', label: 'Activities', icon: Compass },
+  { href: '/wellness', label: 'Wellness', icon: Heart },
 ];
 
 export function SideNav() {
   const pathname = usePathname();
 
   return (
-    <aside className="sidebar-desktop h-screen w-72 fixed left-0 top-0 pt-24 glass border-r border-[var(--outline-variant)]/10 flex flex-col gap-2 p-6 z-40 overflow-y-auto">
+    <aside className="sidebar-desktop h-screen w-72 fixed left-0 top-0 pt-24 glass flex flex-col gap-2 p-6 z-40 overflow-y-auto">
       {/* Section label */}
       <div className="mb-4 px-2">
         <h3 className="label-upper text-[var(--on-surface-variant)]">Categories</h3>
@@ -50,16 +42,34 @@ export function SideNav() {
         })}
       </nav>
 
-      {/* Footer: Elite badge */}
-      <div className="pt-6 border-t border-[var(--outline-variant)]/10">
+      {/* Footer: Vendor login & Elite badge */}
+      <div className="pt-6 border-t border-[color:var(--color-outline-variant)]/30 space-y-4">
+        <Link
+          href="http://localhost:3600"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-[color:var(--color-primary)]/30 bg-[color:var(--color-primary)]/5 text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/10 text-xs font-bold tracking-wide uppercase transition-all text-center justify-center cursor-pointer"
+        >
+          Vendor Console
+        </Link>
         <div className="flex items-center gap-3 px-2">
-          <div className="w-10 h-10 rounded-full bg-[var(--primary)]/10 flex items-center justify-center text-[var(--primary)]">
+          <div className="w-10 h-10 rounded-full bg-[color:var(--color-primary)]/10 flex items-center justify-center text-[color:var(--color-primary)]">
             <Award size={20} strokeWidth={1.5} />
           </div>
           <div>
-            <p className="text-[14px] font-medium text-[var(--on-surface)]">Travel Elite</p>
-            <p className="text-[10px] text-[var(--primary)] uppercase tracking-[0.2em] font-bold">Gold Status</p>
+            <p className="text-[14px] font-medium text-[color:var(--color-on-surface)]">Travel Elite</p>
+            <p className="text-[10px] text-[color:var(--color-primary)] uppercase tracking-[0.2em] font-bold">Gold Status</p>
           </div>
+        </div>
+
+        {/* Founder Console Link */}
+        <div className="text-center pt-2">
+          <Link
+            href="/superadmin"
+            className="text-[9px] text-[color:var(--color-on-surface-variant)] opacity-30 hover:opacity-100 hover:text-[color:var(--color-primary)] transition-all font-bold uppercase tracking-wider block"
+          >
+            Founder Console
+          </Link>
         </div>
       </div>
     </aside>

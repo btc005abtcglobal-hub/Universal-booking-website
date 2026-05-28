@@ -2,44 +2,65 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, LayoutGrid, Sparkles, Route, User } from 'lucide-react';
 
+/* AI tab removed per product decision */
 const NAV_ITEMS = [
-  { href: '/', label: 'Home', icon: Home },
-  { href: '/categories', label: 'Categories', icon: LayoutGrid },
-  { href: '/ai', label: 'AI', icon: Sparkles },
-  { href: '/user/bookings', label: 'Tracks', icon: Route },
-  { href: '/profile', label: 'Profile', icon: User },
+  { href: '/',           icon: 'home',      label: 'Home'       },
+  { href: '/categories', icon: 'grid_view', label: 'Categories' },
+  { href: '/tracks',     icon: 'route',     label: 'Tracks'     },
+  { href: '/profile',    icon: 'person',    label: 'Profile'    },
 ];
 
 export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="bg-[var(--surface)]/95 backdrop-blur-lg border-t border-[var(--outline-variant)]/30 fixed bottom-0 w-full z-50 h-[72px] transition-all duration-300"
-      style={{ boxShadow: 'var(--shadow-bottom-nav)' }}
+    <nav
+      className="fixed bottom-0 left-0 w-full z-50 lg:hidden
+                 border-t border-[color:var(--color-outline-variant)]/40
+                 backdrop-blur-2xl"
+      style={{
+        background: 'color-mix(in srgb, var(--color-surface-dim) 92%, transparent)',
+        boxShadow: '0 -1px 0 color-mix(in srgb, var(--color-primary) 12%, transparent), 0 -8px 32px rgba(0,0,0,0.4)',
+      }}
     >
-      <div className="flex justify-around items-center px-6 lg:px-10 h-full max-w-xl mx-auto">
+      <div className="flex justify-around items-center h-[66px] max-w-md mx-auto px-2">
         {NAV_ITEMS.map((item) => {
-          const isHome = item.href === '/';
-          const active = isHome ? pathname === '/' : pathname.startsWith(item.href);
-
+          const isActive = pathname === item.href;
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center justify-center transition-all duration-200 ${
-                active
-                  ? 'text-[var(--primary)] scale-105'
-                  : 'text-[var(--on-surface-variant)] opacity-60 hover:opacity-100'
-              }`}
+              className={`relative flex flex-col items-center justify-center gap-0.5
+                         py-2 px-5 rounded-2xl transition-all duration-300
+                         ${isActive
+                           ? 'text-[color:var(--color-primary)]'
+                           : 'text-[color:var(--color-outline)] hover:text-[color:var(--color-on-surface-variant)]'
+                         }`}
             >
-              <item.icon
-                size={22}
-                strokeWidth={active ? 2 : 1.5}
-                fill={active ? 'currentColor' : 'none'}
-              />
-              <span className="text-[11px] font-semibold tracking-[0.08em] mt-1">{item.label}</span>
+              {/* Active: neon gold glow pill at top */}
+              {isActive && (
+                <span
+                  className="absolute -top-[1px] left-1/2 -translate-x-1/2 w-10 h-[3px] rounded-full"
+                  style={{
+                    background: 'linear-gradient(90deg, #FFE066, #FFD700, #FFA500)',
+                    boxShadow: '0 0 10px rgba(255,215,0,0.7), 0 0 24px rgba(255,215,0,0.3)',
+                  }}
+                />
+              )}
+
+              {/* Icon */}
+              <span
+                className={`material-symbols-outlined text-[24px] transition-all duration-300 ${isActive ? 'scale-110' : ''}`}
+                style={isActive ? { fontVariationSettings: "'FILL' 1" } : undefined}
+              >
+                {item.icon}
+              </span>
+
+              {/* Label */}
+              <span className="text-[10px] font-semibold tracking-wide">
+                {item.label}
+              </span>
             </Link>
           );
         })}

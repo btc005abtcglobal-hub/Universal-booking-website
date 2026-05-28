@@ -20,8 +20,8 @@ async function bootstrap() {
   });
 
   const configService = app.get(ConfigService);
-  const port = configService.get<number>('PORT', 4000);
-  const corsOrigins = configService.get<string>('CORS_ORIGINS', 'http://localhost:3000,http://localhost:3001');
+  const port = configService.get<number>('PORT', 4500);
+  const corsOrigins = configService.get<string>('CORS_ORIGINS', 'http://localhost:3500,http://localhost:3600');
 
   // Security
   app.use(helmet());
@@ -37,7 +37,7 @@ async function bootstrap() {
   });
 
   // Global prefix
-  app.setGlobalPrefix('api/v1');
+  app.setGlobalPrefix('api');
 
   // Versioning
   app.enableVersioning({

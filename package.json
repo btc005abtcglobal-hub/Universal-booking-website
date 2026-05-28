@@ -11,8 +11,8 @@
   ],
   "scripts": {
     "dev:backend": "npm run dev --workspace=backend-api",
-    "dev:user": "npm run dev --workspace=frontend-user -- -p 3000",
-    "dev:admin": "npm run dev --workspace=frontend-admin -- -p 3001",
+    "dev:user": "npm run dev --workspace=frontend-user -- -p 3500",
+    "dev:admin": "npm run dev --workspace=frontend-admin -- -p 3600",
     "dev:all": "concurrently \"npm run dev:backend\" \"npm run dev:user\" \"npm run dev:admin\"",
     "build:shared": "npm run build --workspace=shared",
     "build:backend": "npm run build --workspace=backend-api",

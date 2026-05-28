@@ -22,12 +22,17 @@ export class ServicesService {
     pagination: PaginationDto,
     filters?: {
       categoryId?: string;
+      categorySlug?: string;
       serviceType?: string;
       merchantId?: string;
       search?: string;
       minPrice?: number;
       maxPrice?: number;
       isFeatured?: boolean;
+      city?: string;
+      latitude?: number;
+      longitude?: number;
+      radius?: number;
     },
   ) {
     const where: any = {
@@ -39,6 +44,48 @@ export class ServicesService {
     if (filters?.serviceType) where.serviceType = filters.serviceType;
     if (filters?.merchantId) where.merchantId = filters.merchantId;
     if (filters?.isFeatured) where.isFeatured = true;
+
+    if (filters?.categorySlug) {
+      where.category = {
+        slug: filters.categorySlug,
+      };
+    }
+
+    if (filters?.city) {
+      where.merchant = {
+        city: { contains: filters.city, mode: 'insensitive' },
+      };
+    }
+
+    if (filters?.latitude !== undefined && filters?.longitude !== undefined) {
+      const radiusKm = filters.radius || 25;
+      const lat = filters.latitude;
+      const lng = filters.longitude;
+
+      // Raw SQL query to find nearby merchant IDs using Haversine formula
+      const nearbyMerchants = await this.prisma.$queryRaw<Array<{ id: string }>>`
+        SELECT id FROM (
+          SELECT id, (
+            6371 * acos(
+              cos(radians(${lat})) *
+              cos(radians(latitude)) *
+              cos(radians(longitude) - radians(${lng})) +
+              sin(radians(${lat})) *
+              sin(radians(latitude))
+            )
+          ) AS distance_km
+          FROM merchants
+          WHERE is_active = true AND deleted_at IS NULL
+        ) sub
+        WHERE distance_km <= ${radiusKm}
+      `;
+      const merchantIds = nearbyMerchants.map((m) => m.id);
+      
+      // If we found nearby merchants, filter by them, otherwise force empty result by passing dummy UUID or empty in list if Prisma allows,
+      // or we can use empty array if Prisma supports it (in Prisma, { in: [] } returns empty list correctly).
+      where.merchantId = { in: merchantIds };
+    }
+
     if (filters?.search) {
       where.OR = [
         { name: { contains: filters.search, mode: 'insensitive' } },
@@ -60,7 +107,7 @@ export class ServicesService {
         orderBy: { [pagination.sortBy || 'createdAt']: pagination.sortOrder || 'desc' },
         include: {
           merchant: {
-            select: { id: true, name: true, slug: true, logoUrl: true, city: true, rating: true },
+            select: { id: true, name: true, slug: true, logoUrl: true, city: true, rating: true, latitude: true, longitude: true },
           },
           category: true,
           _count: { select: { bookings: true, reviews: true } },

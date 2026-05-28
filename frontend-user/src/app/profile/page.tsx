@@ -1,61 +1,460 @@
 'use client';
 
-import { User, Mail, Phone, Camera, Bell, Shield, LogOut } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { 
+  User, Mail, Phone, Camera, Bell, Shield, LogOut, 
+  Award, Sparkles, Check, CheckCircle2, Sliders, ShieldCheck, Heart 
+} from 'lucide-react';
+import { TopNav } from '../../components/TopNav';
+import { SideNav } from '../../components/SideNav';
+import { BottomNav } from '../../components/BottomNav';
+import { useUserStore } from '../../lib/store';
+
+const AVATAR_PRESETS = [
+  { id: 'jetsetter', label: 'Jetsetter', emoji: '✈️', color: 'from-amber-400 to-yellow-600' },
+  { id: 'executive', label: 'Executive', emoji: '💼', color: 'from-blue-500 to-indigo-600' },
+  { id: 'creative', label: 'Creative', emoji: '🎨', color: 'from-pink-500 to-rose-600' },
+  { id: 'explorer', label: 'Explorer', emoji: '🧗', color: 'from-emerald-400 to-teal-600' },
+];
 
 export default function ProfilePage() {
+  const router = useRouter();
+  const { logout } = useUserStore();
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Load and bind user information from state
+  const [fullName, setFullName] = useState('Ramesh Kumar');
+  const [email, setEmail] = useState('ramesh.kumar@betasoftnet.com');
+  const [phone, setPhone] = useState('+91 99887 76655');
+  const [avatar, setAvatar] = useState('jetsetter');
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+
+  // Preference Settings
+  const [seatPref, setSeatPref] = useState('Window');
+  const [dietaryPref, setDietaryPref] = useState('Vegetarian');
+  const [travelClass, setTravelClass] = useState('First Class');
+
+  // Toggle checks
+  const [promoEmails, setPromoEmails] = useState(true);
+  const [smsAlerts, setSmsAlerts] = useState(true);
+  const [twoFactor, setTwoFactor] = useState(false);
+
+  // Action status
+  const [isSaving, setIsSaving] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [hasChanges, setHasChanges] = useState(false);
+
+  // Detect form modifications to activate Save button
+  useEffect(() => {
+    if (!mounted) return;
+    setHasChanges(true);
+  }, [fullName, email, phone, avatar, seatPref, dietaryPref, travelClass, promoEmails, smsAlerts, twoFactor, mounted]);
+
+  // Reset flag on initial mount/load
+  useEffect(() => {
+    if (mounted) {
+      setHasChanges(false);
+    }
+  }, [mounted]);
+
+  if (!mounted) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-[color:var(--color-surface)]">
+        <div className="h-8 w-8 border-4 border-[color:var(--color-primary)] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!fullName.trim() || !email.trim() || !phone.trim()) {
+      setToastMessage('Please fill in all details');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      return;
+    }
+
+    setIsSaving(true);
+    setTimeout(() => {
+      setIsSaving(false);
+      setHasChanges(false);
+      setToastMessage('Profile settings updated successfully!');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }, 1200);
+  };
+
+  const handleLogOut = () => {
+    logout();
+    setToastMessage('Signing out...');
+    setShowToast(true);
+    setTimeout(() => {
+      router.push('/');
+    }, 1000);
+  };
+
+  const currentPreset = AVATAR_PRESETS.find(p => p.id === avatar) || AVATAR_PRESETS[0];
+
   return (
-    <div className="min-h-screen bg-[var(--bg-secondary)]">
-      <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
-        <h1 className="text-2xl font-bold mb-6">Profile</h1>
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-primary)] p-6">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="relative">
-              <div className="h-20 w-20 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">U</div>
-              <button className="absolute -bottom-1 -right-1 h-7 w-7 rounded-full bg-[var(--primary)] flex items-center justify-center text-white shadow-lg">
-                <Camera className="h-3.5 w-3.5" />
-              </button>
-            </div>
-            <div>
-              <h2 className="text-xl font-bold">User Name</h2>
-              <p className="text-sm text-[var(--text-muted)]">Member since 2026</p>
-            </div>
+    <>
+      <TopNav />
+      <div className="hidden lg:block">
+        <SideNav />
+      </div>
+      
+      <main className="page-content-with-sidenav px-4 md:px-8 lg:pr-8 pb-24 animate-fade-in">
+        <div className="mx-auto max-w-5xl pt-4">
+          
+          {/* Header section with brand accent */}
+          <div className="mb-8">
+            <p className="text-[11px] uppercase tracking-[0.25em] text-[color:var(--color-outline)] font-semibold">User Account</p>
+            <h1 className="mt-2 text-[30px] md:text-[42px] font-black tracking-tight text-[color:var(--color-on-surface)] leading-none flex items-center gap-3">
+              <span>Profile Settings</span>
+              <Sliders className="h-8 w-8 text-[color:var(--color-primary)]" />
+            </h1>
+            <p className="mt-3 max-w-2xl text-[14px] leading-6 text-[color:var(--color-on-surface-variant)]">
+              Manage personal details, specify luxury travel preferences, and control notifications.
+            </p>
           </div>
-          <div className="space-y-4">
-            {[
-              { icon: User, label: 'Full Name', value: 'User Name' },
-              { icon: Mail, label: 'Email', value: 'user@example.com' },
-              { icon: Phone, label: 'Phone', value: '+91 98765 43210' },
-            ].map((field) => (
-              <div key={field.label}>
-                <label className="text-xs font-medium text-[var(--text-muted)] mb-1 block">{field.label}</label>
-                <div className="flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] px-4 py-3">
-                  <field.icon className="h-4 w-4 text-[var(--text-muted)]" />
-                  <input type="text" defaultValue={field.value} className="flex-1 bg-transparent outline-none text-sm" />
+
+          <div className="grid gap-8 lg:grid-cols-3">
+            
+            {/* LEFT COLUMN: Profile Overview & Presets & Tier Badge */}
+            <div className="space-y-6">
+              
+              {/* Profile Card & Avatar Selection */}
+              <div className="card-glass rounded-3xl p-6 bg-[color:var(--color-surface-container)] border border-[color:var(--color-outline-variant)]/30 relative overflow-hidden flex flex-col items-center text-center">
+                <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ background: 'radial-gradient(circle at top right, var(--color-primary), transparent 70%)' }} />
+                
+                {/* Large Circle Avatar Preset */}
+                <div className="relative group mb-4">
+                  <div className={`h-24 w-24 rounded-full bg-gradient-to-br ${currentPreset.color} flex items-center justify-center text-white text-4xl shadow-xl border-2 border-[color:var(--color-primary)]/40 relative z-10 transition-transform duration-300 group-hover:scale-102`}>
+                    {currentPreset.emoji}
+                  </div>
+                  <button 
+                    onClick={() => setShowAvatarPicker(!showAvatarPicker)}
+                    className="absolute bottom-0 right-0 h-8 w-8 rounded-full bg-[color:var(--color-primary)] text-[color:var(--color-on-primary)] hover:bg-[color:var(--color-primary-fixed-dim)] flex items-center justify-center shadow-lg border-2 border-[color:var(--color-surface-container)] cursor-pointer z-20 transition-all active:scale-90"
+                    title="Change Avatar Preset"
+                  >
+                    <Camera className="h-4.5 w-4.5" />
+                  </button>
+                </div>
+
+                <h2 className="text-xl font-black text-[color:var(--color-on-surface)]">{fullName || 'Guest User'}</h2>
+                <p className="text-xs text-[color:var(--color-on-surface-variant)] mt-1 font-mono">{email}</p>
+
+                {/* Inline Avatar Presets Selector Modal/Pill */}
+                {showAvatarPicker && (
+                  <div className="mt-4 w-full bg-[color:var(--color-surface-dim)]/90 border border-[color:var(--color-outline-variant)]/40 rounded-2xl p-3 grid grid-cols-4 gap-2 animate-fade-up z-30">
+                    {AVATAR_PRESETS.map((preset) => (
+                      <button
+                        key={preset.id}
+                        onClick={() => {
+                          setAvatar(preset.id);
+                          setShowAvatarPicker(false);
+                        }}
+                        className={`flex flex-col items-center justify-center p-2 rounded-xl border text-[10px] font-bold gap-1 cursor-pointer transition-all ${
+                          avatar === preset.id
+                            ? 'bg-[color:var(--color-primary)]/15 border-[color:var(--color-primary)] text-[color:var(--color-primary)]'
+                            : 'bg-[color:var(--color-on-surface)]/[0.05] border-transparent text-[color:var(--color-on-surface-variant)] hover:bg-[color:var(--color-on-surface)]/[0.1] hover:text-[color:var(--color-on-surface)]'
+                        }`}
+                      >
+                        <span className="text-xl">{preset.emoji}</span>
+                        <span>{preset.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Loyalty points and bookings stats */}
+                <div className="grid grid-cols-3 gap-2 w-full mt-6 pt-5 border-t border-[color:var(--color-outline-variant)]/30 text-left">
+                  <div className="flex flex-col">
+                    <span className="text-[9px] uppercase tracking-wider text-[color:var(--color-outline)] font-bold">Bookings</span>
+                    <span className="text-base font-black text-[color:var(--color-on-surface)] mt-1">12</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[9px] uppercase tracking-wider text-[color:var(--color-outline)] font-bold">Active</span>
+                    <span className="text-base font-black text-[color:var(--color-primary)] mt-1 animate-pulse">1</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[9px] uppercase tracking-wider text-[color:var(--color-outline)] font-bold">Points</span>
+                    <span className="text-base font-black text-[color:var(--color-on-surface)] mt-1">4.8k</span>
+                  </div>
                 </div>
               </div>
-            ))}
-            <button className="w-full rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 py-3 font-semibold text-white hover:from-indigo-600 hover:to-purple-700 transition-all mt-4">
-              Save Changes
-            </button>
-          </div>
-        </div>
 
-        <div className="mt-4 rounded-2xl border border-[var(--border)] bg-[var(--bg-primary)] divide-y divide-[var(--border)]">
-          {[
-            { icon: Bell, label: 'Notifications', desc: 'Manage notification preferences' },
-            { icon: Shield, label: 'Privacy & Security', desc: 'Account security settings' },
-            { icon: LogOut, label: 'Log Out', desc: 'Sign out of your account', danger: true },
-          ].map((item) => (
-            <button key={item.label} className="flex w-full items-center gap-4 px-6 py-4 hover:bg-[var(--bg-tertiary)] transition-colors text-left">
-              <item.icon className={`h-5 w-5 ${item.danger ? 'text-red-500' : 'text-[var(--text-muted)]'}`} />
-              <div>
-                <div className={`font-medium text-sm ${item.danger ? 'text-red-500' : ''}`}>{item.label}</div>
-                <div className="text-xs text-[var(--text-muted)]">{item.desc}</div>
+              {/* Loyalty Status Tier Card */}
+              <div className="card-glass rounded-3xl p-5 bg-[color:var(--color-surface-container)] border border-[color:var(--color-primary)]/15 relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-3 opacity-15">
+                  <Award size={64} className="text-[color:var(--color-primary)] animate-pulse" />
+                </div>
+                <div className="relative z-10">
+                  <div className="flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--color-primary)] animate-ping" />
+                    <span className="text-[9px] uppercase tracking-widest text-[color:var(--color-primary)] font-extrabold bg-[color:var(--color-primary)]/10 px-2 py-0.5 rounded border border-[color:var(--color-primary)]/25">
+                      Elite Member
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-black text-[color:var(--color-on-surface)] mt-2">Gold Status Member</h3>
+                  <p className="text-[11px] text-[color:var(--color-on-surface-variant)] mt-1.5">
+                    Unlock private airport lounges, complimentary yacht deck upgrades, and fast checkout priorities.
+                  </p>
+
+                  <div className="mt-4 space-y-1.5">
+                    <div className="flex justify-between text-[10px] text-[color:var(--color-outline)] font-bold uppercase">
+                      <span>Tier Progress</span>
+                      <span>12 / 15 rides to Platinum</span>
+                    </div>
+                    {/* Progress Bar */}
+                    <div className="h-1.5 w-full bg-[color:var(--color-surface-dim)] border border-[color:var(--color-outline-variant)]/30 rounded-full overflow-hidden">
+                      <div className="h-full bg-[color:var(--color-primary)] rounded-full" style={{ width: '80%' }} />
+                    </div>
+                  </div>
+                </div>
               </div>
-            </button>
-          ))}
+
+            </div>
+
+            {/* RIGHT COLUMN: Account settings forms, Preferences & Actions */}
+            <div className="lg:col-span-2 space-y-6">
+              
+              {/* Profile Details Form Card */}
+              <div className="card-glass rounded-3xl p-6 bg-[color:var(--color-surface-container)] border border-[color:var(--color-outline-variant)]/30 relative overflow-hidden">
+                <h2 className="text-base font-bold text-[color:var(--color-on-surface)] mb-5 flex items-center gap-2">
+                  <User size={18} className="text-[color:var(--color-primary)]" />
+                  <span>Personal Credentials</span>
+                </h2>
+                
+                <form onSubmit={handleSave} className="space-y-4">
+                  
+                  {/* Inputs Row */}
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {/* Full Name */}
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[10px] uppercase tracking-wider text-[color:var(--color-outline)] font-bold">
+                        Full Legal Name
+                      </label>
+                      <div className="flex items-center gap-3 rounded-xl border border-[color:var(--color-outline-variant)]/40 bg-[color:var(--color-surface-dim)] px-3.5 py-2.5">
+                        <User size={16} className="text-[color:var(--color-outline)]" />
+                        <input 
+                          type="text" 
+                          required
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
+                          className="flex-1 bg-transparent outline-none text-xs text-[color:var(--color-on-surface)] placeholder-[color:var(--color-outline)] focus:ring-0" 
+                        />
+                      </div>
+                    </div>
+
+                    {/* Email */}
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[10px] uppercase tracking-wider text-[color:var(--color-outline)] font-bold">
+                        Email Address
+                      </label>
+                      <div className="flex items-center gap-3 rounded-xl border border-[color:var(--color-outline-variant)]/40 bg-[color:var(--color-surface-dim)] px-3.5 py-2.5">
+                        <Mail size={16} className="text-[color:var(--color-outline)]" />
+                        <input 
+                          type="email" 
+                          required
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          className="flex-1 bg-transparent outline-none text-xs text-[color:var(--color-on-surface)] placeholder-[color:var(--color-outline)] focus:ring-0" 
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Phone Input */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[10px] uppercase tracking-wider text-[color:var(--color-outline)] font-bold">
+                      Mobile Number
+                    </label>
+                    <div className="flex items-center gap-3 rounded-xl border border-[color:var(--color-outline-variant)]/40 bg-[color:var(--color-surface-dim)] px-3.5 py-2.5">
+                      <Phone size={16} className="text-[color:var(--color-outline)]" />
+                      <input 
+                        type="text" 
+                        required
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="flex-1 bg-transparent outline-none text-xs text-[color:var(--color-on-surface)] placeholder-[color:var(--color-outline)] focus:ring-0" 
+                      />
+                    </div>
+                  </div>
+
+                  {/* PREFERENCES SECTION */}
+                  <div className="pt-4 border-t border-[color:var(--color-outline-variant)]/30">
+                    <h3 className="text-xs uppercase tracking-wider text-[color:var(--color-outline)] font-bold mb-3 flex items-center gap-1.5">
+                      <Sparkles size={13} className="text-[color:var(--color-primary)]" />
+                      <span>Luxury Transit Preferences</span>
+                    </h3>
+                    
+                    <div className="grid gap-3 md:grid-cols-3">
+                      
+                      {/* Seat Preference */}
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[9px] uppercase tracking-wide text-[color:var(--color-outline)] font-semibold">Seat Preference</span>
+                        <select
+                          value={seatPref}
+                          onChange={(e) => setSeatPref(e.target.value)}
+                          className="w-full bg-[color:var(--color-surface-dim)] border border-[color:var(--color-outline-variant)]/30 rounded-xl px-3 py-2 text-[11px] text-[color:var(--color-on-surface)] outline-none cursor-pointer hover:border-[color:var(--color-primary)]/30 transition-all appearance-none"
+                        >
+                          <option value="Window" className="bg-[color:var(--color-surface-container)] text-[color:var(--color-on-surface)]">🪟 Window Seat</option>
+                          <option value="Aisle" className="bg-[color:var(--color-surface-container)] text-[color:var(--color-on-surface)]">💺 Aisle Seat</option>
+                          <option value="Extra Legroom" className="bg-[color:var(--color-surface-container)] text-[color:var(--color-on-surface)]">🛫 Extra Legroom</option>
+                        </select>
+                      </div>
+
+                      {/* Dietary Preference */}
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[9px] uppercase tracking-wide text-[color:var(--color-outline)] font-semibold">Catering Choice</span>
+                        <select
+                          value={dietaryPref}
+                          onChange={(e) => setDietaryPref(e.target.value)}
+                          className="w-full bg-[color:var(--color-surface-dim)] border border-[color:var(--color-outline-variant)]/30 rounded-xl px-3 py-2 text-[11px] text-[color:var(--color-on-surface)] outline-none cursor-pointer hover:border-[color:var(--color-primary)]/30 transition-all appearance-none"
+                        >
+                          <option value="Vegetarian" className="bg-[color:var(--color-surface-container)] text-[color:var(--color-on-surface)]">🥗 Vegetarian</option>
+                          <option value="Halal" className="bg-[color:var(--color-surface-container)] text-[color:var(--color-on-surface)]">🥩 Halal Certified</option>
+                          <option value="Vegan" className="bg-[color:var(--color-surface-container)] text-[color:var(--color-on-surface)]">🌱 Vegan Options</option>
+                          <option value="None" className="bg-[color:var(--color-surface-container)] text-[color:var(--color-on-surface)]">🍽️ No Preferences</option>
+                        </select>
+                      </div>
+
+                      {/* Travel Class Preference */}
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[9px] uppercase tracking-wide text-[color:var(--color-outline)] font-semibold">Service Level</span>
+                        <select
+                          value={travelClass}
+                          onChange={(e) => setTravelClass(e.target.value)}
+                          className="w-full bg-[color:var(--color-surface-dim)] border border-[color:var(--color-outline-variant)]/30 rounded-xl px-3 py-2 text-[11px] text-[color:var(--color-on-surface)] outline-none cursor-pointer hover:border-[color:var(--color-primary)]/30 transition-all appearance-none"
+                        >
+                          <option value="First Class" className="bg-[color:var(--color-surface-container)] text-[color:var(--color-on-surface)]">👑 First Class VIP</option>
+                          <option value="Business Class" className="bg-[color:var(--color-surface-container)] text-[color:var(--color-on-surface)]">👔 Business Executive</option>
+                          <option value="Premium Economy" className="bg-[color:var(--color-surface-container)] text-[color:var(--color-on-surface)]">✈️ Premium Economy</option>
+                        </select>
+                      </div>
+
+                    </div>
+                  </div>
+
+                  {/* NOTIFICATION SETTINGS */}
+                  <div className="pt-4 border-t border-[color:var(--color-outline-variant)]/30 grid gap-4 md:grid-cols-2">
+                    
+                    <div className="flex items-center justify-between bg-[color:var(--color-surface-dim)]/50 border border-[color:var(--color-outline-variant)]/30 px-4 py-3 rounded-2xl">
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-[11px] font-bold text-[color:var(--color-on-surface)]">Promo & Discount Emails</span>
+                        <span className="text-[9px] text-[color:var(--color-outline)]">Get lounge voucher sales</span>
+                      </div>
+                      <input 
+                        type="checkbox"
+                        checked={promoEmails}
+                        onChange={(e) => setPromoEmails(e.target.checked)}
+                        className="h-4 w-4 accent-[color:var(--color-primary)] cursor-pointer"
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between bg-[color:var(--color-surface-dim)]/50 border border-[color:var(--color-outline-variant)]/30 px-4 py-3 rounded-2xl">
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-[11px] font-bold text-[color:var(--color-on-surface)]">Live SMS Status Alerts</span>
+                        <span className="text-[9px] text-[color:var(--color-outline)]">Receive gate & track updates</span>
+                      </div>
+                      <input 
+                        type="checkbox"
+                        checked={smsAlerts}
+                        onChange={(e) => setSmsAlerts(e.target.checked)}
+                        className="h-4 w-4 accent-[color:var(--color-primary)] cursor-pointer"
+                      />
+                    </div>
+
+                  </div>
+
+                  {/* Save Changes button with conditional highlighting */}
+                  <button
+                    type="submit"
+                    disabled={isSaving}
+                    className="w-full bg-[color:var(--color-primary)] text-[color:var(--color-on-primary)] disabled:opacity-50 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2 hover:bg-[color:var(--color-primary-fixed-dim)] shadow-[0_4px_16px_rgba(255,215,0,0.15)] disabled:shadow-none"
+                  >
+                    {isSaving ? (
+                      <>
+                        <div className="h-3.5 w-3.5 border-2 border-[color:var(--color-on-primary)] border-t-transparent rounded-full animate-spin" />
+                        <span>Applying Changes to Database...</span>
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 size={14} />
+                        <span>Save Profile Settings</span>
+                      </>
+                    )}
+                  </button>
+
+                </form>
+              </div>
+
+              {/* Extra Utilities Menu (Notifications, Privacy, Logout) */}
+              <div className="card-glass rounded-3xl bg-[color:var(--color-surface-container)] border border-[color:var(--color-outline-variant)]/30 divide-y divide-[color:var(--color-outline-variant)]/30">
+                
+                <div className="flex items-center justify-between px-6 py-4.5 hover:bg-[color:var(--color-on-surface)]/[0.02] transition-colors cursor-pointer select-none">
+                  <div className="flex items-center gap-3.5">
+                    <div className="h-9 w-9 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center">
+                      <ShieldCheck size={18} />
+                    </div>
+                    <div>
+                      <h4 className="font-extrabold text-xs text-[color:var(--color-on-surface)]">Two-Factor Authentication</h4>
+                      <p className="text-[10px] text-[color:var(--color-on-surface-variant)] mt-0.5">Secure your bookings with SMS OTP</p>
+                    </div>
+                  </div>
+                  <input 
+                    type="checkbox" 
+                    checked={twoFactor}
+                    onChange={(e) => setTwoFactor(e.target.checked)}
+                    className="h-4.5 w-9 rounded-full bg-[color:var(--color-surface-dim)] checked:bg-[color:var(--color-primary)] accent-[color:var(--color-primary)] appearance-none cursor-pointer border border-[color:var(--color-outline-variant)]/30 relative transition-all duration-300 after:absolute after:top-[2px] after:left-[2px] after:h-3 after:w-3 after:rounded-full after:bg-[color:var(--color-outline)] checked:after:translate-x-4 checked:after:bg-[color:var(--color-on-primary)] checked:after:left-[4px]"
+                  />
+                </div>
+
+                <div 
+                  onClick={handleLogOut}
+                  className="flex items-center justify-between px-6 py-4.5 hover:bg-red-500/5 transition-colors cursor-pointer select-none group"
+                >
+                  <div className="flex items-center gap-3.5">
+                    <div className="h-9 w-9 rounded-xl bg-red-500/10 text-red-400 flex items-center justify-center group-hover:bg-red-500/20 transition-all">
+                      <LogOut size={16} />
+                    </div>
+                    <div>
+                      <h4 className="font-extrabold text-xs text-red-400 group-hover:text-red-500">Sign Out of Account</h4>
+                      <p className="text-[10px] text-[color:var(--color-outline)] mt-0.5">Sign out of active device sessions securely</p>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          {/* Toast Notification popup */}
+          {showToast && (
+            <div className="fixed bottom-6 right-6 z-[100] animate-fade-up">
+              <div className="bg-[color:var(--color-surface-container-high)] border border-[color:var(--color-primary)]/20 p-4 rounded-2xl shadow-2xl flex items-center gap-3">
+                <div className="h-8 w-8 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
+                  <Check size={16} className="animate-bounce" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-[color:var(--color-on-surface)]">{toastMessage}</h4>
+                  <p className="text-[10px] text-[color:var(--color-on-surface-variant)] mt-0.5">Settings synced successfully</p>
+                </div>
+              </div>
+            </div>
+          )}
+
         </div>
-      </div>
-    </div>
+      </main>
+      <BottomNav />
+    </>
   );
 }

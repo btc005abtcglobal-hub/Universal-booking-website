@@ -1,100 +1,23 @@
 'use client';
 
-import { use } from 'react';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ChevronRight, Star, Clock, MapPin, Shield, Phone, Mail, Calendar, Info } from 'lucide-react';
 import { useState } from 'react';
 import { ThemeToggle } from '../../../../components/ThemeToggle';
+import { useLocationStore } from '../../../../lib/store';
+import { getMerchantBySlug } from '../../../../lib/mockData';
 
-const MERCHANTS_DATA: Record<string, {
-  name: string;
-  image: string;
-  rating: number;
-  reviewCount: number;
-  city: string;
-  address: string;
-  distance: string;
-  phone: string;
-  email: string;
-  isVerified: boolean;
-  isOpen: boolean;
-  openTime: string;
-  about: string;
-  services: {
-    id: string;
-    name: string;
-    price: number;
-    duration: string;
-    desc: string;
-  }[];
-}> = {
-  'apollo-dental': {
-    name: 'Apollo Dental Care',
-    image: '🦷',
-    rating: 4.8,
-    reviewCount: 324,
-    city: 'Chennai',
-    address: '42 Anna Nagar Main Road',
-    distance: '1.2 km',
-    phone: '+91 98765 43210',
-    email: 'info@apollodental.com',
-    isVerified: true,
-    isOpen: true,
-    openTime: '9 AM – 9 PM',
-    about: 'Apollo Dental Care is a state-of-the-art dental clinic providing top-tier oral care services. Our team of experienced orthodontists, surgeons, and general dentists are committed to offering pain-free, premium treatments in a comfortable and hygienic environment.',
-    services: [
-      { id: 's1', name: 'Root Canal Treatment', price: 3500, duration: '60 min', desc: 'Expert pain-free root canal treatment with high-grade ceramic crowns.' },
-      { id: 's2', name: 'Dental Braces Consultation', price: 500, duration: '30 min', desc: 'Detailed orthodontic scanning and consultation for metal, ceramic, or invisible aligners.' },
-      { id: 's3', name: 'Teeth Whitening & Bleaching', price: 2500, duration: '45 min', desc: 'Advanced laser teeth whitening for a sparkling smile in a single session.' },
-      { id: 's4', name: 'Deep Teeth Cleaning & Scaling', price: 999, duration: '45 min', desc: 'Removal of plaque, tartar, and surface stains to prevent gum diseases.' }
-    ]
-  },
-  'smile-dental': {
-    name: 'Smile Dental Studio',
-    image: '😁',
-    rating: 4.6,
-    reviewCount: 189,
-    city: 'Chennai',
-    address: '15 T Nagar High Road',
-    distance: '2.4 km',
-    phone: '+91 98765 12345',
-    email: 'smile@dentalstudio.com',
-    isVerified: true,
-    isOpen: true,
-    openTime: '8 AM – 8 PM',
-    about: 'At Smile Dental Studio, we create beautiful and healthy smiles. We utilize the latest digital dentistry tools to ensure precision, comfort, and outstanding results for all cosmetic and clinical dental procedures.',
-    services: [
-      { id: 's5', name: 'Teeth Cleaning', price: 800, duration: '30 min', desc: 'Complete scaling and polishing using ultra-fine scaling tools.' },
-      { id: 's6', name: 'Composite Fillings', price: 1200, duration: '30 min', desc: 'Natural-looking tooth-colored composite fillings for cavities.' },
-      { id: 's7', name: 'Veneers & Smile Makeover', price: 8000, duration: '60 min', desc: 'High-aesthetic porcelain or composite veneers to reshape and brighten your teeth.' }
-    ]
-  }
-};
-
-export default function MerchantDetailPage({ params }: { params: Promise<{ bookingType: string; category: string; merchantSlug: string }> }) {
-  const { bookingType, category, merchantSlug } = use(params);
+export default function MerchantDetailPage() {
+  const params = useParams();
+  const bookingType = params?.bookingType as string;
+  const category = params?.category as string;
+  const merchantSlug = params?.merchantSlug as string;
+  const { city } = useLocationStore();
   const [selectedService, setSelectedService] = useState<string | null>(null);
 
-  const merchant = MERCHANTS_DATA[merchantSlug] || {
-    name: merchantSlug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-    image: '🏢',
-    rating: 4.5,
-    reviewCount: 120,
-    city: 'Chennai',
-    address: '100 G.S.T Road',
-    distance: '3.5 km',
-    phone: '+91 90000 00000',
-    email: 'support@beta.universal',
-    isVerified: true,
-    isOpen: true,
-    openTime: '9 AM – 6 PM',
-    about: 'This is a premium service provider registered under the BETA Universal booking ecosystem, guaranteeing high quality service and instant scheduling.',
-    services: [
-      { id: 'ds1', name: 'General Consultation', price: 300, duration: '30 min', desc: 'Standard check-up and advisory session with certified experts.' },
-      { id: 'ds2', name: 'Premium Service Package', price: 1500, duration: '60 min', desc: 'Comprehensive package containing premium benefits and priority care.' }
-    ]
-  };
+  const merchant = getMerchantBySlug(merchantSlug, category, bookingType, city);
 
   return (
     <main className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] transition-colors duration-300">

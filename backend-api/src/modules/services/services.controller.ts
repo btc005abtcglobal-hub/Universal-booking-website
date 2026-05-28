@@ -6,7 +6,7 @@ import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger'
 import { ServicesService } from './services.service';
 import { CreateServiceDto } from './dto/create-service.dto';
 import { UpdateServiceDto } from './dto/update-service.dto';
-import { PaginationDto } from '../../common/dto/pagination.dto';
+import { GetServicesFilterDto } from './dto/get-services-filter.dto';
 import { Public } from '../../common/decorators/public.decorator';
 
 @ApiTags('services')
@@ -28,25 +28,21 @@ export class ServicesController {
   @Public()
   @ApiOperation({ summary: 'List/search services' })
   @ApiQuery({ name: 'categoryId', required: false })
+  @ApiQuery({ name: 'categorySlug', required: false })
   @ApiQuery({ name: 'serviceType', required: false })
   @ApiQuery({ name: 'merchantId', required: false })
   @ApiQuery({ name: 'search', required: false })
   @ApiQuery({ name: 'minPrice', required: false })
   @ApiQuery({ name: 'maxPrice', required: false })
   @ApiQuery({ name: 'isFeatured', required: false })
+  @ApiQuery({ name: 'city', required: false })
+  @ApiQuery({ name: 'latitude', required: false })
+  @ApiQuery({ name: 'longitude', required: false })
+  @ApiQuery({ name: 'radius', required: false })
   async findAll(
-    @Query() pagination: PaginationDto,
-    @Query('categoryId') categoryId?: string,
-    @Query('serviceType') serviceType?: string,
-    @Query('merchantId') merchantId?: string,
-    @Query('search') search?: string,
-    @Query('minPrice') minPrice?: number,
-    @Query('maxPrice') maxPrice?: number,
-    @Query('isFeatured') isFeatured?: boolean,
+    @Query() query: GetServicesFilterDto,
   ) {
-    return this.servicesService.findAll(pagination, {
-      categoryId, serviceType, merchantId, search, minPrice, maxPrice, isFeatured,
-    });
+    return this.servicesService.findAll(query, query);
   }
 
   @Get('categories')

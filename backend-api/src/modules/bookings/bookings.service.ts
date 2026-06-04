@@ -288,6 +288,10 @@ export class BookingsService {
   // ==========================================================
 
   async findById(id: string) {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(id)) {
+      throw new NotFoundException('Booking not found');
+    }
     const booking = await this.prisma.booking.findUnique({
       where: { id, deletedAt: null },
       include: {

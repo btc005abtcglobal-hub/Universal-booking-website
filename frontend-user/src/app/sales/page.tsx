@@ -2,18 +2,165 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { useBookingFlowStore } from '../../lib/store';
+import { LiveClock } from '../../components/LiveClock';
 import { 
   ArrowLeft, ArrowRight, Activity, TrendingUp, Lock, User, Eye, EyeOff, AlertCircle, 
   ShieldCheck, CheckCircle2, Building2, Calendar, ShoppingBag, PlusCircle, Trash2, 
-  MapPin, Clock, Search, Briefcase, Sliders, Check, Copy
+  MapPin, Clock, Search, Briefcase, Sliders, Check, Copy, Navigation, Loader
 } from 'lucide-react';
 
-const CITIES = ['Chennai', 'Bangalore', 'Coimbatore', 'Theni', 'Madurai', 'Mumbai', 'Delhi'];
+// Dynamic import of MapComponent with SSR disabled
+const MapComponent = dynamic(() => import('../../components/MapComponent'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center bg-[color:var(--color-surface-dim)]/50 rounded-2xl border border-white/5 min-h-[250px]">
+      <div className="text-center">
+        <Loader className="h-6 w-6 animate-spin text-[color:var(--color-primary)] mx-auto mb-2" />
+        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Loading Map Canvas...</span>
+      </div>
+    </div>
+  )
+});
+
+const CITIES = [
+  'Ahmedabad', 'Amritsar', 'Bangalore', 'Bhopal', 'Bhubaneswar', 'Chandigarh', 'Chennai', 
+  'Coimbatore', 'Dehradun', 'Delhi', 'Faridabad', 'Ghaziabad', 'Gurugram', 'Guwahati', 
+  'Hyderabad', 'Indore', 'Jaipur', 'Jalandhar', 'Jammu', 'Jamshedpur', 'Kanpur', 'Kochi', 
+  'Kolkata', 'Kozhikode', 'Lucknow', 'Ludhiana', 'Madurai', 'Mangalore', 'Mumbai', 'Mysore', 
+  'Nagpur', 'Nashik', 'Noida', 'Patna', 'Pune', 'Raipur', 'Rajkot', 'Ranchi', 'Srinagar', 
+  'Surat', 'Theni', 'Thiruvananthapuram', 'Thrissur', 'Tiruchirappalli', 'Udaipur', 'Vadodara', 
+  'Varanasi', 'Vijayawada', 'Visakhapatnam'
+];
+
+const CITY_COORDINATES: Record<string, { lat: number; lng: number }> = {
+  ahmedabad: { lat: 23.0225, lng: 72.5714 },
+  amritsar: { lat: 31.6340, lng: 74.8723 },
+  bangalore: { lat: 12.9716, lng: 77.5946 },
+  bhopal: { lat: 23.2599, lng: 77.4126 },
+  bhubaneswar: { lat: 20.2961, lng: 85.8245 },
+  chandigarh: { lat: 30.7333, lng: 76.7794 },
+  chennai: { lat: 13.0827, lng: 80.2707 },
+  coimbatore: { lat: 11.0168, lng: 76.9558 },
+  dehradun: { lat: 30.3165, lng: 78.0322 },
+  delhi: { lat: 28.6139, lng: 77.2090 },
+  faridabad: { lat: 28.4089, lng: 77.3178 },
+  ghaziabad: { lat: 28.6692, lng: 77.4538 },
+  gurugram: { lat: 28.4595, lng: 77.0266 },
+  guwahati: { lat: 26.1158, lng: 91.7086 },
+  hyderabad: { lat: 17.3850, lng: 78.4867 },
+  indore: { lat: 22.7196, lng: 75.8577 },
+  jaipur: { lat: 26.9124, lng: 75.7873 },
+  jalandhar: { lat: 31.3260, lng: 75.5762 },
+  jammu: { lat: 32.7266, lng: 74.8570 },
+  jamshedpur: { lat: 22.8046, lng: 86.2029 },
+  kanpur: { lat: 26.4499, lng: 80.3319 },
+  kochi: { lat: 9.9312, lng: 76.2673 },
+  kolkata: { lat: 22.5726, lng: 88.3639 },
+  kozhikode: { lat: 11.2588, lng: 75.7804 },
+  lucknow: { lat: 26.8467, lng: 80.9462 },
+  ludhiana: { lat: 30.9010, lng: 75.8573 },
+  madurai: { lat: 9.9252, lng: 78.1198 },
+  mangalore: { lat: 12.9141, lng: 74.8560 },
+  mumbai: { lat: 19.0760, lng: 72.8777 },
+  mysore: { lat: 12.2958, lng: 76.6394 },
+  nagpur: { lat: 21.1458, lng: 79.0882 },
+  nashik: { lat: 19.9975, lng: 73.7898 },
+  noida: { lat: 28.5355, lng: 77.3910 },
+  patna: { lat: 25.5941, lng: 85.1376 },
+  pune: { lat: 18.5204, lng: 73.8567 },
+  raipur: { lat: 21.2514, lng: 81.6296 },
+  rajkot: { lat: 22.3039, lng: 70.8022 },
+  ranchi: { lat: 23.3441, lng: 85.3096 },
+  srinagar: { lat: 34.0837, lng: 74.7973 },
+  surat: { lat: 21.1702, lng: 72.8311 },
+  theni: { lat: 10.0104, lng: 77.4702 },
+  thiruvananthapuram: { lat: 8.5241, lng: 76.9366 },
+  thrissur: { lat: 10.5276, lng: 76.2144 },
+  tiruchirappalli: { lat: 10.7905, lng: 78.7047 },
+  udaipur: { lat: 24.5854, lng: 73.7125 },
+  vadodara: { lat: 22.3072, lng: 73.1812 },
+  varanasi: { lat: 25.3176, lng: 82.9739 },
+  vijayawada: { lat: 16.5062, lng: 80.6480 },
+  visakhapatnam: { lat: 17.6868, lng: 83.2185 }
+};
 const CATEGORIES = [
-  'Dental & Clinic', 'Fitness & Gyms', 'Beauty & Salon', 'Fine Dining', 
-  'Home Cleaning', 'Events & Concerts', 'Sports & Courts', 'Tutors & Education', 
-  'Rentals & Equipment'
+  // Travel & Transport
+  'Bus Booking',
+  'Train Booking',
+  'Flight Booking',
+  'Ferry / Boat Booking',
+  'Shuttle / Van Booking',
+  'Helicopter Booking',
+  'Cab / Taxi Booking',
+  'Bike Rental',
+  'Self-Drive Car Rental',
+
+  // Stay & Accommodation
+  'Hotel Booking',
+  'Resort Booking',
+  'Homestay / Villa',
+  'Hostel Booking',
+  'Camping Booking',
+
+  // Entertainment & Events
+  'Cinema / Movie Tickets',
+  'Theatre Shows',
+  'Concert Tickets',
+  'Events & Festivals',
+  'Exhibition Entry',
+  'Workshops / Classes',
+  'Gaming Arena Booking',
+
+  // Sports & Turf
+  'Football Turf',
+  'Cricket Ground',
+  'Badminton Court',
+  'Tennis Court',
+  'Basketball Court',
+  'Swimming Pool Slots',
+  'Indoor Play Arena',
+
+  // Lifestyle & Local Services
+  'Restaurant Table Reservation',
+  'Salon / Spa Appointment',
+  'Gym / Yoga Slot Booking',
+  'Doctor Appointment',
+  'Electrician Booking',
+  'Plumber Booking',
+  'Cleaning Service',
+  'Technician Service',
+  'Studio Booking',
+
+  // Business & Professional
+  'Co-working Space',
+  'Meeting Room',
+  'Podcast Studio',
+  'Conference Hall',
+  'Training Sessions',
+
+  // Religious & Government Services
+  'Temple Darshan Booking',
+  'Pooja Slot Booking',
+  'Pilgrimage Packages',
+  'Exam Slot Booking',
+  'Passport Appointment',
+  'RTO Appointment',
+  'Government Office Appointment',
+
+  // Rental & Equipment Booking
+  'Cycle Rental',
+  'Sports Bike Rental',
+  'Camera Rental',
+  'Sound System Rental',
+  'Event Equipment Rental',
+
+  // Personal & Miscellaneous Services
+  'Pet Grooming Appointment',
+  'Babysitting Service',
+  'Elder Care Service',
+  'Event Organizer Booking'
 ];
 
 interface ServiceCommissionRowProps {
@@ -145,6 +292,8 @@ export default function SalesAdminPage() {
   const [vendorCity, setVendorCity] = useState(CITIES[0]);
   const [vendorAddress, setVendorAddress] = useState('');
   const [vendorDesc, setVendorDesc] = useState('');
+  const [vendorLat, setVendorLat] = useState('13.0827');
+  const [vendorLng, setVendorLng] = useState('80.2707');
 
   // Listing Form State
   const [selectedMerchantId, setSelectedMerchantId] = useState('');
@@ -181,6 +330,22 @@ export default function SalesAdminPage() {
       setIsLoggedIn(true);
     }
   }, []);
+
+  // Synchronize vendor lat/lng default value when operating city changes
+  useEffect(() => {
+    const coords = CITY_COORDINATES[vendorCity.toLowerCase()] || { lat: 13.0827, lng: 80.2707 };
+    setVendorLat(String(coords.lat));
+    setVendorLng(String(coords.lng));
+  }, [vendorCity]);
+
+  // Synchronize listing lat/lng with the selected merchant's coordinates
+  useEffect(() => {
+    const targetMerchant = merchants.find(m => m.id === selectedMerchantId);
+    if (targetMerchant) {
+      setListingLat(String(targetMerchant.latitude || 13.0827));
+      setListingLng(String(targetMerchant.longitude || 80.2707));
+    }
+  }, [selectedMerchantId, merchants]);
 
   // Pre-fill dropdowns when merchants list loads
   useEffect(() => {
@@ -254,7 +419,9 @@ export default function SalesAdminPage() {
       city: vendorCity,
       address: vendorAddress.trim() || 'Main St',
       description: vendorDesc.trim() || 'Premium service vendor.',
-      rating: 5.0
+      rating: 5.0,
+      latitude: parseFloat(vendorLat) || 13.0827,
+      longitude: parseFloat(vendorLng) || 80.2707
     };
 
     addMerchant(newVendor);
@@ -444,12 +611,18 @@ export default function SalesAdminPage() {
             </div>
           </div>
           
-          <button
-            onClick={handleLogout}
-            className="rounded-xl border border-white/10 hover:border-red-500/20 bg-white/[0.01] hover:bg-red-500/5 px-3 py-1.5 text-[10px] font-bold text-[color:var(--color-on-surface-variant)] hover:text-red-400 transition-all cursor-pointer"
-          >
-            Lock Console
-          </button>
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:flex items-center gap-1.5 border border-white/5 bg-white/[0.02] rounded-lg px-2.5 py-1.5 shrink-0">
+              <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">SYS TIME:</span>
+              <LiveClock />
+            </div>
+            <button
+              onClick={handleLogout}
+              className="rounded-xl border border-white/10 hover:border-red-500/20 bg-white/[0.01] hover:bg-red-500/5 px-3 py-1.5 text-[10px] font-bold text-[color:var(--color-on-surface-variant)] hover:text-red-400 transition-all cursor-pointer"
+            >
+              Lock Console
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -621,6 +794,90 @@ export default function SalesAdminPage() {
                     className="w-full rounded-xl border border-white/10 bg-white/[0.02] focus:bg-white/[0.05] px-3.5 py-2.5 text-xs text-white placeholder-slate-600 outline-none focus:border-indigo-500 transition-all"
                   />
                 </div>
+              </div>
+
+              {/* Exact Location & Interactive Map Picker */}
+              <div className="space-y-3 border-t border-white/5 pt-3">
+                <div className="flex justify-between items-center">
+                  <label className="block text-[10px] font-bold text-[color:var(--color-on-surface-variant)] uppercase tracking-wider">Shop Coordinates Location</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(
+                          (position) => {
+                            setVendorLat(position.coords.latitude.toFixed(5));
+                            setVendorLng(position.coords.longitude.toFixed(5));
+                            showToast("Current location detected!");
+                          },
+                          (err) => {
+                            console.error("GPS detection failed", err);
+                            showToast("GPS timeout. Please select on map or enter manually.");
+                          }
+                        );
+                      } else {
+                        showToast("Geolocation is not supported by your browser.");
+                      }
+                    }}
+                    className="flex items-center gap-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-indigo-400 hover:bg-indigo-500/20 transition-all cursor-pointer"
+                  >
+                    <Navigation size={10} /> Detect GPS Location
+                  </button>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-1.5">
+                    <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider">Latitude</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. 13.0827"
+                      value={vendorLat}
+                      onChange={(e) => setVendorLat(e.target.value)}
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.02] focus:bg-white/[0.05] px-3.5 py-2 text-xs text-white placeholder-slate-600 outline-none focus:border-indigo-500 transition-all"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider">Longitude</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. 80.2707"
+                      value={vendorLng}
+                      onChange={(e) => setVendorLng(e.target.value)}
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.02] focus:bg-white/[0.05] px-3.5 py-2 text-xs text-white placeholder-slate-600 outline-none focus:border-indigo-500 transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div className="h-[200px] w-full rounded-2xl overflow-hidden border border-white/5 relative bg-slate-900/50">
+                  <MapComponent
+                    center={[parseFloat(vendorLat) || 13.0827, parseFloat(vendorLng) || 80.2707]}
+                    zoom={13}
+                    customPin={{ lat: parseFloat(vendorLat) || 13.0827, lng: parseFloat(vendorLng) || 80.2707 }}
+                    onMapClick={(lat, lng) => {
+                      setVendorLat(lat.toFixed(5));
+                      setVendorLng(lng.toFixed(5));
+                    }}
+                    markers={merchants
+                      .filter(m => m.latitude && m.longitude)
+                      .map(m => ({
+                        id: m.id,
+                        name: m.name,
+                        merchant: m.name,
+                        lat: m.latitude!,
+                        lng: m.longitude!,
+                        emoji: '🏢',
+                        category: m.category,
+                        price: 'Partner',
+                        rating: m.rating,
+                      }))
+                    }
+                  />
+                </div>
+                <p className="text-[9px] text-slate-500 italic">
+                  💡 Hint: Drag the map and click anywhere to place your shop pin exactly.
+                </p>
               </div>
 
               <div className="space-y-1.5">

@@ -63,6 +63,10 @@ export class MerchantsService {
   }
 
   async findById(id: string) {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(id)) {
+      throw new NotFoundException('Merchant not found');
+    }
     const merchant = await this.prisma.merchant.findUnique({
       where: { id, deletedAt: null },
       include: {

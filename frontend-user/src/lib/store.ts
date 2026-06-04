@@ -64,6 +64,8 @@ export interface PersistedMerchant {
   description?: string;
   rating: number;
   vendorId?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 interface BookingFlowState {
@@ -110,10 +112,10 @@ export const useBookingFlowStore = create<BookingFlowState>()(
       ],
       services: MOCK_SERVICES,
       merchants: [
-        { id: '1', name: 'Apollo Dental Care', category: 'Dental & Clinic', status: 'ACTIVE', rating: 4.8, email: 'info@apollodental.com', phone: '+91 98765 43210', city: 'Chennai', address: '42 Anna Nagar Main Road', description: 'Apollo Dental Care is a state-of-the-art dental clinic providing top-tier oral care services.', vendorId: '2026050001' },
-        { id: '2', name: 'ZenFit', category: 'Fitness & Gyms', status: 'ACTIVE', rating: 4.9, email: 'zenfit@fitness.com', phone: '+91 98765 54321', city: 'Chennai', address: '15 T Nagar High Road', description: 'ZenFit is a wellness and fitness club offering personal training and group yoga sessions.', vendorId: '2026050002' },
-        { id: '3', name: 'Style Studio', category: 'Beauty & Salon', status: 'ACTIVE', rating: 4.8, email: 'style@studio.com', phone: '+91 98765 12345', city: 'Chennai', address: '15 T Nagar High Road', description: 'Style Studio is a premium beauty salon for haircuts, styling, and bridal makeups.', vendorId: '2026050003' },
-        { id: '4', name: 'The Grand temple Dine', category: 'Fine Dining', status: 'ACTIVE', rating: 4.7, email: 'dine@grandtemple.com', phone: '+91 98450 12345', city: 'Madurai', address: 'Madurai High Road', description: 'The Grand Temple Dine is an elegant family fine-dining restaurant.', vendorId: '2026050004' }
+        { id: '1', name: 'Apollo Dental Care', category: 'Doctor Appointment', status: 'ACTIVE', rating: 4.8, email: 'info@apollodental.com', phone: '+91 98765 43210', city: 'Chennai', address: '42 Anna Nagar Main Road', description: 'Apollo Dental Care is a state-of-the-art dental clinic providing top-tier oral care services.', vendorId: '2026050001', latitude: 13.0827, longitude: 80.2707 },
+        { id: '2', name: 'ZenFit', category: 'Gym / Yoga Slot Booking', status: 'ACTIVE', rating: 4.9, email: 'zenfit@fitness.com', phone: '+91 98765 54321', city: 'Chennai', address: '15 T Nagar High Road', description: 'ZenFit is a wellness and fitness club offering personal training and group yoga sessions.', vendorId: '2026050002', latitude: 13.078, longitude: 80.268 },
+        { id: '3', name: 'Style Studio', category: 'Salon / Spa Appointment', status: 'ACTIVE', rating: 4.8, email: 'style@studio.com', phone: '+91 98765 12345', city: 'Chennai', address: '15 T Nagar High Road', description: 'Style Studio is a premium beauty salon for haircuts, styling, and bridal makeups.', vendorId: '2026050003', latitude: 13.085, longitude: 80.275 },
+        { id: '4', name: 'The Grand temple Dine', category: 'Restaurant Table Reservation', status: 'ACTIVE', rating: 4.7, email: 'dine@grandtemple.com', phone: '+91 98450 12345', city: 'Madurai', address: 'Madurai High Road', description: 'The Grand Temple Dine is an elegant family fine-dining restaurant.', vendorId: '2026050004', latitude: 9.925, longitude: 78.118 }
       ],
       commissionRate: 10,
       nextVendorSerial: 5,

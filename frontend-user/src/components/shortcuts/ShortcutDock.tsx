@@ -5,7 +5,9 @@ import Link from 'next/link';
 
 export function ShortcutDock() {
   const { activeShortcuts, setShortcutModalOpen, openActionModal } = useShortcutStore();
-  const active = activeShortcuts.map(id => AVAILABLE_SHORTCUTS.find(s => s.id === id)).filter(Boolean);
+  const active = Array.isArray(activeShortcuts)
+    ? activeShortcuts.map(id => AVAILABLE_SHORTCUTS.find(s => s.id === id)).filter(Boolean)
+    : [];
 
   const Card = ({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) => (
     <div

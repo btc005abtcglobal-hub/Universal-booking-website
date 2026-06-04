@@ -4,12 +4,54 @@ import { BookingsService } from './bookings.service';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { JwtPayload } from '../../common/guards/jwt-auth.guard';
+import { Public } from '../../common/decorators/public.decorator';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @ApiTags('bookings')
 @ApiBearerAuth()
 @Controller('bookings')
 export class BookingsController {
   constructor(private bookingsService: BookingsService) {}
+
+  @Post('sync')
+  @Public()
+  @ApiOperation({ summary: 'Add a synchronized booking for demo' })
+  async syncAdd(@Body() booking: any) {
+    const filePath = path.join(process.cwd(), 'shared-bookings.json');
+    let bookings = [];
+    try {
+      if (fs.existsSync(filePath)) {
+        const content = fs.readFileSync(filePath, 'utf8');
+        bookings = JSON.parse(content);
+      }
+    } catch (e) {
+      bookings = [];
+    }
+    const exists = bookings.some((b: any) => b.ref === booking.ref || b.id === booking.id);
+    if (!exists) {
+      bookings.unshift(booking);
+      fs.writeFileSync(filePath, JSON.stringify(bookings, null, 2), 'utf8');
+    }
+    return { success: true, booking };
+  }
+
+  @Get('sync')
+  @Public()
+  @ApiOperation({ summary: 'Get all synchronized bookings for demo' })
+  async syncList() {
+    const filePath = path.join(process.cwd(), 'shared-bookings.json');
+    let bookings = [];
+    try {
+      if (fs.existsSync(filePath)) {
+        const content = fs.readFileSync(filePath, 'utf8');
+        bookings = JSON.parse(content);
+      }
+    } catch (e) {
+      bookings = [];
+    }
+    return bookings;
+  }
 
   @Post('reserve')
   @ApiOperation({ summary: 'Reserve a booking slot (Step 1 of booking flow)' })

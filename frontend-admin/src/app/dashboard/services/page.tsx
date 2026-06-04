@@ -1,6 +1,7 @@
 'use client';
 
 import { useVendorStore, CatalogService } from '../../../lib/store';
+import { getVerticalFromCategory } from '../../../lib/categoryUtils';
 import { 
   Plus, Search, Edit, Trash2, Clock, IndianRupee, Star, X, Save, 
   Stethoscope, Dumbbell, Scissors, Utensils, Award, CheckCircle2 
@@ -102,10 +103,10 @@ export default function ServicesPage() {
       description: description.trim() || undefined,
 
       // Custom attributes
-      specializationRequired: currentMerchant.category === 'Dental' ? specialization.trim() : undefined,
-      difficultyLevel: currentMerchant.category === 'Fitness' ? difficulty : undefined,
-      productsUsed: currentMerchant.category === 'Salon' ? productsUsed.trim() : undefined,
-      tableCapacity: currentMerchant.category === 'Dining' ? parseInt(tableCapacity) || 4 : undefined
+      specializationRequired: getVerticalFromCategory(currentMerchant.category) === 'Dental' ? specialization.trim() : undefined,
+      difficultyLevel: getVerticalFromCategory(currentMerchant.category) === 'Fitness' ? difficulty : undefined,
+      productsUsed: getVerticalFromCategory(currentMerchant.category) === 'Salon' ? productsUsed.trim() : undefined,
+      tableCapacity: getVerticalFromCategory(currentMerchant.category) === 'Dining' ? parseInt(tableCapacity) || 4 : undefined
     };
 
     addService(newSvc);
@@ -126,10 +127,10 @@ export default function ServicesPage() {
       description: description.trim() || undefined,
 
       // Custom attributes
-      specializationRequired: currentMerchant.category === 'Dental' ? specialization.trim() : undefined,
-      difficultyLevel: currentMerchant.category === 'Fitness' ? difficulty : undefined,
-      productsUsed: currentMerchant.category === 'Salon' ? productsUsed.trim() : undefined,
-      tableCapacity: currentMerchant.category === 'Dining' ? parseInt(tableCapacity) || 4 : undefined
+      specializationRequired: getVerticalFromCategory(currentMerchant.category) === 'Dental' ? specialization.trim() : undefined,
+      difficultyLevel: getVerticalFromCategory(currentMerchant.category) === 'Fitness' ? difficulty : undefined,
+      productsUsed: getVerticalFromCategory(currentMerchant.category) === 'Salon' ? productsUsed.trim() : undefined,
+      tableCapacity: getVerticalFromCategory(currentMerchant.category) === 'Dining' ? parseInt(tableCapacity) || 4 : undefined
     };
 
     updateService(updatedSvc);
@@ -206,22 +207,22 @@ export default function ServicesPage() {
                 </td>
                 <td className="px-5 py-4">
                   {/* Category specific details */}
-                  {currentMerchant.category === 'Dental' && s.specializationRequired && (
+                  {getVerticalFromCategory(currentMerchant.category) === 'Dental' && s.specializationRequired && (
                     <span className="inline-flex items-center gap-1 text-[9px] uppercase font-bold text-sky-400 bg-sky-500/10 px-2.5 py-0.5 rounded-full border border-sky-500/20">
                       <Stethoscope size={10} /> Specialist: {s.specializationRequired}
                     </span>
                   )}
-                  {currentMerchant.category === 'Fitness' && s.difficultyLevel && (
+                  {getVerticalFromCategory(currentMerchant.category) === 'Fitness' && s.difficultyLevel && (
                     <span className="inline-flex items-center gap-1 text-[9px] uppercase font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
                       <Dumbbell size={10} /> Difficulty: {s.difficultyLevel}
                     </span>
                   )}
-                  {currentMerchant.category === 'Salon' && s.productsUsed && (
+                  {getVerticalFromCategory(currentMerchant.category) === 'Salon' && s.productsUsed && (
                     <span className="inline-flex items-center gap-1 text-[9px] uppercase font-bold text-rose-400 bg-rose-500/10 px-2.5 py-0.5 rounded-full border border-rose-500/20">
                       <Scissors size={10} /> Product: {s.productsUsed}
                     </span>
                   )}
-                  {currentMerchant.category === 'Dining' && s.tableCapacity && (
+                  {getVerticalFromCategory(currentMerchant.category) === 'Dining' && s.tableCapacity && (
                     <span className="inline-flex items-center gap-1 text-[9px] uppercase font-bold text-fuchsia-400 bg-fuchsia-500/10 px-2.5 py-0.5 rounded-full border border-fuchsia-500/20">
                       <Utensils size={10} /> Capacity: {s.tableCapacity} seats
                     </span>
@@ -324,7 +325,7 @@ export default function ServicesPage() {
                 </div>
 
                 {/* CATEGORY SPECIFIC FIELDS */}
-                {currentMerchant.category === 'Dental' && (
+                {getVerticalFromCategory(currentMerchant.category) === 'Dental' && (
                   <div className="space-y-1">
                     <label className="text-[10px] uppercase font-bold tracking-wider text-slate-500">Medical Specialization Tag</label>
                     <input 
@@ -337,7 +338,7 @@ export default function ServicesPage() {
                   </div>
                 )}
 
-                {currentMerchant.category === 'Fitness' && (
+                {getVerticalFromCategory(currentMerchant.category) === 'Fitness' && (
                   <div className="space-y-1">
                     <label className="text-[10px] uppercase font-bold tracking-wider text-slate-500">Workout Difficulty Level</label>
                     <select
@@ -352,7 +353,7 @@ export default function ServicesPage() {
                   </div>
                 )}
 
-                {currentMerchant.category === 'Salon' && (
+                {getVerticalFromCategory(currentMerchant.category) === 'Salon' && (
                   <div className="space-y-1">
                     <label className="text-[10px] uppercase font-bold tracking-wider text-slate-500">Styling Products Used</label>
                     <input 
@@ -365,7 +366,7 @@ export default function ServicesPage() {
                   </div>
                 )}
 
-                {currentMerchant.category === 'Dining' && (
+                {getVerticalFromCategory(currentMerchant.category) === 'Dining' && (
                   <div className="space-y-1">
                     <label className="text-[10px] uppercase font-bold tracking-wider text-slate-500">Table Capacity (Guests)</label>
                     <input 
@@ -474,7 +475,7 @@ export default function ServicesPage() {
                 </div>
 
                 {/* CATEGORY SPECIFIC FIELDS */}
-                {currentMerchant.category === 'Dental' && (
+                {getVerticalFromCategory(currentMerchant.category) === 'Dental' && (
                   <div className="space-y-1">
                     <label className="text-[10px] uppercase font-bold tracking-wider text-slate-500">Medical Specialization Tag</label>
                     <input 
@@ -486,7 +487,7 @@ export default function ServicesPage() {
                   </div>
                 )}
 
-                {currentMerchant.category === 'Fitness' && (
+                {getVerticalFromCategory(currentMerchant.category) === 'Fitness' && (
                   <div className="space-y-1">
                     <label className="text-[10px] uppercase font-bold tracking-wider text-slate-500">Workout Difficulty Level</label>
                     <select
@@ -501,7 +502,7 @@ export default function ServicesPage() {
                   </div>
                 )}
 
-                {currentMerchant.category === 'Salon' && (
+                {getVerticalFromCategory(currentMerchant.category) === 'Salon' && (
                   <div className="space-y-1">
                     <label className="text-[10px] uppercase font-bold tracking-wider text-slate-500">Styling Products Used</label>
                     <input 
@@ -513,7 +514,7 @@ export default function ServicesPage() {
                   </div>
                 )}
 
-                {currentMerchant.category === 'Dining' && (
+                {getVerticalFromCategory(currentMerchant.category) === 'Dining' && (
                   <div className="space-y-1">
                     <label className="text-[10px] uppercase font-bold tracking-wider text-slate-500">Table Capacity (Guests)</label>
                     <input 

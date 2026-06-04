@@ -21,7 +21,7 @@ export function ShortcutManagerModal() {
         <div className="p-6 border-b border-outline/10 flex justify-between items-center">
           <div>
             <h2 className="font-headline-md text-headline-md text-on-surface">Manage Shortcuts</h2>
-            <p className="font-body-md text-on-surface-variant mt-1">Select up to 5 quick actions for your dashboard.</p>
+            <p className="font-body-md text-on-surface-variant mt-1">Select quick actions for your dashboard.</p>
           </div>
           <button 
             onClick={() => setShortcutModalOpen(false)}
@@ -33,24 +33,21 @@ export function ShortcutManagerModal() {
 
         <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
           <div className="flex justify-between items-center mb-4">
-            <span className="font-label-md text-primary uppercase tracking-widest">{activeShortcuts.length} / 5 Selected</span>
+            <span className="font-label-md text-primary uppercase tracking-widest">{Array.isArray(activeShortcuts) ? activeShortcuts.length : 0} Selected</span>
           </div>
           
           <div className="space-y-2">
             {AVAILABLE_SHORTCUTS.map(shortcut => {
-              const isActive = activeShortcuts.includes(shortcut.id);
-              const isDisabled = !isActive && activeShortcuts.length >= 5;
+              const isActive = Array.isArray(activeShortcuts) ? activeShortcuts.includes(shortcut.id) : false;
 
               return (
                 <div 
                   key={shortcut.id}
-                  onClick={() => !isDisabled && toggleShortcut(shortcut.id)}
+                  onClick={() => toggleShortcut(shortcut.id)}
                   className={`flex items-center justify-between p-4 rounded-xl border transition-all cursor-pointer ${
                     isActive 
                       ? 'bg-primary/10 border-primary text-primary' 
-                      : isDisabled 
-                        ? 'bg-surface-container-low border-outline/5 opacity-50 cursor-not-allowed' 
-                        : 'bg-surface-container-high border-outline/10 hover:border-primary/30 hover:bg-surface-variant text-on-surface'
+                      : 'bg-surface-container-high border-outline/10 hover:border-primary/30 hover:bg-surface-variant text-on-surface'
                   }`}
                 >
                   <div className="flex items-center gap-4">

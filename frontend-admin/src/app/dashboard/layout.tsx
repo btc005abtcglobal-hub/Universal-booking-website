@@ -10,6 +10,9 @@ import {
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useVendorStore, PRESET_MERCHANTS } from '../../lib/store';
+import { getVerticalFromCategory } from '../../lib/categoryUtils';
+import { LiveClock } from './LiveClock';
+
 
 const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Console' },
@@ -59,7 +62,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   useEffect(() => {
     if (currentMerchant) {
       const getMockNotifications = (): NotificationItem[] => {
-        switch (currentMerchant.category) {
+        switch (getVerticalFromCategory(currentMerchant.category)) {
           case 'Dental':
             return [
               { id: '1', text: 'Aditya Sen checked in at clinic waiting room.', time: '10 mins ago', read: false, type: 'success' },
@@ -106,6 +109,45 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Poll NestJS backend to retrieve synchronized customer bookings in real-time
+  useEffect(() => {
+    if (!currentMerchant) return;
+
+    const fetchSyncBookings = async () => {
+      try {
+        const res = await fetch('/api/v1/bookings/sync');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          const currentBookings = useVendorStore.getState().bookings;
+          let changed = false;
+          const merged = [...currentBookings];
+
+          data.forEach((syncB: any) => {
+            const exists = merged.some((b) => b.ref === syncB.ref || b.id === syncB.id);
+            if (!exists) {
+              merged.unshift({
+                ...syncB,
+                status: syncB.status === 'CONFIRMED' ? 'CONFIRMED' : syncB.status,
+              });
+              changed = true;
+            }
+          });
+
+          if (changed) {
+            useVendorStore.setState({ bookings: merged });
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching sync bookings:', err);
+      }
+    };
+
+    fetchSyncBookings();
+    const interval = setInterval(fetchSyncBookings, 3000);
+    return () => clearInterval(interval);
+  }, [currentMerchant]);
+
   useEffect(() => {
     if (isMounted && hasHydrated && !currentMerchant) {
       window.location.href = '/';
@@ -121,7 +163,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   const getCategoryIcon = (category: string) => {
-    switch (category) {
+    switch (getVerticalFromCategory(category)) {
       case 'Dental':
         return Stethoscope;
       case 'Fitness':
@@ -136,7 +178,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   };
   
   const allStores = currentMerchant 
-    ? PRESET_MERCHANTS.filter(m => m.username === currentMerchant.username) 
+    ? [
+        ...PRESET_MERCHANTS.filter(m => m.username === currentMerchant.username),
+        ...Array.from(new Set(useVendorStore.getState().bookings
+          .filter(b => b.category === currentMerchant.category)
+          .map(b => b.merchantName)))
+          .map((name) => {
+            const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            return {
+              id: `mer-${slug}`,
+              username: currentMerchant.username,
+              merchantName: name,
+              category: currentMerchant.category,
+              logoLetter: name.charAt(0),
+              aboutText: `Welcome to ${name}. We provide professional bookings and top-tier services.`
+            };
+          })
+          .filter(m => !PRESET_MERCHANTS.some(pm => pm.merchantName === m.merchantName))
+      ]
     : [];
 
   const CategoryIcon = getCategoryIcon(currentMerchant.category);
@@ -280,6 +339,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
           
           <div className="flex items-center gap-4 ml-auto">
+            {/* Live Clock */}
+            <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-white/5 bg-white/[0.01]">
+              <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider hidden sm:inline">SYS TIME:</span>
+              <LiveClock />
+            </div>
+
             {/* Stateful Notifications Popover */}
             <div className="relative" ref={popoverRef}>
               <button 

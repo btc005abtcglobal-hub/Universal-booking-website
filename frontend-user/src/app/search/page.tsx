@@ -44,7 +44,7 @@ export default function SearchPage() {
       const distance = calculateDistance(latitude, longitude, svc.lat, svc.lng);
       matchesLocation = distance <= 100; // Show services within 100 km
     } else {
-      matchesLocation = svc.city.toLowerCase() === city.toLowerCase();
+      matchesLocation = svc.city.toLowerCase() === (city || 'Chennai').toLowerCase();
     }
 
     const matchesSearch = 

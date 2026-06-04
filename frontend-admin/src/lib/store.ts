@@ -35,7 +35,7 @@ export interface PersistedBooking {
   serviceId: string;
   serviceName: string;
   merchantName: string;
-  category: 'Salon' | 'Fitness' | 'Dining' | 'Dental' | 'Events' | 'Wellness';
+  category: string;
   date: string;
   time: string;
   amount: number;
@@ -100,7 +100,7 @@ export interface MerchantUser {
   id: string;
   username: string;
   merchantName: string;
-  category: 'Salon' | 'Fitness' | 'Dining' | 'Dental' | 'Wellness';
+  category: string;
   logoLetter: string;
   aboutText: string;
   vendorId?: string;
@@ -150,7 +150,7 @@ export const PRESET_MERCHANTS: MerchantUser[] = [
     id: 'mer-1', 
     username: 'doctor', 
     merchantName: 'Apollo Dental Care', 
-    category: 'Dental', 
+    category: 'Doctor Appointment', 
     logoLetter: 'A',
     aboutText: 'Apollo Dental Care is a multi-specialty dental clinic network dedicated to providing high-quality oral health services. From preventive care to advanced orthodontics and restorative treatments, our certified specialists ensure comfort and clinical excellence for all patients.',
     vendorId: '2026050001'
@@ -159,7 +159,7 @@ export const PRESET_MERCHANTS: MerchantUser[] = [
     id: 'mer-2', 
     username: 'fitness', 
     merchantName: 'ZenFit Clinic', 
-    category: 'Fitness', 
+    category: 'Gym / Yoga Slot Booking', 
     logoLetter: 'Z',
     aboutText: 'ZenFit is a holistic strength and wellness clinic combining personal functional training, vinyasa yoga, and evidence-based nutrition coaching. Our certified coaches provide structured training and diet plans to guide you toward sustainable health goals.',
     vendorId: '2026050002'
@@ -168,7 +168,7 @@ export const PRESET_MERCHANTS: MerchantUser[] = [
     id: 'mer-3', 
     username: 'salon', 
     merchantName: 'Style Studio', 
-    category: 'Salon', 
+    category: 'Salon / Spa Appointment', 
     logoLetter: 'S',
     aboutText: 'Style Studio is a premium beauty and wellness salon specializing in modern hair design, organic aesthetic therapies, and restorative body treatments. We combine advanced skin care with professional styling in an inviting, contemporary atmosphere.',
     vendorId: '2026050003'
@@ -177,7 +177,7 @@ export const PRESET_MERCHANTS: MerchantUser[] = [
     id: 'mer-4', 
     username: 'dining', 
     merchantName: 'The Grand Temple Dine', 
-    category: 'Dining', 
+    category: 'Restaurant Table Reservation', 
     logoLetter: 'T',
     aboutText: 'The Grand Temple Dine delivers an exceptional culinary experience, combining contemporary fusion menus with custom chef\'s tasting events and table-side service in a refined architectural setting.',
     vendorId: '2026050004'
@@ -186,7 +186,7 @@ export const PRESET_MERCHANTS: MerchantUser[] = [
     id: 'mer-5', 
     username: 'salon', 
     merchantName: 'Glitz Parlour', 
-    category: 'Salon', 
+    category: 'Salon / Spa Appointment', 
     logoLetter: 'G',
     aboutText: 'Glitz Parlour offers advanced bridal makeovers, nail art, and organic facial treatments designed to make you shine on every occasion.',
     vendorId: '2026050003'
@@ -195,7 +195,7 @@ export const PRESET_MERCHANTS: MerchantUser[] = [
     id: 'mer-6', 
     username: 'salon', 
     merchantName: 'Urban Haircut Co', 
-    category: 'Salon', 
+    category: 'Salon / Spa Appointment', 
     logoLetter: 'U',
     aboutText: 'Urban Haircut Co provides quick, premium grooming, haircuts, and beard stylings for the modern busy professional.',
     vendorId: '2026050003'
@@ -204,30 +204,30 @@ export const PRESET_MERCHANTS: MerchantUser[] = [
 
 const INITIAL_SERVICES: CatalogService[] = [
   // Dental / Medical
-  { id: 'svc-d1', name: 'Root Canal Treatment', merchant: 'Apollo Dental Care', price: 3500, duration: 60, category: 'Dental', active: true, rating: 4.8, bookingsCount: 142, description: 'Expert root canal therapy with ceramic crown molding and painless local anesthesia.', specializationRequired: 'Endodontics' },
-  { id: 'svc-d2', name: 'Orthodontic Braces Scan', merchant: 'Apollo Dental Care', price: 500, duration: 30, category: 'Dental', active: true, rating: 4.6, bookingsCount: 98, description: '3D digital intraoral orthodontic scanning and complete custom aligners consultation.', specializationRequired: 'Orthodontics' },
-  { id: 'svc-d3', name: 'Teeth Whitening Session', merchant: 'Apollo Dental Care', price: 2500, duration: 45, category: 'Dental', active: true, rating: 4.9, bookingsCount: 64, description: 'Laser-activated clinical teeth whitening for immediate shade improvement.', specializationRequired: 'General Dentistry' },
+  { id: 'svc-d1', name: 'Root Canal Treatment', merchant: 'Apollo Dental Care', price: 3500, duration: 60, category: 'Doctor Appointment', active: true, rating: 4.8, bookingsCount: 142, description: 'Expert root canal therapy with ceramic crown molding and painless local anesthesia.', specializationRequired: 'Endodontics' },
+  { id: 'svc-d2', name: 'Orthodontic Braces Scan', merchant: 'Apollo Dental Care', price: 500, duration: 30, category: 'Doctor Appointment', active: true, rating: 4.6, bookingsCount: 98, description: '3D digital intraoral orthodontic scanning and complete custom aligners consultation.', specializationRequired: 'Orthodontics' },
+  { id: 'svc-d3', name: 'Teeth Whitening Session', merchant: 'Apollo Dental Care', price: 2500, duration: 45, category: 'Doctor Appointment', active: true, rating: 4.9, bookingsCount: 64, description: 'Laser-activated clinical teeth whitening for immediate shade improvement.', specializationRequired: 'General Dentistry' },
   
   // Fitness
-  { id: 'svc-f1', name: 'Yoga Vinyasa Session', merchant: 'ZenFit Clinic', price: 499, duration: 60, category: 'Fitness', active: true, rating: 4.9, bookingsCount: 220, description: 'Morning breathing practice and core flexibility yoga flow in solar studios.', difficultyLevel: 'Beginner' },
-  { id: 'svc-f2', name: 'HIIT Boot Camp', merchant: 'ZenFit Clinic', price: 799, duration: 45, category: 'Fitness', active: true, rating: 4.7, bookingsCount: 167, description: 'High-intensity interval cardio training session designed to boost metabolic performance.', difficultyLevel: 'Advanced' },
-  { id: 'svc-f3', name: '1-on-1 Fitness Consulting', merchant: 'ZenFit Clinic', price: 1200, duration: 60, category: 'Fitness', active: true, rating: 4.8, bookingsCount: 88, description: 'Personal assessment, body fat indexing, and tailored macro diet planning sessions.', difficultyLevel: 'Intermediate' },
+  { id: 'svc-f1', name: 'Yoga Vinyasa Session', merchant: 'ZenFit Clinic', price: 499, duration: 60, category: 'Gym / Yoga Slot Booking', active: true, rating: 4.9, bookingsCount: 220, description: 'Morning breathing practice and core flexibility yoga flow in solar studios.', difficultyLevel: 'Beginner' },
+  { id: 'svc-f2', name: 'HIIT Boot Camp', merchant: 'ZenFit Clinic', price: 799, duration: 45, category: 'Gym / Yoga Slot Booking', active: true, rating: 4.7, bookingsCount: 167, description: 'High-intensity interval cardio training session designed to boost metabolic performance.', difficultyLevel: 'Advanced' },
+  { id: 'svc-f3', name: '1-on-1 Fitness Consulting', merchant: 'ZenFit Clinic', price: 1200, duration: 60, category: 'Gym / Yoga Slot Booking', active: true, rating: 4.8, bookingsCount: 88, description: 'Personal assessment, body fat indexing, and tailored macro diet planning sessions.', difficultyLevel: 'Intermediate' },
 
   // Salon
-  { id: 'svc-s1', name: 'Premium Haircut & Wash', merchant: 'Style Studio', price: 599, duration: 45, category: 'Salon', active: true, rating: 4.8, bookingsCount: 432, description: 'Bespoke fade cuts, deep tea-tree hair wash, and hot towel style massage.', productsUsed: 'Sulfate-Free Tea-Tree Oils' },
-  { id: 'svc-s2', name: 'Full Body Massage', merchant: 'Style Studio', price: 1800, duration: 90, category: 'Salon', active: true, rating: 4.9, bookingsCount: 231, description: 'Swedish deep tissue massage with natural lavender essential aromatic oils.', productsUsed: 'Lavender Aromatic Oils' },
-  { id: 'svc-s3', name: 'Hydrafacial Facial Skin Treatment', merchant: 'Style Studio', price: 2200, duration: 60, category: 'Salon', active: false, rating: 4.6, bookingsCount: 45, description: 'Clinical skin extraction, vortex exfoliation, and antioxidant hydration serum infusion.', productsUsed: 'Antioxidant Collagen Hydration Serum' },
+  { id: 'svc-s1', name: 'Premium Haircut & Wash', merchant: 'Style Studio', price: 599, duration: 45, category: 'Salon / Spa Appointment', active: true, rating: 4.8, bookingsCount: 432, description: 'Bespoke fade cuts, deep tea-tree hair wash, and hot towel style massage.', productsUsed: 'Sulfate-Free Tea-Tree Oils' },
+  { id: 'svc-s2', name: 'Full Body Massage', merchant: 'Style Studio', price: 1800, duration: 90, category: 'Salon / Spa Appointment', active: true, rating: 4.9, bookingsCount: 231, description: 'Swedish deep tissue massage with natural lavender essential aromatic oils.', productsUsed: 'Lavender Aromatic Oils' },
+  { id: 'svc-s3', name: 'Hydrafacial Facial Skin Treatment', merchant: 'Style Studio', price: 2200, duration: 60, category: 'Salon / Spa Appointment', active: false, rating: 4.6, bookingsCount: 45, description: 'Clinical skin extraction, vortex exfoliation, and antioxidant hydration serum infusion.', productsUsed: 'Antioxidant Collagen Hydration Serum' },
 
   // Dining
-  { id: 'svc-r1', name: 'Premium Dinner Table Booking', merchant: 'The Grand Temple Dine', price: 1200, duration: 120, category: 'Dining', active: true, rating: 4.7, bookingsCount: 512, description: 'Reserved table seating in the rooftop temple pavilion with access to full menu catalog.', tableCapacity: 4 },
-  { id: 'svc-r2', name: 'Couples Candle Light Package', merchant: 'The Grand Temple Dine', price: 3500, duration: 150, category: 'Dining', active: true, rating: 4.9, bookingsCount: 104, description: 'Private corner table, personalized floral setups, 5-course degustation menu, and soft live music.', tableCapacity: 2 },
+  { id: 'svc-r1', name: 'Premium Dinner Table Booking', merchant: 'The Grand Temple Dine', price: 1200, duration: 120, category: 'Restaurant Table Reservation', active: true, rating: 4.7, bookingsCount: 512, description: 'Reserved table seating in the rooftop temple pavilion with access to full menu catalog.', tableCapacity: 4 },
+  { id: 'svc-r2', name: 'Couples Candle Light Package', merchant: 'The Grand Temple Dine', price: 3500, duration: 150, category: 'Restaurant Table Reservation', active: true, rating: 4.9, bookingsCount: 104, description: 'Private corner table, personalized floral setups, 5-course degustation menu, and soft live music.', tableCapacity: 2 },
 
   // Salon Extra - Glitz Parlour
-  { id: 'svc-gp1', name: 'Bridal Glow Makeover', merchant: 'Glitz Parlour', price: 4500, duration: 120, category: 'Salon', active: true, rating: 4.9, bookingsCount: 38, description: 'Complete HD bridal makeup session, premium lashes, and setting spray lock.', productsUsed: 'MAC & Estée Lauder HD Kits' },
-  { id: 'svc-gp2', name: 'Gel Nail Art & Extensions', merchant: 'Glitz Parlour', price: 1500, duration: 60, category: 'Salon', active: true, rating: 4.7, bookingsCount: 89, description: 'Premium gel extensions with custom hand-drawn nail art and rhinestone styling.', productsUsed: 'OPI Gel Polishes' },
+  { id: 'svc-gp1', name: 'Bridal Glow Makeover', merchant: 'Glitz Parlour', price: 4500, duration: 120, category: 'Salon / Spa Appointment', active: true, rating: 4.9, bookingsCount: 38, description: 'Complete HD bridal makeup session, premium lashes, and setting spray lock.', productsUsed: 'MAC & Estée Lauder HD Kits' },
+  { id: 'svc-gp2', name: 'Gel Nail Art & Extensions', merchant: 'Glitz Parlour', price: 1500, duration: 60, category: 'Salon / Spa Appointment', active: true, rating: 4.7, bookingsCount: 89, description: 'Premium gel extensions with custom hand-drawn nail art and rhinestone styling.', productsUsed: 'OPI Gel Polishes' },
 
   // Salon Extra - Urban Haircut Co
-  { id: 'svc-uh1', name: 'Modern Scissor Cut & Trim', merchant: 'Urban Haircut Co', price: 350, duration: 30, category: 'Salon', active: true, rating: 4.5, bookingsCount: 110, description: 'Classic grooming, shampoo, precise beard line styling with a hot towel finish.', productsUsed: 'Urban Beard Balm' }
+  { id: 'svc-uh1', name: 'Modern Scissor Cut & Trim', merchant: 'Urban Haircut Co', price: 350, duration: 30, category: 'Salon / Spa Appointment', active: true, rating: 4.5, bookingsCount: 110, description: 'Classic grooming, shampoo, precise beard line styling with a hot towel finish.', productsUsed: 'Urban Beard Balm' }
 ];
 
 const INITIAL_BOOKINGS: PersistedBooking[] = [
@@ -238,7 +238,7 @@ const INITIAL_BOOKINGS: PersistedBooking[] = [
     serviceId: 'svc-d1',
     serviceName: 'Root Canal Treatment',
     merchantName: 'Apollo Dental Care',
-    category: 'Dental',
+    category: 'Doctor Appointment',
     date: '2026-05-26',
     time: '10:00 AM',
     amount: 3500,
@@ -259,7 +259,7 @@ const INITIAL_BOOKINGS: PersistedBooking[] = [
     serviceId: 'svc-d2',
     serviceName: 'Orthodontic Braces Scan',
     merchantName: 'Apollo Dental Care',
-    category: 'Dental',
+    category: 'Doctor Appointment',
     date: '2026-05-26',
     time: '02:30 PM',
     amount: 500,
@@ -278,7 +278,7 @@ const INITIAL_BOOKINGS: PersistedBooking[] = [
     serviceId: 'svc-d3',
     serviceName: 'Teeth Whitening Session',
     merchantName: 'Apollo Dental Care',
-    category: 'Dental',
+    category: 'Doctor Appointment',
     date: '2026-05-24',
     time: '11:00 AM',
     amount: 2500,
@@ -306,7 +306,7 @@ const INITIAL_BOOKINGS: PersistedBooking[] = [
     serviceId: 'svc-f3',
     serviceName: '1-on-1 Fitness Consulting',
     merchantName: 'ZenFit Clinic',
-    category: 'Fitness',
+    category: 'Gym / Yoga Slot Booking',
     date: '2026-05-26',
     time: '08:30 AM',
     amount: 1200,
@@ -340,7 +340,7 @@ const INITIAL_BOOKINGS: PersistedBooking[] = [
     serviceId: 'svc-f1',
     serviceName: 'Yoga Vinyasa Session',
     merchantName: 'ZenFit Clinic',
-    category: 'Fitness',
+    category: 'Gym / Yoga Slot Booking',
     date: '2026-05-26',
     time: '06:00 AM',
     amount: 499,
@@ -366,7 +366,7 @@ const INITIAL_BOOKINGS: PersistedBooking[] = [
     serviceId: 'svc-s1',
     serviceName: 'Premium Haircut & Wash',
     merchantName: 'Style Studio',
-    category: 'Salon',
+    category: 'Salon / Spa Appointment',
     date: '2026-05-26',
     time: '11:30 AM',
     amount: 599,
@@ -387,7 +387,7 @@ const INITIAL_BOOKINGS: PersistedBooking[] = [
     serviceId: 'svc-s2',
     serviceName: 'Full Body Massage',
     merchantName: 'Style Studio',
-    category: 'Salon',
+    category: 'Salon / Spa Appointment',
     date: '2026-05-25',
     time: '04:00 PM',
     amount: 1800,
@@ -410,7 +410,7 @@ const INITIAL_BOOKINGS: PersistedBooking[] = [
     serviceId: 'svc-r1',
     serviceName: 'Premium Dinner Table Booking',
     merchantName: 'The Grand Temple Dine',
-    category: 'Dining',
+    category: 'Restaurant Table Reservation',
     date: '2026-05-26',
     time: '08:00 PM',
     amount: 1200,
@@ -431,7 +431,7 @@ const INITIAL_BOOKINGS: PersistedBooking[] = [
     serviceId: 'svc-r2',
     serviceName: 'Couples Candle Light Package',
     merchantName: 'The Grand Temple Dine',
-    category: 'Dining',
+    category: 'Restaurant Table Reservation',
     date: '2026-05-26',
     time: '09:00 PM',
     amount: 3500,
@@ -452,7 +452,7 @@ const INITIAL_BOOKINGS: PersistedBooking[] = [
     serviceId: 'svc-gp1',
     serviceName: 'Bridal Glow Makeover',
     merchantName: 'Glitz Parlour',
-    category: 'Salon',
+    category: 'Salon / Spa Appointment',
     date: '2026-05-26',
     time: '01:00 PM',
     amount: 4500,
@@ -471,7 +471,7 @@ const INITIAL_BOOKINGS: PersistedBooking[] = [
     serviceId: 'svc-uh1',
     serviceName: 'Modern Scissor Cut & Trim',
     merchantName: 'Urban Haircut Co',
-    category: 'Salon',
+    category: 'Salon / Spa Appointment',
     date: '2026-05-26',
     time: '11:00 AM',
     amount: 350,
@@ -483,6 +483,104 @@ const INITIAL_BOOKINGS: PersistedBooking[] = [
   }
 ];
 
+function formatSlug(slug: string): string {
+  const mapping: Record<string, string> = {
+    flights: 'Flight Booking',
+    trains: 'Train Booking',
+    buses: 'Bus Booking',
+    ferry: 'Ferry / Boat Booking',
+    shuttle: 'Shuttle / Van Booking',
+    helicopter: 'Helicopter Booking',
+    cabs: 'Cab / Taxi Booking',
+    'bike-rental': 'Bike Rental',
+    'car-rental': 'Self-Drive Car Rental',
+    hotels: 'Hotel Booking',
+    resorts: 'Resort Booking',
+    villas: 'Homestay / Villa',
+    hostels: 'Hostel Booking',
+    camping: 'Camping Booking',
+    movies: 'Cinema / Movie Tickets',
+    theatre: 'Theatre Shows',
+    concerts: 'Concert Tickets',
+    events: 'Events & Festivals',
+    exhibitions: 'Exhibition Entry',
+    workshops: 'Workshops / Classes',
+    gaming: 'Gaming Arena Booking',
+    'football-turf': 'Football Turf',
+    'cricket-ground': 'Cricket Ground',
+    badminton: 'Badminton Court',
+    tennis: 'Tennis Court',
+    basketball: 'Basketball Court',
+    swimming: 'Swimming Pool Slots',
+    'play-arena': 'Indoor Play Arena',
+    dining: 'Restaurant Table Reservation',
+    salons: 'Salon / Spa Appointment',
+    'gym-yoga': 'Gym / Yoga Slot Booking',
+    doctor: 'Doctor Appointment',
+    electrician: 'Electrician Booking',
+    plumber: 'Plumber Booking',
+    cleaning: 'Cleaning Service',
+    technician: 'Technician Service',
+    studio: 'Studio Booking',
+    coworking: 'Co-working Space',
+    'meeting-room': 'Meeting Room',
+    podcast: 'Podcast Studio',
+    conference: 'Conference Hall',
+    training: 'Training Sessions',
+    darshan: 'Temple Darshan Booking',
+    pooja: 'Pooja Slot Booking',
+    pilgrimage: 'Pilgrimage Packages',
+    exams: 'Exam Slot Booking',
+    passport: 'Passport Appointment',
+    rto: 'RTO Appointment',
+    'gov-office': 'Government Office Appointment',
+    'cycle-rental': 'Cycle Rental',
+    'sports-bike': 'Sports Bike Rental',
+    camera: 'Camera Rental',
+    'sound-system': 'Sound System Rental',
+    'event-equip': 'Event Equipment Rental',
+    'pet-grooming': 'Pet Grooming Appointment',
+    babysitting: 'Babysitting Service',
+    'elder-care': 'Elder Care Service',
+    'event-organizer': 'Event Organizer Booking',
+  };
+  
+  if (mapping[slug]) return mapping[slug];
+  return slug
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+function getMockServicesForAdminMerchant(merchant: MerchantUser): CatalogService[] {
+  return [
+    {
+      id: `ds-${merchant.username}-1`,
+      name: `Standard ${merchant.category} Service`,
+      merchant: merchant.merchantName,
+      price: 499,
+      duration: 45,
+      category: merchant.category,
+      active: true,
+      rating: 4.7,
+      bookingsCount: 24,
+      description: `Professional standard ${merchant.category} package.`
+    },
+    {
+      id: `ds-${merchant.username}-2`,
+      name: `Premium ${merchant.category} Package`,
+      merchant: merchant.merchantName,
+      price: 1499,
+      duration: 90,
+      category: merchant.category,
+      active: true,
+      rating: 4.9,
+      bookingsCount: 12,
+      description: `Complete luxury ${merchant.category} experience.`
+    }
+  ];
+}
+
 export const useVendorStore = create<VendorStoreState>()(
   persist(
     (set, get) => ({
@@ -491,12 +589,35 @@ export const useVendorStore = create<VendorStoreState>()(
       services: INITIAL_SERVICES,
       
       loginMerchant: (username, passwordHash) => {
+        if (passwordHash !== '123') return false;
         const checkUsername = username.toLowerCase() === 'admin' ? 'doctor' : username.toLowerCase();
-        const found = PRESET_MERCHANTS.find(
-          (m) => m.username === checkUsername && passwordHash === '123'
+        
+        let found = PRESET_MERCHANTS.find(
+          (m) => m.username === checkUsername
         );
+        
+        if (!found) {
+          const categoryName = formatSlug(checkUsername);
+          found = {
+            id: `mer-${checkUsername}`,
+            username: checkUsername,
+            merchantName: `${categoryName} Care Hub`,
+            category: categoryName,
+            logoLetter: categoryName.charAt(0),
+            aboutText: `Welcome to ${categoryName} Care Hub. We provide professional bookings and top-tier services.`,
+            vendorId: `2026060001`
+          };
+        }
+        
         if (found) {
           set({ currentMerchant: found });
+          
+          // Seed services for this merchant if not present
+          const hasServices = get().services.some(s => s.merchant === found.merchantName);
+          if (!hasServices) {
+            const newServices = getMockServicesForAdminMerchant(found);
+            set({ services: [...get().services, ...newServices] });
+          }
           return true;
         }
         return false;
@@ -507,9 +628,28 @@ export const useVendorStore = create<VendorStoreState>()(
       },
       
       switchStore: (merchantId) => {
-        const found = PRESET_MERCHANTS.find((m) => m.id === merchantId);
+        let found = PRESET_MERCHANTS.find((m) => m.id === merchantId);
+        if (!found && merchantId.startsWith('mer-')) {
+          const checkUsername = merchantId.replace('mer-', '');
+          const categoryName = formatSlug(checkUsername);
+          found = {
+            id: merchantId,
+            username: checkUsername,
+            merchantName: `${categoryName} Care Hub`,
+            category: categoryName,
+            logoLetter: categoryName.charAt(0),
+            aboutText: `Welcome to ${categoryName} Care Hub. We provide professional bookings and top-tier services.`
+          };
+        }
         if (found) {
           set({ currentMerchant: found });
+          
+          // Seed services for this merchant if not present
+          const hasServices = get().services.some(s => s.merchant === found.merchantName);
+          if (!hasServices) {
+            const newServices = getMockServicesForAdminMerchant(found);
+            set({ services: [...get().services, ...newServices] });
+          }
         }
       },
       

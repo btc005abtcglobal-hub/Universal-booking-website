@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Search, Heart, ShoppingBag, Sparkles, MapPin, Map, X } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { useLocationStore } from '../lib/store';
+import { LiveClock } from './LiveClock';
 
 const CITY_NODES = [
   { name: 'Chennai', x: 80, y: 35, display: 'Chennai (Metro)', lat: 13.0827, lng: 80.2707 },
@@ -107,7 +108,7 @@ export function TopNav() {
 
   useEffect(() => {
     if (showMapModal) {
-      const activeNode = CITY_NODES.find(n => n.name.toLowerCase() === city.toLowerCase()) || CITY_NODES[0];
+      const activeNode = CITY_NODES.find(n => n.name.toLowerCase() === (city || 'Chennai').toLowerCase()) || CITY_NODES[0];
       setTempSelectedCity(activeNode.name);
       setMarkerPos({ x: `${activeNode.x}%`, y: `${activeNode.y}%` });
     }
@@ -272,6 +273,13 @@ export function TopNav() {
                 <span className="absolute top-0 right-0 w-1.5 h-1.5 bg-[color:var(--color-primary)] rounded-full shadow-[0_0_8px_rgba(255,215,0,0.6)]" />
               </button>
 
+              <div className="flex items-center gap-1.5 px-1">
+                <span className="text-[10px] text-[color:var(--color-outline)] font-bold tracking-widest uppercase hidden xl:inline">SYS TIME:</span>
+                <LiveClock />
+              </div>
+
+              <span className="w-[1px] h-4 bg-[color:var(--color-outline-variant)]/40" />
+
               <ThemeToggle />
 
               <Link
@@ -322,6 +330,12 @@ export function TopNav() {
               </div>
               
               <span className="w-[1px] h-3.5 bg-[color:var(--color-outline-variant)]/40" />
+
+              <div className="hidden md:flex items-center">
+                <LiveClock />
+              </div>
+
+              <span className="w-[1px] h-3.5 bg-[color:var(--color-outline-variant)]/40 hidden md:inline" />
 
               <ThemeToggle />
               <Link

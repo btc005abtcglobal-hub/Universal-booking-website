@@ -100,7 +100,11 @@ Thank you for booking with BETA!
 
         {/* QR Code */}
         <div className="mt-6 rounded-2xl border-2 border-dashed border-[color:var(--color-outline-variant)]/30 p-6 bg-[color:var(--color-surface-dim)]/30 flex flex-col items-center justify-center">
-          <QrCode className="mx-auto h-32 w-32 text-[color:var(--color-primary)] opacity-90 animate-pulse" />
+          <img 
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(booking.ref)}`} 
+            alt="Booking QR Code" 
+            className="mx-auto h-32 w-32 rounded-xl border border-white/10 shadow-lg p-2 bg-white"
+          />
           <p className="mt-3 text-xs text-[color:var(--color-on-surface-variant)] font-medium">Show this QR code at the reception desk</p>
         </div>
 

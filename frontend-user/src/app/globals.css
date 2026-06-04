@@ -173,6 +173,35 @@
   --color-outline-variant:          #C4C4D4;
 }
 
+:root {
+  /* Legacy/fallback variable mappings for compatibility with all pages */
+  --border: var(--color-outline-variant);
+  --bg-primary: var(--color-surface);
+  --bg-secondary: var(--color-surface-container-low);
+  --bg-tertiary: var(--color-surface-container);
+  --bg-base: var(--color-background);
+  --text-primary: var(--color-on-surface);
+  --text-secondary: var(--color-on-surface-variant);
+  --text-muted: var(--color-on-surface-variant);
+  --primary: var(--color-primary);
+
+  /* TopNav fixed height on mobile (profile row + search row + padding) */
+  --topnav-height: 64px;
+  /* BottomNav height on mobile */
+  --bottomnav-height: 66px;
+  /* SideNav width on desktop */
+  --sidenav-width: 292px;
+  --sidenav-offset: 1rem;     /* left-4 */
+  --sidenav-gap: 1rem;        /* gap between sidenav right edge and main */
+}
+
+@media (min-width: 1024px) {
+  :root {
+    /* TopNav fixed height on desktop (includes tabs row) */
+    --topnav-height: 80px;
+  }
+}
+
 /* ================================================================
  * BASE STYLES
  * ================================================================ */
@@ -183,33 +212,6 @@
     padding: 0;
   }
   html { color-scheme: dark light; }
-  :root {
-    /* Legacy/fallback variable mappings for compatibility with all pages */
-    --border: var(--color-outline-variant);
-    --bg-primary: var(--color-surface);
-    --bg-secondary: var(--color-surface-container-low);
-    --bg-tertiary: var(--color-surface-container);
-    --bg-base: var(--color-background);
-    --text-primary: var(--color-on-surface);
-    --text-secondary: var(--color-on-surface-variant);
-    --text-muted: var(--color-on-surface-variant);
-    --primary: var(--color-primary);
-
-    /* TopNav fixed height on mobile (profile row + search row + padding) */
-    --topnav-height: 64px;
-    /* BottomNav height on mobile */
-    --bottomnav-height: 66px;
-    /* SideNav width on desktop */
-    --sidenav-width: 292px;
-    --sidenav-offset: 1rem;     /* left-4 */
-    --sidenav-gap: 1rem;        /* gap between sidenav right edge and main */
-  }
-  @media (min-width: 1024px) {
-    :root {
-      /* TopNav fixed height on desktop (includes tabs row) */
-      --topnav-height: 80px;
-    }
-  }
   body {
     background-color: var(--color-background);
     color: var(--color-on-surface);
@@ -271,7 +273,6 @@
 /* ================================================================
  * UTILITIES
  * ================================================================ */
-@layer utilities {
   .material-symbols-outlined {
     font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
   }
@@ -282,16 +283,19 @@
    * On desktop (lg+), also shifts right of the SideNav.
    */
   .page-content {
-    padding-top: var(--topnav-height);
+    padding-top: 88px;
     padding-bottom: var(--bottomnav-height);
     min-height: 100vh;
   }
   .page-content-with-sidenav {
-    padding-top: var(--topnav-height);
+    padding-top: 88px;
     padding-bottom: var(--bottomnav-height);
     min-height: 100vh;
   }
   @media (min-width: 1024px) {
+    .page-content, .page-content-with-sidenav {
+      padding-top: 104px;
+    }
     .page-content-with-sidenav {
       padding-left: calc(var(--sidenav-width) + var(--sidenav-offset) + var(--sidenav-gap));
     }
@@ -361,6 +365,9 @@
   }
 
   /* Desktop vs Mobile sidebar media queries */
+  .sidebar-desktop {
+    padding-top: 104px !important;
+  }
   @media (max-width: 1023px) {
     .sidebar-desktop {
       display: none !important;
@@ -541,4 +548,3 @@
     50%       { box-shadow: 0 0 20px rgba(255, 215, 0, 0.7), 0 0 40px rgba(255, 215, 0, 0.2); }
   }
   .glow-gold { animation: goldPulse 2.5s ease-in-out infinite; }
-}

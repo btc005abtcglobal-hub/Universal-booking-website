@@ -103,12 +103,16 @@ export default function CheckoutPage() {
       };
 
       const ref = generateBookingRef();
+      const merchantName = selectedService.merchant?.name || selectedService.merchant || '';
+      const categoryName = selectedService.category?.name || selectedService.category || 'Default';
+
       const newBooking = {
         id: String(Date.now()),
         ref: ref,
         serviceId: selectedService.id,
         serviceName: selectedService.name,
-        merchantName: selectedService.merchant,
+        merchantName: merchantName,
+        category: categoryName,
         date: selectedSlot.date,
         time: selectedSlot.time,
         amount: total,
@@ -123,6 +127,17 @@ export default function CheckoutPage() {
       };
 
       addBooking(newBooking);
+
+      // Sync booking with NestJS backend so that port 3600 (Admin) can capture it
+      fetch('/api/v1/bookings/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newBooking),
+      })
+        .then(res => res.json())
+        .then(data => console.log('Successfully synced booking to backend:', data))
+        .catch(err => console.error('Error syncing booking to backend:', err));
+
       setIsSubmitting(false);
       router.push(`/booking/success?ref=${ref}`);
     }, 1800);

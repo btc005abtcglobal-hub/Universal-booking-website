@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useBookingFlowStore } from '../../lib/store';
+import { LiveClock } from '../../components/LiveClock';
 import {
   ArrowLeft, ArrowRight, Activity, Database, Cpu, Server, TrendingUp, Users, IndianRupee,
   Clock, Lock, User, Eye, EyeOff, AlertCircle, ShieldCheck, CheckCircle2,
@@ -376,12 +377,18 @@ export default function SuperAdminPage() {
             </div>
           </div>
 
-          <button
-            onClick={handleLogout}
-            className="rounded-xl border border-white/10 hover:border-red-500/20 bg-white/[0.01] hover:bg-red-500/5 px-3 py-1.5 text-[10px] font-bold text-[color:var(--color-on-surface-variant)] hover:text-red-400 transition-all cursor-pointer"
-          >
-            Lock Terminal
-          </button>
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:flex items-center gap-1.5 border border-white/5 bg-white/[0.02] rounded-lg px-2.5 py-1.5 shrink-0">
+              <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">SYS TIME:</span>
+              <LiveClock />
+            </div>
+            <button
+              onClick={handleLogout}
+              className="rounded-xl border border-white/10 hover:border-red-500/20 bg-white/[0.01] hover:bg-red-500/5 px-3 py-1.5 text-[10px] font-bold text-[color:var(--color-on-surface-variant)] hover:text-red-400 transition-all cursor-pointer"
+            >
+              Lock Terminal
+            </button>
+          </div>
         </div>
       </nav>
 

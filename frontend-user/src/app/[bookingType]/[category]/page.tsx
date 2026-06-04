@@ -10,10 +10,23 @@ import {
   Navigation, HelpCircle, Activity, AlertTriangle
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { ThemeToggle } from '../../../components/ThemeToggle';
 import { useLocationStore } from '../../../lib/store';
 import { api, Service } from '../../../lib/api';
 import { calculateDistance } from '../../../lib/mockData';
+
+const MapComponent = dynamic(() => import('../../../components/MapComponent'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center bg-[color:var(--color-surface-dim)]/50">
+      <div className="text-center">
+        <RefreshCw className="h-6 w-6 animate-spin text-[color:var(--color-primary)] mx-auto mb-2" />
+        <p className="text-[10px] text-[color:var(--color-outline)] font-bold uppercase tracking-wider">Syncing Map Overlays...</p>
+      </div>
+    </div>
+  ),
+});
 
 const CATEGORY_NAMES: Record<string, string> = {
   // Travel & Transport
@@ -1464,71 +1477,153 @@ export default function ProviderDiscoveryPage() {
 
           {/* Standard fallback listing for all other categories */}
           {!isCustomBooking && (
-            <div className="grid gap-4 mt-6">
-              {filteredServices.map((service, i) => {
-                const dist = (latitude !== null && longitude !== null && service.merchant.latitude && service.merchant.longitude)
-                  ? `${calculateDistance(latitude, longitude, service.merchant.latitude, service.merchant.longitude)} km`
-                  : 'Nearby';
+            <div className="space-y-6">
+              {/* Search, Sort, and View Mode Toggle Bar */}
+              <div className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-[color:var(--color-surface-container)]/50 border border-[color:var(--color-outline-variant)]/20 p-3 rounded-2xl">
+                <div className="relative flex items-center w-full sm:max-w-xs rounded-xl border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-dim)]/50 px-3 py-1.5 focus-within:border-[color:var(--color-primary)]/50 transition-all">
+                  <Search size={14} className="text-[color:var(--color-outline)] mr-2" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder={`Search ${categoryName}...`}
+                    className="w-full bg-transparent text-xs text-[color:var(--color-on-surface)] placeholder-[color:var(--color-outline)] outline-none"
+                  />
+                </div>
 
-                return (
-                  <motion.div
-                    key={service.id}
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.06 }}
-                  >
-                    <Link href={`/service/${service.id}`}>
-                      <div className="group glass-card p-5 md:p-6 flex gap-5 cursor-pointer hover:border-[var(--border-strong)] transition-all">
-                        <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl overflow-hidden bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-[var(--border-subtle)] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                          {service.images && service.images[0] ? (
-                            <img src={service.images[0]} alt={service.name} className="w-full h-full object-cover" />
-                          ) : (
-                            <span className="text-3xl">✨</span>
-                          )}
-                        </div>
+                <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                  <div className="flex items-center gap-1.5">
+                    <SlidersHorizontal size={13} className="text-[color:var(--color-outline)]" />
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      className="bg-transparent text-xs font-bold text-[color:var(--color-on-surface-variant)] outline-none cursor-pointer"
+                    >
+                      {SORT_OPTIONS.map((opt) => (
+                        <option key={opt.value} value={opt.value} className="bg-[color:var(--color-surface-container-high)] text-[color:var(--color-on-surface)]">
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
-                                <h3 className="font-bold text-base md:text-lg truncate text-[var(--text-primary)]">{service.name}</h3>
-                                {service.merchant.isVerified && (
-                                  <Shield size={14} className="text-blue-400 shrink-0" />
-                                )}
-                              </div>
-                              <p className="text-sm font-semibold text-indigo-400 mb-1">{service.merchant.name}</p>
-                              <div className="flex items-center gap-3 text-sm text-[var(--text-secondary)] mb-2 flex-wrap">
-                                <div className="flex items-center gap-1">
-                                  <Star size={13} className="text-amber-400 fill-amber-400" />
-                                  <span className="text-[var(--text-primary)] font-semibold">{service.rating}</span>
-                                  <span>({service.reviewCount})</span>
-                                </div>
-                                <span className="text-[var(--border-strong)]">•</span>
-                                <div className="flex items-center gap-1">
-                                  <MapPin size={13} />
-                                  {dist}
-                                </div>
-                              </div>
+                  <div className="h-4 w-px bg-[color:var(--color-outline-variant)]/25" />
+
+                  {/* Segmented view mode control */}
+                  <div className="flex rounded-lg border border-[color:var(--color-outline-variant)]/30 p-0.5 bg-[color:var(--color-surface-dim)]">
+                    <button
+                      onClick={() => setViewMode('list')}
+                      className={`flex items-center gap-1 px-3 py-1 rounded-md text-[10px] font-bold uppercase cursor-pointer transition-colors ${
+                        viewMode === 'list'
+                          ? 'bg-[color:var(--color-primary)] text-[color:var(--color-on-primary)]'
+                          : 'text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)]'
+                      }`}
+                    >
+                      <List size={12} />
+                      List
+                    </button>
+                    <button
+                      onClick={() => setViewMode('map')}
+                      className={`flex items-center gap-1 px-3 py-1 rounded-md text-[10px] font-bold uppercase cursor-pointer transition-colors ${
+                        viewMode === 'map'
+                          ? 'bg-[color:var(--color-primary)] text-[color:var(--color-on-primary)]'
+                          : 'text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)]'
+                      }`}
+                    >
+                      <Map size={12} />
+                      Map
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {viewMode === 'map' ? (
+                <div className="h-[480px] w-full rounded-3xl overflow-hidden border border-[color:var(--color-outline-variant)]/30 relative">
+                  <MapComponent
+                    center={[latitude || 13.0827, longitude || 80.2707]}
+                    zoom={13}
+                    markers={filteredServices.map(svc => ({
+                      id: svc.id,
+                      name: svc.name,
+                      merchant: svc.merchant.name,
+                      lat: svc.merchant.latitude || (latitude || 13.0827),
+                      lng: svc.merchant.longitude || (longitude || 80.2707),
+                      emoji: '📍',
+                      category: categoryName,
+                      price: `₹${svc.basePrice}`,
+                      rating: svc.rating,
+                      linkUrl: `/service/${svc.id}`
+                    }))}
+                  />
+                </div>
+              ) : (
+                <div className="grid gap-4">
+                  {filteredServices.map((service, i) => {
+                    const dist = (latitude !== null && longitude !== null && service.merchant.latitude && service.merchant.longitude)
+                      ? `${calculateDistance(latitude, longitude, service.merchant.latitude, service.merchant.longitude)} km`
+                      : 'Nearby';
+
+                    return (
+                      <motion.div
+                        key={service.id}
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.06 }}
+                      >
+                        <Link href={`/service/${service.id}`}>
+                          <div className="group glass-card p-5 md:p-6 flex gap-5 cursor-pointer hover:border-[var(--border-strong)] transition-all">
+                            <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl overflow-hidden bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-[var(--border-subtle)] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                              {service.images && service.images[0] ? (
+                                <img src={service.images[0]} alt={service.name} className="w-full h-full object-cover" />
+                              ) : (
+                                <span className="text-3xl">✨</span>
+                              )}
                             </div>
-                            <div className="text-right shrink-0">
-                              <div className="text-lg font-bold text-[var(--text-primary)]">₹{service.basePrice}</div>
-                              <button className="btn-primary text-xs py-2 px-4 mt-2 rounded-lg">Book Now</button>
+
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="min-w-0">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <h3 className="font-bold text-base md:text-lg truncate text-[var(--text-primary)]">{service.name}</h3>
+                                    {service.merchant.isVerified && (
+                                      <Shield size={14} className="text-blue-400 shrink-0" />
+                                    )}
+                                  </div>
+                                  <p className="text-sm font-semibold text-indigo-400 mb-1">{service.merchant.name}</p>
+                                  <div className="flex items-center gap-3 text-sm text-[var(--text-secondary)] mb-2 flex-wrap">
+                                    <div className="flex items-center gap-1">
+                                      <Star size={13} className="text-amber-400 fill-amber-400" />
+                                      <span className="text-[var(--text-primary)] font-semibold">{service.rating}</span>
+                                      <span>({service.reviewCount})</span>
+                                    </div>
+                                    <span className="text-[var(--border-strong)]">•</span>
+                                    <div className="flex items-center gap-1">
+                                      <MapPin size={13} />
+                                      {dist}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="text-right shrink-0">
+                                  <div className="text-lg font-bold text-[var(--text-primary)]">₹{service.basePrice}</div>
+                                  <button className="btn-primary text-xs py-2 px-4 mt-2 rounded-lg">Book Now</button>
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </div>
-                    </Link>
-                  </motion.div>
-                );
-              })}
+                        </Link>
+                      </motion.div>
+                    );
+                  })}
 
-              {filteredServices.length === 0 && (
-                <div className="text-center py-12 glass-card rounded-3xl border border-dashed border-[var(--border-subtle)]">
-                  <AlertCircle className="mx-auto h-12 w-12 text-[var(--text-muted)] mb-3" />
-                  <h3 className="text-lg font-bold mb-1">No services found</h3>
-                  <p className="text-sm text-[var(--text-secondary)] max-w-sm mx-auto">
-                    We couldn't find any services matching "{categoryName}" in {city}.
-                  </p>
+                  {filteredServices.length === 0 && (
+                    <div className="text-center py-12 glass-card rounded-3xl border border-dashed border-[var(--border-subtle)]">
+                      <AlertCircle className="mx-auto h-12 w-12 text-[var(--text-muted)] mb-3" />
+                      <h3 className="text-lg font-bold mb-1">No services found</h3>
+                      <p className="text-sm text-[var(--text-secondary)] max-w-sm mx-auto">
+                        We couldn't find any services matching "{categoryName}" in {city}.
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

@@ -17,30 +17,30 @@ export interface MockService {
 
 export const MOCK_SERVICES: MockService[] = [
   // Chennai (2 services)
-  { id: 'svc-1', name: 'Premium Haircut', merchant: 'Style Studio', price: 599, rating: 4.8, reviews: 234, duration: 45, city: 'Chennai', image: 'https://picsum.photos/seed/10/400/250', category: 'Salon', lat: 13.085, lng: 80.275 },
-  { id: 'svc-2', name: 'Yoga Class', merchant: 'ZenFit', price: 499, rating: 4.9, reviews: 189, duration: 60, city: 'Chennai', image: 'https://picsum.photos/seed/11/400/250', category: 'Fitness', lat: 13.078, lng: 80.268 },
+  { id: 'svc-1', name: 'Premium Haircut', merchant: 'Style Studio', price: 599, rating: 4.8, reviews: 234, duration: 45, city: 'Chennai', image: 'https://picsum.photos/seed/10/400/250', category: 'Salon / Spa Appointment', lat: 13.085, lng: 80.275 },
+  { id: 'svc-2', name: 'Yoga Class', merchant: 'ZenFit', price: 499, rating: 4.9, reviews: 189, duration: 60, city: 'Chennai', image: 'https://picsum.photos/seed/11/400/250', category: 'Gym / Yoga Slot Booking', lat: 13.078, lng: 80.268 },
 
   // Madurai (2 services)
-  { id: 'svc-3', name: 'Table Reservation', merchant: 'The Grand temple Dine', price: 1200, rating: 4.7, reviews: 156, duration: 120, city: 'Madurai', image: 'https://picsum.photos/seed/12/400/250', category: 'Dining', lat: 9.925, lng: 78.118 },
-  { id: 'svc-4', name: 'Concert Tickets', merchant: 'Temple City EventHub', price: 2500, rating: 4.6, reviews: 445, duration: 180, city: 'Madurai', image: 'https://picsum.photos/seed/13/400/250', category: 'Events', lat: 9.918, lng: 78.105 },
+  { id: 'svc-3', name: 'Table Reservation', merchant: 'The Grand temple Dine', price: 1200, rating: 4.7, reviews: 156, duration: 120, city: 'Madurai', image: 'https://picsum.photos/seed/12/400/250', category: 'Restaurant Table Reservation', lat: 9.925, lng: 78.118 },
+  { id: 'svc-4', name: 'Concert Tickets', merchant: 'Temple City EventHub', price: 2500, rating: 4.6, reviews: 445, duration: 180, city: 'Madurai', image: 'https://picsum.photos/seed/13/400/250', category: 'Concert Tickets', lat: 9.918, lng: 78.105 },
 
   // Theni (2 services)
-  { id: 'svc-5', name: 'Spa Treatment', merchant: 'Valley Serenity Spa', price: 1800, rating: 4.9, reviews: 312, duration: 90, city: 'Theni', image: 'https://picsum.photos/seed/14/400/250', category: 'Wellness', lat: 10.012, lng: 77.478 },
-  { id: 'svc-6', name: 'Gym Session', merchant: 'Cardamom Hills FitZone', price: 399, rating: 4.5, reviews: 567, duration: 60, city: 'Theni', image: 'https://picsum.photos/seed/15/400/250', category: 'Fitness', lat: 10.005, lng: 77.462 },
+  { id: 'svc-5', name: 'Spa Treatment', merchant: 'Valley Serenity Spa', price: 1800, rating: 4.9, reviews: 312, duration: 90, city: 'Theni', image: 'https://picsum.photos/seed/14/400/250', category: 'Salon / Spa Appointment', lat: 10.012, lng: 77.478 },
+  { id: 'svc-6', name: 'Gym Session', merchant: 'Cardamom Hills FitZone', price: 399, rating: 4.5, reviews: 567, duration: 60, city: 'Theni', image: 'https://picsum.photos/seed/15/400/250', category: 'Gym / Yoga Slot Booking', lat: 10.005, lng: 77.462 },
 
   // Coimbatore (2 services)
-  { id: 'svc-7', name: 'Dance Class', merchant: 'Kovai Rhythm Dance', price: 699, rating: 4.8, reviews: 123, duration: 75, city: 'Coimbatore', image: 'https://picsum.photos/seed/16/400/250', category: 'Dance', lat: 11.015, lng: 76.958 },
-  { id: 'svc-8', name: 'Photography Session', merchant: 'Western Ghats ClickPro', price: 3500, rating: 4.7, reviews: 89, duration: 120, city: 'Coimbatore', image: 'https://picsum.photos/seed/17/400/250', category: 'Photography', lat: 11.002, lng: 76.938 },
+  { id: 'svc-7', name: 'Dance Class', merchant: 'Kovai Rhythm Dance', price: 699, rating: 4.8, reviews: 123, duration: 75, city: 'Coimbatore', image: 'https://picsum.photos/seed/16/400/250', category: 'Workshops / Classes', lat: 11.015, lng: 76.958 },
+  { id: 'svc-8', name: 'Photography Session', merchant: 'Western Ghats ClickPro', price: 3500, rating: 4.7, reviews: 89, duration: 120, city: 'Coimbatore', image: 'https://picsum.photos/seed/17/400/250', category: 'Workshops / Classes', lat: 11.002, lng: 76.938 },
 
   // Bangalore (2 services)
-  { id: 'svc-9', name: 'Music Lesson', merchant: 'Silicon Valley Melody', price: 800, rating: 4.6, reviews: 67, duration: 45, city: 'Bangalore', image: 'https://picsum.photos/seed/18/400/250', category: 'Music', lat: 12.975, lng: 77.595 },
-  { id: 'svc-10', name: 'Art Workshop', merchant: 'Cubbon ArtHouse', price: 1200, rating: 4.8, reviews: 145, duration: 90, city: 'Bangalore', image: 'https://picsum.photos/seed/19/400/250', category: 'Art', lat: 12.962, lng: 77.578 },
+  { id: 'svc-9', name: 'Music Lesson', merchant: 'Silicon Valley Melody', price: 800, rating: 4.6, reviews: 67, duration: 45, city: 'Bangalore', image: 'https://picsum.photos/seed/18/400/250', category: 'Workshops / Classes', lat: 12.975, lng: 77.595 },
+  { id: 'svc-10', name: 'Art Workshop', merchant: 'Cubbon ArtHouse', price: 1200, rating: 4.8, reviews: 145, duration: 90, city: 'Bangalore', image: 'https://picsum.photos/seed/19/400/250', category: 'Workshops / Classes', lat: 12.962, lng: 77.578 },
 
   // Mumbai (1 service)
-  { id: 'svc-11', name: 'Cooking Class', merchant: 'Marine Drive ChefTable', price: 1500, rating: 4.9, reviews: 201, duration: 150, city: 'Mumbai', image: 'https://picsum.photos/seed/20/400/250', category: 'Cooking', lat: 19.082, lng: 72.882 },
+  { id: 'svc-11', name: 'Cooking Class', merchant: 'Marine Drive ChefTable', price: 1500, rating: 4.9, reviews: 201, duration: 150, city: 'Mumbai', image: 'https://picsum.photos/seed/20/400/250', category: 'Workshops / Classes', lat: 19.082, lng: 72.882 },
 
   // Delhi (1 service)
-  { id: 'svc-12', name: 'Tennis Court Reservation', merchant: 'Connaught SportArena', price: 600, rating: 4.5, reviews: 334, duration: 60, city: 'Delhi', image: 'https://picsum.photos/seed/21/400/250', category: 'Sports', lat: 28.625, lng: 77.215 }
+  { id: 'svc-12', name: 'Tennis Court Reservation', merchant: 'Connaught SportArena', price: 600, rating: 4.5, reviews: 334, duration: 60, city: 'Delhi', image: 'https://picsum.photos/seed/21/400/250', category: 'Tennis Court', lat: 28.625, lng: 77.215 }
 ];
 
 export interface DynamicProvider {
@@ -89,6 +89,80 @@ export function getProvidersByCategory(categorySlug: string, categoryName: strin
   const nameSuffixes = ['Care', 'Studio', 'Pro', 'Express', 'Hub', 'Specialists'];
   const emojis = ['✨', '📍', '🔧', '⭐', '⚡', '🏥', '🔑', '🎯'];
 
+  // Realistic names based on category
+  const nameTemplates: Record<string, string[]> = {
+    temple: [
+      'Sri Kapaleeshwarar Temple',
+      'Arulmigu Meenakshi Amman Kovil',
+      'Sri Vadapalani Murugan Mandir',
+      'Lord Ganesha Vinayagar Temple',
+      'Sri Parthasarathy Temple',
+      'Marundeeswarar Shiva Kovil',
+      'Sri Ashtalakshmi Shrine',
+      'Sai Baba Prayer Center',
+      'Arulmigu Ekambareswarar Temple',
+      'Sri Kalikambal Alayam',
+      'Sri Velleeswarar Temple',
+      'Sri Mangadu Kamakshi Kovil'
+    ],
+    shop: [
+      'Saravana Super Store',
+      'Nilgiris Grocery & Fresh Mart',
+      'Reliance Smart Bazaar',
+      'Ganesh Provisions & General Shop',
+      'Pazhamudir Nilayam Fruits',
+      'Metro Traders & Stationers',
+      'Organic Harvest Daily Mart',
+      'Vasanth & Co Electronics',
+      'Chennai Silks Fashion Mall',
+      'Daily Needs Supermarket',
+      'Nalli Silks Emporium',
+      'Local Corner Grocery'
+    ],
+    hotels: [
+      'The Grand Residency Suites',
+      'Taj Gateway Royal Plaza',
+      'Royal Palace Premium Inn',
+      'Fortune Park Boutique Hotel',
+      'Classic Heritage Resort',
+      'Park Hyatt Residency',
+      'The Leela Palace Hotel',
+      'Radisson Blu Plaza',
+      'Courtyard Marriott Inn',
+      'Trident Executive Hotel',
+      'Ginger Premium Stay',
+      'Heritage Inn Rooms'
+    ],
+    dining: [
+      'Anjappar Chettinad Restaurant',
+      'Saravana Bhavan Pure Veg',
+      'Sangeetha Veg Restaurant',
+      'The Spice Route Cafe & Bistro',
+      'Coastal Flavors Seafood Grill',
+      'Dindigul Thalappakatti Biryani',
+      'The Grand Temple Dine',
+      'Copper Chimney Fine Dining',
+      'Barbeque Nation Buffet',
+      'Cafe Coffee Day Elite',
+      'Little Italy Pizzeria',
+      'Cream Centre Desserts'
+    ]
+  };
+
+  const categoryEmojis: Record<string, string> = {
+    temple: '🛕',
+    shop: '🛍️',
+    hotels: '🏨',
+    dining: '🍴',
+    salons: '💇',
+    doctor: '🏥',
+    cabs: '🚖',
+    'football-turf': '⚽',
+    movies: '🎥',
+    plumber: '🔧',
+    electrician: '⚡',
+  };
+
   // Base coordinates mapping for cities
   const cityCoords: Record<string, { lat: number; lng: number }> = {
     chennai: { lat: 13.0827, lng: 80.2707 },
@@ -101,7 +175,8 @@ export function getProvidersByCategory(categorySlug: string, categoryName: strin
   };
   const base = cityCoords[activeCity.toLowerCase()] || cityCoords.chennai;
   
-  return Array.from({ length: 5 }, (_, i) => {
+  // Increase from 5 to 12 mock items per category to create a highly populated map
+  return Array.from({ length: 12 }, (_, i) => {
     const s = hash + i;
     const rating = parseFloat((4.2 + seededRandom(s) * 0.75).toFixed(1));
     const reviews = Math.floor(seededRandom(s + 1) * 350) + 15;
@@ -110,10 +185,20 @@ export function getProvidersByCategory(categorySlug: string, categoryName: strin
     const openH = Math.floor(seededRandom(s + 4) * 3) + 8;
     const closeH = Math.floor(seededRandom(s + 5) * 4) + 6;
 
-    const suffix = nameSuffixes[(Math.abs(hash) + i) % nameSuffixes.length];
-    const providerName = `${categoryName} ${suffix}`;
+    // Determine realistic name based on templates
+    let providerName = '';
+    const templates = nameTemplates[categorySlug];
+    if (templates && templates[i % templates.length]) {
+      providerName = templates[i % templates.length];
+    } else {
+      const suffix = nameSuffixes[(Math.abs(hash) + i) % nameSuffixes.length];
+      providerName = `${categoryName} ${suffix}`;
+    }
+
     const providerSlug = `${categorySlug}-${i + 1}`;
-    const emoji = emojis[(Math.abs(hash) + i) % emojis.length];
+    
+    // Determine realistic emoji
+    const emoji = categoryEmojis[categorySlug] || emojis[(Math.abs(hash) + i) % emojis.length];
 
     // Add slightly offset coordinates for dynamic providers in this city
     const offsetLat = base.lat + (seededRandom(s + 9) - 0.5) * 0.1;
@@ -221,9 +306,9 @@ export function getServiceById(id: string): MockService | null {
   if (found) return found;
 
   const apolloServices = [
-    { id: 's1', name: 'Root Canal Treatment', price: 3500, duration: 60, city: 'Chennai', image: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&auto=format&fit=crop&q=60', category: 'Dental', merchant: 'Apollo Dental Care' },
-    { id: 's2', name: 'Dental Braces Consultation', price: 500, duration: 30, city: 'Chennai', image: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&auto=format&fit=crop&q=60', category: 'Dental', merchant: 'Apollo Dental Care' },
-    { id: 's3', name: 'Teeth Whitening & Bleaching', price: 2500, duration: 45, city: 'Chennai', image: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&auto=format&fit=crop&q=60', category: 'Dental', merchant: 'Apollo Dental Care' }
+    { id: 's1', name: 'Root Canal Treatment', price: 3500, duration: 60, city: 'Chennai', image: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&auto=format&fit=crop&q=60', category: 'Doctor Appointment', merchant: 'Apollo Dental Care' },
+    { id: 's2', name: 'Dental Braces Consultation', price: 500, duration: 30, city: 'Chennai', image: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&auto=format&fit=crop&q=60', category: 'Doctor Appointment', merchant: 'Apollo Dental Care' },
+    { id: 's3', name: 'Teeth Whitening & Bleaching', price: 2500, duration: 45, city: 'Chennai', image: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&auto=format&fit=crop&q=60', category: 'Doctor Appointment', merchant: 'Apollo Dental Care' }
   ];
   const foundApollo = apolloServices.find(s => s.id === id);
   if (foundApollo) {
@@ -231,8 +316,8 @@ export function getServiceById(id: string): MockService | null {
   }
 
   const smileServices = [
-    { id: 's5', name: 'Teeth Cleaning', price: 800, duration: 30, city: 'Chennai', image: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&auto=format&fit=crop&q=60', category: 'Dental', merchant: 'Smile Dental Studio' },
-    { id: 's6', name: 'Composite Fillings', price: 1200, duration: 30, city: 'Chennai', image: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&auto=format&fit=crop&q=60', category: 'Dental', merchant: 'Smile Dental Studio' }
+    { id: 's5', name: 'Teeth Cleaning', price: 800, duration: 30, city: 'Chennai', image: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&auto=format&fit=crop&q=60', category: 'Doctor Appointment', merchant: 'Smile Dental Studio' },
+    { id: 's6', name: 'Composite Fillings', price: 1200, duration: 30, city: 'Chennai', image: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&auto=format&fit=crop&q=60', category: 'Doctor Appointment', merchant: 'Smile Dental Studio' }
   ];
   const foundSmile = smileServices.find(s => s.id === id);
   if (foundSmile) {

@@ -1,6 +1,7 @@
 'use client';
 
 import { useVendorStore, PersistedBooking, Prescription, DietPlan, WorkoutExercise } from '../../../lib/store';
+import { getVerticalFromCategory } from '../../../lib/categoryUtils';
 import { 
   Search, Filter, Clock, CheckCircle2, XCircle, ChevronRight, 
   User, Mail, Phone, FileText, ArrowLeft, Upload, Trash2, Plus, 
@@ -445,7 +446,7 @@ export default function BookingsPage() {
             {/* INDUSTRY SPECIFIC INTERACTIVE MODULES */}
             
             {/* 1. MEDICAL / DOCTOR CLINICAL MODULE */}
-            {currentMerchant.category === 'Dental' && (
+            {getVerticalFromCategory(currentMerchant.category) === 'Dental' && (
               <div className="space-y-6">
                 
                 {/* Vitals Summary Card */}
@@ -618,7 +619,7 @@ export default function BookingsPage() {
             )}
 
             {/* 2. FITNESS MODULE */}
-            {currentMerchant.category === 'Fitness' && (
+            {getVerticalFromCategory(currentMerchant.category) === 'Fitness' && (
               <div className="space-y-6">
                 
                 {/* Fitness Goal */}
@@ -749,7 +750,7 @@ export default function BookingsPage() {
             )}
 
             {/* 3. BEAUTY SALON MODULE */}
-            {currentMerchant.category === 'Salon' && (
+            {getVerticalFromCategory(currentMerchant.category) === 'Salon' && (
               <div className="space-y-6">
                 
                 {/* Styling preferences and parameters */}
@@ -843,7 +844,7 @@ export default function BookingsPage() {
             )}
 
             {/* 4. FINE DINING MODULE */}
-            {currentMerchant.category === 'Dining' && (
+            {getVerticalFromCategory(currentMerchant.category) === 'Dining' && (
               <div className="space-y-6">
                 
                 {/* Table assignment and dietary restrictions */}

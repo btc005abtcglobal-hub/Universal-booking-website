@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ['itchy-bats-roll.loca.lt', '*.loca.lt', '*.lhr.life', 'localhost.run'],
   images: {
     remotePatterns: [
       {
@@ -14,10 +15,11 @@ const nextConfig: NextConfig = {
     ],
   },
   async rewrites() {
+    const backendUrl = process.env.BACKEND_API_URL || 'http://localhost:4500';
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:4500/api/:path*',
+        destination: `${backendUrl}/api/:path*`,
       },
     ];
   },

@@ -92,14 +92,6 @@ function TracksContent() {
     setActiveType((prev) => (prev !== type ? type : prev));
   }, [searchParams, mounted]);
 
-  if (!mounted) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-[color:var(--color-surface)]">
-        <div className="h-8 w-8 border-4 border-[color:var(--color-primary)] border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
-
   // Local console inputs (when no parameters are active)
   const [localNumber, setLocalNumber] = useState('');
   const [localType, setLocalType] = useState<'flight' | 'train' | 'bus' | 'cab'>('train');
@@ -259,6 +251,14 @@ function TracksContent() {
 
   const staff = activeType ? GET_STAFF_INFO(activeType) : null;
   const waypoints = activeType ? GET_WAYPOINTS(activeType) : [];
+
+  if (!mounted) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-[color:var(--color-surface)]">
+        <div className="h-8 w-8 border-4 border-[color:var(--color-primary)] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <>

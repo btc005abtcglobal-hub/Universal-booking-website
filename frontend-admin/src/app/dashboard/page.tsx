@@ -1,6 +1,7 @@
 'use client';
 
 import { useVendorStore } from '../../lib/store';
+import { getVerticalFromCategory } from '../../lib/categoryUtils';
 import { 
   TrendingUp, Users, Calendar, IndianRupee, Clock, CheckCircle2, 
   Stethoscope, Scissors, Dumbbell, Utensils, AlertTriangle, 
@@ -56,7 +57,7 @@ export default function DashboardPage() {
 
   // Render Industry Specific KPI widgets
   const renderKPIs = () => {
-    switch (currentMerchant.category) {
+    switch (getVerticalFromCategory(currentMerchant.category)) {
       case 'Dental':
         return [
           { label: 'Platform Revenue', value: `₹${totalEarnings.toLocaleString()}`, change: 'Consultations', icon: IndianRupee, color: 'from-sky-500 to-indigo-600' },
@@ -128,7 +129,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Industry Custom Dashboard Sections */}
-      {currentMerchant.category === 'Dental' && (
+      {getVerticalFromCategory(currentMerchant.category) === 'Dental' && (
         <div className="grid gap-6 lg:grid-cols-5">
           {/* Waiting Room Patient Vitals Monitor */}
           <div className="lg:col-span-3 rounded-2xl border border-white/5 bg-white/[0.01] p-6 space-y-4">
@@ -197,7 +198,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {currentMerchant.category === 'Fitness' && (
+      {getVerticalFromCategory(currentMerchant.category) === 'Fitness' && (
         <div className="grid gap-6 lg:grid-cols-5">
           {/* Caloric & Macronutrient Distribution Panel */}
           <div className="lg:col-span-3 rounded-2xl border border-white/5 bg-white/[0.01] p-6 space-y-6">
@@ -271,7 +272,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {currentMerchant.category === 'Salon' && (
+      {getVerticalFromCategory(currentMerchant.category) === 'Salon' && (
         <div className="grid gap-6 lg:grid-cols-5">
           {/* VIP Client preference files */}
           <div className="lg:col-span-3 rounded-2xl border border-white/5 bg-white/[0.01] p-6 space-y-4">
@@ -326,7 +327,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {currentMerchant.category === 'Dining' && (
+      {getVerticalFromCategory(currentMerchant.category) === 'Dining' && (
         <div className="grid gap-6 lg:grid-cols-5">
           {/* Restaurant Live Table Status Map */}
           <div className="lg:col-span-3 rounded-2xl border border-white/5 bg-white/[0.01] p-6 space-y-4">

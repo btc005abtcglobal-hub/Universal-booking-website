@@ -19,7 +19,7 @@ export function SideNav() {
   const pathname = usePathname();
 
   return (
-    <aside className="sidebar-desktop h-screen w-72 fixed left-0 top-0 pt-24 glass flex flex-col gap-2 p-6 z-40 overflow-y-auto">
+    <aside className="sidebar-desktop h-screen w-72 fixed left-0 top-0 glass flex flex-col gap-2 p-6 z-40 overflow-y-auto">
       {/* Section label */}
       <div className="mb-4 px-2">
         <h3 className="label-upper text-[var(--on-surface-variant)]">Categories</h3>

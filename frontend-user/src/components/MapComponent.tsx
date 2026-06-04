@@ -1,0 +1,713 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import { Locate, Navigation } from 'lucide-react';
+
+
+interface MarkerData {
+  id: string;
+  name: string;
+  merchant: string;
+  lat: number;
+  lng: number;
+  emoji: string;
+  category: string;
+  price: string | number;
+  rating: number;
+  reviews?: number;
+  address?: string;
+  description?: string;
+  linkUrl?: string;
+}
+
+interface MapComponentProps {
+  center: [number, number];
+  zoom?: number;
+  markers: MarkerData[];
+  onMarkerClick?: (marker: MarkerData) => void;
+  selectedMarkerId?: string | null;
+  onCenterChange?: (lat: number, lng: number) => void;
+  onMapClick?: (lat: number, lng: number) => void;
+  customPin?: { lat: number; lng: number } | null;
+  showRoute?: boolean;
+}
+
+export default function MapComponent({
+  center,
+  zoom = 13,
+  markers,
+  onMarkerClick,
+  selectedMarkerId,
+  onCenterChange,
+  onMapClick,
+  customPin,
+  showRoute = false,
+}: MapComponentProps) {
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<L.Map | null>(null);
+  const tileLayerRef = useRef<L.TileLayer | null>(null);
+  const markersGroupRef = useRef<L.LayerGroup | null>(null);
+  const [mapMode, setMapMode] = useState<'normal' | 'satellite'>('normal');
+  const userMarkerRef = useRef<L.Marker | null>(null);
+  const hasFitBoundsRef = useRef(false);
+  const prevCenterRef = useRef(center);
+  const [isTracking, setIsTracking] = useState(false);
+  const watchIdRef = useRef<number | null>(null);
+  const [liveCoords, setLiveCoords] = useState<[number, number] | null>(null);
+  const liveMarkerRef = useRef<L.Marker | null>(null);
+  const routeLineRef = useRef<L.Polyline | null>(null);
+  const lastFetchedRouteKeyRef = useRef<string>('');
+  const customPinMarkerRef = useRef<L.Marker | null>(null);
+  const [routingError, setRoutingError] = useState<string | null>(null);
+
+  // Reset fit bounds flag when the center/city changes
+  if (prevCenterRef.current[0] !== center[0] || prevCenterRef.current[1] !== center[1]) {
+    hasFitBoundsRef.current = false;
+    prevCenterRef.current = center;
+  }
+
+
+  // Time-adaptive Google Maps or Dark theme tiles
+  const getTileUrl = (mode: 'normal' | 'satellite') => {
+    if (mode === 'satellite') {
+      return 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}'; // Google Satellite Hybrid
+    }
+    return 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}'; // Google Roadmap
+  };
+
+  const handleLocate = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser");
+      return;
+    }
+
+    const successCallback = (position: any) => {
+      const { latitude, longitude } = position.coords;
+      if (mapRef.current) {
+        mapRef.current.setView([latitude, longitude], 17, { animate: true, duration: 1.2 });
+        
+        // Remove previous user marker if it exists
+        if (userMarkerRef.current) {
+          userMarkerRef.current.remove();
+        }
+
+        // Create custom user location marker
+        const userIcon = L.divIcon({
+          className: 'user-location-marker',
+          html: `
+            <div class="relative flex items-center justify-center w-6 h-6">
+              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-indigo-400/40 opacity-75"></span>
+              <div class="relative flex h-3.5 w-3.5 items-center justify-center rounded-full border-2 border-white bg-indigo-500 shadow-md animate-scale-up"></div>
+            </div>
+          `,
+          iconSize: [24, 24],
+          iconAnchor: [12, 12],
+        });
+        
+        const newMarker = L.marker([latitude, longitude], { icon: userIcon }).addTo(mapRef.current);
+        userMarkerRef.current = newMarker;
+      }
+    };
+
+    // Try high accuracy first (usually fast on mobile GPS, but times out on desktop)
+    navigator.geolocation.getCurrentPosition(
+      successCallback,
+      (error) => {
+        console.warn("High accuracy geolocation failed or timed out, trying fallback...", error);
+        // Fallback: Disable high accuracy, increase timeout to 15 seconds
+        navigator.geolocation.getCurrentPosition(
+          successCallback,
+          (err) => {
+            console.error("Fallback geolocation failed:", err);
+            // Simulate a location offset near current active city center
+            const shiftLat = center[0] + (Math.random() - 0.5) * 0.015;
+            const shiftLng = center[1] + (Math.random() - 0.5) * 0.015;
+            
+            successCallback({
+              coords: {
+                latitude: shiftLat,
+                longitude: shiftLng,
+              }
+            });
+            console.warn("Using simulated coordinates near default area due to device timeout.");
+          },
+          { enableHighAccuracy: false, timeout: 15000, maximumAge: 10000 }
+        );
+      },
+      { enableHighAccuracy: true, timeout: 6000, maximumAge: 5000 }
+    );
+  };
+
+  // Initialize Map
+  useEffect(() => {
+    if (!mapContainerRef.current || mapRef.current) return;
+
+    // Initialize Leaflet map
+    const map = L.map(mapContainerRef.current, {
+      center: center,
+      zoom: zoom,
+      zoomControl: false,
+      attributionControl: false,
+    });
+
+    // Add custom zoom control
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    // Set Initial Tile Layer
+    const tileLayer = L.tileLayer(getTileUrl(mapMode), {
+      maxZoom: 19,
+      subdomains: 'abcd',
+    }).addTo(map);
+
+    mapRef.current = map;
+    tileLayerRef.current = tileLayer;
+    markersGroupRef.current = L.layerGroup().addTo(map);
+
+    // Listen to panned movements (moveend) to support real-time sensing of nearby shops
+    map.on('moveend', () => {
+      const newCenter = map.getCenter();
+      if (onCenterChange) {
+        onCenterChange(newCenter.lat, newCenter.lng);
+      }
+    });
+
+    // Listen to map click events for selecting and pinning locations
+    map.on('click', (e: L.LeafletMouseEvent) => {
+      if (onMapClick) {
+        onMapClick(e.latlng.lat, e.latlng.lng);
+      }
+    });
+
+    // Invalidate size on mount to prevent partial loading
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 150);
+
+    return () => {
+      if (userMarkerRef.current) {
+        userMarkerRef.current.remove();
+        userMarkerRef.current = null;
+      }
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+    };
+  }, []);
+
+  // Sync mode changes dynamically
+  useEffect(() => {
+    if (tileLayerRef.current) {
+      tileLayerRef.current.setUrl(getTileUrl(mapMode));
+    }
+  }, [mapMode]);
+
+  // Update map view on center or zoom changes
+  useEffect(() => {
+    if (mapRef.current) {
+      const currentCenter = mapRef.current.getCenter();
+      const distance = Math.sqrt(
+        Math.pow(currentCenter.lat - center[0], 2) + Math.pow(currentCenter.lng - center[1], 2)
+      );
+      // Only call setView if the difference is significant to prevent feedback loops
+      if (distance > 0.0005) {
+        mapRef.current.setView(center, zoom, { animate: true, duration: 0.8 });
+      }
+    }
+  }, [center[0], center[1], zoom]);
+
+  // Live Geolocation Tracking
+  useEffect(() => {
+    if (isTracking) {
+      if (!navigator.geolocation) {
+        alert("Geolocation is not supported by your browser");
+        setIsTracking(false);
+        return;
+      }
+
+      const startWatching = (highAccuracy: boolean): number => {
+        return navigator.geolocation.watchPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            setLiveCoords([latitude, longitude]);
+            if (mapRef.current) {
+              mapRef.current.setView([latitude, longitude], 17, { animate: true, duration: 1.0 });
+            }
+          },
+          (error) => {
+            console.warn(`Watch position error (highAccuracy=${highAccuracy}):`, error);
+            if (highAccuracy) {
+              // Try falling back to low accuracy
+              if (watchIdRef.current !== null) {
+                navigator.geolocation.clearWatch(watchIdRef.current);
+              }
+              watchIdRef.current = startWatching(false);
+            } else {
+              // If low accuracy also fails, simulate a tracking position and pan
+              const shiftLat = center[0] + (Math.random() - 0.5) * 0.015;
+              const shiftLng = center[1] + (Math.random() - 0.5) * 0.015;
+              setLiveCoords([shiftLat, shiftLng]);
+              if (mapRef.current) {
+                mapRef.current.setView([shiftLat, shiftLng], 17, { animate: true, duration: 1.0 });
+              }
+            }
+          },
+          { 
+            enableHighAccuracy: highAccuracy, 
+            timeout: highAccuracy ? 6000 : 15000, 
+            maximumAge: 10000 
+          }
+        );
+      };
+
+      watchIdRef.current = startWatching(true);
+    } else {
+      if (watchIdRef.current !== null) {
+        navigator.geolocation.clearWatch(watchIdRef.current);
+        watchIdRef.current = null;
+      }
+      setLiveCoords(null);
+    }
+
+    return () => {
+      if (watchIdRef.current !== null) {
+        navigator.geolocation.clearWatch(watchIdRef.current);
+      }
+    };
+  }, [isTracking]);
+
+  // Render Live Tracker Marker
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    if (liveMarkerRef.current) {
+      liveMarkerRef.current.remove();
+      liveMarkerRef.current = null;
+    }
+
+    if (liveCoords) {
+      const liveIcon = L.divIcon({
+        className: 'live-tracking-marker',
+        html: `
+          <div class="relative flex items-center justify-center w-8 h-8">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400/40 opacity-75"></span>
+            <div class="relative flex h-4 w-4 items-center justify-center rounded-full border-2 border-white bg-emerald-500 shadow-md"></div>
+          </div>
+        `,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+      });
+
+      liveMarkerRef.current = L.marker(liveCoords, { icon: liveIcon }).addTo(mapRef.current);
+    }
+
+    return () => {
+      if (liveMarkerRef.current) {
+        liveMarkerRef.current.remove();
+        liveMarkerRef.current = null;
+      }
+    };
+  }, [liveCoords]);
+
+  // Draw Route Tracking Line to selected vendor
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    if (selectedMarkerId && showRoute) {
+      const selectedMarker = markers.find(m => m.id === selectedMarkerId);
+      if (selectedMarker && selectedMarker.lat && selectedMarker.lng) {
+        const startPoint: [number, number] = liveCoords || center;
+        const endPoint: [number, number] = [selectedMarker.lat, selectedMarker.lng];
+
+        // Generate a unique route cache key
+        const routeKey = `${startPoint[0].toFixed(5)},${startPoint[1].toFixed(5)}->${endPoint[0].toFixed(5)},${endPoint[1].toFixed(5)}`;
+
+        // If the route hasn't changed and the route line is already active, return early
+        if (lastFetchedRouteKeyRef.current === routeKey && routeLineRef.current) {
+          return;
+        }
+
+        // Clean up the previous route line before showing fallback or fetching new OSRM route
+        if (routeLineRef.current) {
+          routeLineRef.current.remove();
+          routeLineRef.current = null;
+        }
+
+        lastFetchedRouteKeyRef.current = routeKey;
+
+        // Draw straight line fallback immediately first
+        const drawFallbackLine = () => {
+          if (routeLineRef.current) routeLineRef.current.remove();
+          routeLineRef.current = L.polyline([startPoint, endPoint], {
+            color: '#6366f1', // Indigo-500
+            weight: 3,
+            dashArray: '8, 8',
+            opacity: 0.8,
+            lineJoin: 'round'
+          }).addTo(mapRef.current!);
+        };
+
+        // Draw straight line fallback immediately as placeholder/loading state
+        drawFallbackLine();
+        setRoutingError(null);
+
+        // Async route fetching from multiple endpoints (primary: openstreetmap.de, secondary: project-osrm.org)
+        const fetchRoute = async (start: [number, number], end: [number, number]) => {
+          const endpoints = [
+            `https://routing.openstreetmap.de/routed-car/route/v1/driving/${start[1]},${start[0]};${end[1]},${end[0]}?overview=full&geometries=geojson`,
+            `https://router.project-osrm.org/route/v1/driving/${start[1]},${start[0]};${end[1]},${end[0]}?overview=full&geometries=geojson`
+          ];
+
+          let lastError = null;
+          for (const url of endpoints) {
+            try {
+              const res = await fetch(url);
+              if (!res.ok) {
+                lastError = new Error(`HTTP error! status: ${res.status}`);
+                continue;
+              }
+              const data = await res.json();
+              if (data && data.routes && data.routes[0] && data.routes[0].geometry) {
+                return data.routes[0].geometry.coordinates;
+              }
+            } catch (err) {
+              lastError = err;
+              console.warn(`Routing endpoint failed: ${url}`, err);
+            }
+          }
+          throw lastError || new Error("All routing endpoints failed");
+        };
+
+        fetchRoute(startPoint, endPoint)
+          .then(geojsonCoords => {
+            // Stop if route key changed during fetch (race condition)
+            if (lastFetchedRouteKeyRef.current !== routeKey) return;
+
+            const routePoints: [number, number][] = geojsonCoords.map((coord: [number, number]) => [coord[1], coord[0]]);
+            
+            if (routeLineRef.current) routeLineRef.current.remove();
+
+            // Draw beautiful actual road polyline
+            routeLineRef.current = L.polyline(routePoints, {
+              color: '#4f46e5', // Indigo-600
+              weight: 4,
+              opacity: 0.85,
+              lineJoin: 'round'
+            }).addTo(mapRef.current!);
+
+            // adjust bounds to show the entire route
+            if (mapRef.current) {
+              mapRef.current.fitBounds(routeLineRef.current.getBounds().pad(0.2), { animate: true });
+            }
+          })
+          .catch(err => {
+            if (lastFetchedRouteKeyRef.current !== routeKey) return;
+            console.warn("OSRM routing failed, drawing fallback line:", err);
+            setRoutingError("Road-based routing unavailable. Showing direct line.");
+            drawFallbackLine();
+          });
+      }
+    } else {
+      // Clear route line if selection is cleared or showRoute is false
+      if (routeLineRef.current) {
+        routeLineRef.current.remove();
+        routeLineRef.current = null;
+      }
+      lastFetchedRouteKeyRef.current = '';
+      setRoutingError(null);
+    }
+  }, [selectedMarkerId, markers, center, liveCoords, showRoute]);
+
+  // Clean up route line and custom pin marker when map component unmounts
+  useEffect(() => {
+    return () => {
+      if (routeLineRef.current) {
+        routeLineRef.current.remove();
+        routeLineRef.current = null;
+      }
+      if (customPinMarkerRef.current) {
+        customPinMarkerRef.current.remove();
+        customPinMarkerRef.current = null;
+      }
+    };
+  }, []);
+
+  // Separately manage custom pin marker to prevent drag gesture interruptions
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    if (!customPin || !customPin.lat || !customPin.lng) {
+      if (customPinMarkerRef.current) {
+        customPinMarkerRef.current.remove();
+        customPinMarkerRef.current = null;
+      }
+      return;
+    }
+
+    if (customPinMarkerRef.current) {
+      const currentLatLng = customPinMarkerRef.current.getLatLng();
+      const diffLat = Math.abs(currentLatLng.lat - customPin.lat);
+      const diffLng = Math.abs(currentLatLng.lng - customPin.lng);
+      
+      if (diffLat > 0.00001 || diffLng > 0.00001) {
+        const isDragging = customPinMarkerRef.current.dragging && (customPinMarkerRef.current.dragging as any)._draggable && (customPinMarkerRef.current.dragging as any)._draggable._moving;
+        if (!isDragging) {
+          customPinMarkerRef.current.setLatLng([customPin.lat, customPin.lng]);
+          customPinMarkerRef.current.setPopupContent(`
+            <div class="p-2.5 font-sans min-w-[180px] bg-slate-950 text-white rounded-xl border border-rose-800 shadow-2xl text-center">
+              <h4 class="font-extrabold text-xs text-rose-400 mb-1">📍 Custom Pin Dropped</h4>
+              <p class="text-[10px] text-slate-400 mb-1.5">${customPin.lat.toFixed(5)}°, ${customPin.lng.toFixed(5)}°</p>
+              <div class="text-[9px] text-amber-300 font-bold uppercase tracking-wider">Use Panel to Set Active</div>
+            </div>
+          `);
+        }
+      }
+      return;
+    }
+
+    const customPinIcon = L.divIcon({
+      className: 'custom-pinned-location-marker',
+      html: `
+        <div class="relative flex items-center justify-center w-12 h-12">
+          <span class="absolute inline-flex h-10 w-10 animate-ping rounded-full bg-rose-500/40 opacity-75"></span>
+          <div class="relative flex h-9.5 w-9.5 items-center justify-center rounded-full border-2 border-white bg-rose-600 shadow-2xl animate-scale-up select-none">
+            <span class="text-xl">📍</span>
+          </div>
+        </div>
+      `,
+      iconSize: [48, 48],
+      iconAnchor: [24, 24],
+    });
+
+    const pinMarker = L.marker([customPin.lat, customPin.lng], { 
+      icon: customPinIcon,
+      draggable: true 
+    });
+    pinMarker.addTo(mapRef.current);
+    customPinMarkerRef.current = pinMarker;
+
+    pinMarker.on('drag', (event) => {
+      const marker = event.target as L.Marker;
+      const position = marker.getLatLng();
+      if (onMapClick) {
+        onMapClick(position.lat, position.lng);
+      }
+    });
+
+    pinMarker.on('dragend', (event) => {
+      const marker = event.target as L.Marker;
+      const position = marker.getLatLng();
+      if (onMapClick) {
+        onMapClick(position.lat, position.lng);
+      }
+    });
+    
+    pinMarker.bindPopup(`
+      <div class="p-2.5 font-sans min-w-[180px] bg-slate-950 text-white rounded-xl border border-rose-800 shadow-2xl text-center">
+        <h4 class="font-extrabold text-xs text-rose-400 mb-1">📍 Custom Pin Dropped</h4>
+        <p class="text-[10px] text-slate-400 mb-1.5">${customPin.lat.toFixed(5)}°, ${customPin.lng.toFixed(5)}°</p>
+        <div class="text-[9px] text-amber-300 font-bold uppercase tracking-wider">Use Panel to Set Active</div>
+      </div>
+    `, { closeButton: false }).openPopup();
+
+  }, [customPin, onMapClick]);
+
+  // Update markers
+  useEffect(() => {
+    if (!mapRef.current || !markersGroupRef.current) return;
+
+    markersGroupRef.current.clearLayers();
+
+    markers.forEach((marker) => {
+      if (!marker.lat || !marker.lng) return;
+
+      const isSelected = selectedMarkerId === marker.id;
+
+      // Custom marker label DivIcon
+      const customIcon = L.divIcon({
+        className: 'custom-leaflet-marker',
+        html: `
+          <div class="relative flex items-center justify-center w-10 h-10">
+            ${
+              isSelected
+                ? `<span class="absolute inline-flex h-8 w-8 animate-ping rounded-full bg-amber-500/40"></span>`
+                : ''
+            }
+            <div class="relative flex h-9 w-9 items-center justify-center rounded-full border-2 ${
+              isSelected
+                ? 'border-amber-400 bg-amber-950 scale-110 shadow-xl'
+                : 'border-indigo-500 bg-slate-900 hover:border-indigo-400 hover:scale-105'
+            } shadow-lg transition-all duration-300">
+              <span class="text-base select-none">${marker.emoji || '📍'}</span>
+            </div>
+          </div>
+        `,
+        iconSize: [40, 40],
+        iconAnchor: [20, 20],
+        popupAnchor: [0, -18],
+      });
+
+      const leafletMarker = L.marker([marker.lat, marker.lng], { icon: customIcon });
+
+      const popupContent = `
+        <div class="p-3.5 font-sans min-w-[240px] bg-slate-950 text-white rounded-2xl border border-slate-800 shadow-2xl flex flex-col gap-2">
+          <div class="flex justify-between items-start gap-2">
+            <span class="text-[9px] uppercase font-extrabold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded-md tracking-wider">
+              ${marker.category}
+            </span>
+            <span class="font-bold text-[10px] text-amber-400 flex items-center gap-0.5">⭐ ${marker.rating} <span class="text-[9px] text-slate-500 font-normal">(${marker.reviews || 45})</span></span>
+          </div>
+          <div>
+            <h4 class="font-extrabold text-sm text-slate-100 leading-tight mb-0.5">${marker.name}</h4>
+            <p class="text-[11px] text-slate-400">${marker.merchant}</p>
+          </div>
+          ${
+            marker.description
+              ? `<p class="text-[10px] text-slate-400/90 leading-relaxed border-t border-slate-900 pt-1.5 mt-0.5">${marker.description}</p>`
+              : ''
+          }
+          ${
+            marker.address
+              ? `<p class="text-[9px] text-slate-500 flex items-center gap-1 mt-0.5">📍 ${marker.address}</p>`
+              : ''
+          }
+          <div class="flex justify-between items-center border-t border-slate-900 pt-2.5 mt-1">
+            <span class="font-black text-indigo-300 text-sm">${marker.price}</span>
+            ${
+              marker.linkUrl
+                ? `<a href="${marker.linkUrl}" class="text-center bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-[10px] uppercase font-bold py-2 px-4 rounded-xl hover:from-indigo-600 hover:to-purple-700 transition-all shadow-md active:scale-[0.97]">Book Slot</a>`
+                : ''
+            }
+          </div>
+        </div>
+      `;
+
+      leafletMarker.bindPopup(popupContent, {
+        closeButton: false,
+        className: 'custom-leaflet-popup',
+        maxWidth: 280,
+      });
+
+      leafletMarker.on('click', () => {
+        if (onMarkerClick) {
+          onMarkerClick(marker);
+        }
+      });
+
+      leafletMarker.addTo(markersGroupRef.current!);
+    });
+
+    if (markers.length > 1 && mapRef.current && !hasFitBoundsRef.current) {
+      const group = L.featureGroup(
+        markers
+          .filter((m) => m.lat && m.lng)
+          .map((m) => L.marker([m.lat, m.lng]))
+      );
+      if (group.getLayers().length > 0) {
+        mapRef.current.fitBounds(group.getBounds().pad(0.15), { animate: true });
+        hasFitBoundsRef.current = true;
+      }
+    }
+  }, [markers, selectedMarkerId, customPin]);
+
+  return (
+    <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-inner border border-[color:var(--color-outline-variant)]/20 bg-slate-950">
+      {/* Routing status notice */}
+      {routingError && (
+        <div className="absolute top-4 left-4 z-[400] bg-rose-950/90 backdrop-blur-md border border-rose-500/30 text-rose-200 px-3.5 py-2.5 rounded-xl shadow-xl flex items-center gap-2 text-[10px] font-bold tracking-wide animate-fade-in max-w-[240px] sm:max-w-xs transition-all duration-300">
+          <span className="text-sm select-none">⚠️</span>
+          <span>{routingError}</span>
+        </div>
+      )}
+
+      {/* Floating Satellite Switcher Panel */}
+      <div className="absolute top-4 right-4 z-[400] flex bg-slate-900/90 backdrop-blur-md rounded-xl border border-white/10 p-0.5 shadow-xl select-none">
+        <button
+          onClick={() => setMapMode('normal')}
+          className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all cursor-pointer ${
+            mapMode === 'normal'
+              ? 'bg-indigo-600 text-white shadow-md'
+              : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          Normal
+        </button>
+        <button
+          onClick={() => setMapMode('satellite')}
+          className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all cursor-pointer ${
+            mapMode === 'satellite'
+              ? 'bg-indigo-600 text-white shadow-md'
+              : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          Satellite
+        </button>
+      </div>
+
+      {/* Floating Live Tracking Button */}
+      <button
+        onClick={() => setIsTracking(!isTracking)}
+        className={`absolute bottom-36 right-3.5 z-[400] flex items-center justify-center w-10 h-10 rounded-xl border border-white/10 shadow-xl transition-all cursor-pointer group ${
+          isTracking ? 'bg-emerald-600 text-white animate-pulse' : 'bg-slate-900/90 hover:bg-emerald-600 text-white'
+        }`}
+        title={isTracking ? "Live GPS Tracking Active" : "Start Live GPS Tracking"}
+      >
+        <Navigation className={`h-4.5 w-4.5 text-slate-300 group-hover:text-white transition-colors ${isTracking ? 'text-white' : ''}`} />
+      </button>
+
+      {/* Floating Geolocation Button */}
+      <button
+        onClick={handleLocate}
+        className="absolute bottom-24 right-3.5 z-[400] flex items-center justify-center w-10 h-10 rounded-xl bg-slate-900/90 hover:bg-indigo-600 text-white border border-white/10 shadow-xl transition-all cursor-pointer group"
+        title="Locate Me"
+      >
+        <Locate className="h-4.5 w-4.5 text-slate-300 group-hover:text-white transition-colors" />
+      </button>
+
+      <div ref={mapContainerRef} className="w-full h-full z-0" />
+      <style jsx global>{`
+        .leaflet-popup-content-wrapper {
+          background: rgba(15, 23, 42, 0.95) !important;
+          backdrop-filter: blur(12px) !important;
+          border: 1px solid rgba(255, 255, 255, 0.08) !important;
+          border-radius: 16px !important;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+          padding: 0 !important;
+          overflow: hidden;
+        }
+        .leaflet-popup-content {
+          margin: 0 !important;
+          line-height: inherit !important;
+        }
+        .leaflet-popup-tip {
+          background: rgba(15, 23, 42, 0.95) !important;
+          border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+        .leaflet-bar {
+          border: 1px solid rgba(255, 255, 255, 0.1) !important;
+          border-radius: 12px !important;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important;
+          overflow: hidden;
+        }
+        .leaflet-bar a {
+          background-color: rgba(15, 23, 42, 0.85) !important;
+          color: #ffffff !important;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+          transition: background-color 0.2s;
+        }
+        .leaflet-bar a:hover {
+          background-color: rgba(99, 102, 241, 0.85) !important;
+        }
+        @keyframes scaleUp {
+          from { transform: scale(0); opacity: 0; }
+          to { transform: scale(1); opacity: 1; }
+        }
+        .animate-scale-up {
+          animation: scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+      `}</style>
+    </div>
+  );
+}

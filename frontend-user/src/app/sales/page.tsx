@@ -850,7 +850,7 @@ export default function SalesAdminPage() {
                   </div>
                 </div>
 
-                <div className="h-[200px] w-full rounded-2xl overflow-hidden border border-white/5 relative bg-slate-900/50">
+                <div className="h-[400px] w-full rounded-2xl overflow-hidden border border-white/5 relative bg-slate-900/50">
                   <MapComponent
                     center={[parseFloat(vendorLat) || 13.0827, parseFloat(vendorLng) || 80.2707]}
                     zoom={13}

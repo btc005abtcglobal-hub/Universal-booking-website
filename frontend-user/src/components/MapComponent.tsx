@@ -80,6 +80,7 @@ export default function MapComponent({
   const routePointsRef = useRef<[number, number][]>([]);
   const liveCoordsRef = useRef<[number, number] | null>(null);
   const headingRef = useRef<number>(0);
+  const prevZoomRef = useRef(zoom);
 
   const handleSimulateNavigation = () => {
     if (isSimulating) {
@@ -138,9 +139,14 @@ export default function MapComponent({
     }, 1000);
   };
 
-  // Reset fit bounds flag when the center/city changes
-  if (prevCenterRef.current[0] !== center[0] || prevCenterRef.current[1] !== center[1]) {
-    hasFitBoundsRef.current = false;
+  // Reset fit bounds flag when the center/city changes significantly (e.g. changing cities)
+  const distCenter = Math.sqrt(
+    Math.pow(prevCenterRef.current[0] - center[0], 2) + Math.pow(prevCenterRef.current[1] - center[1], 2)
+  );
+  if (distCenter > 0.0005) {
+    if (distCenter > 0.1) {
+      hasFitBoundsRef.current = false;
+    }
     prevCenterRef.current = center;
   }
 
@@ -312,12 +318,22 @@ export default function MapComponent({
   useEffect(() => {
     if (mapRef.current) {
       const currentCenter = mapRef.current.getCenter();
+      const currentZoom = mapRef.current.getZoom();
       const distance = Math.sqrt(
         Math.pow(currentCenter.lat - center[0], 2) + Math.pow(currentCenter.lng - center[1], 2)
       );
+      
+      const zoomChanged = prevZoomRef.current !== zoom;
+      prevZoomRef.current = zoom;
+
+      // If the distance is very large (> 0.1 degrees), it's likely a city fly-to/reset,
+      // so we should reset the zoom to the prop zoom. Otherwise, preserve user's zoom.
+      const isLargeDistance = distance > 0.1;
+
       // Only call setView if the difference is significant to prevent feedback loops
-      if (distance > 0.0005) {
-        mapRef.current.setView(center, zoom, { animate: true, duration: 0.8 });
+      if (distance > 0.0005 || zoomChanged) {
+        const targetZoom = (zoomChanged || isLargeDistance) ? zoom : currentZoom;
+        mapRef.current.setView(center, targetZoom, { animate: true, duration: 0.8 });
       }
     }
   }, [center[0], center[1], zoom]);
@@ -439,20 +455,29 @@ export default function MapComponent({
     };
   }, [liveCoords]);
 
-  // Draw Route Tracking Line to selected vendor
+  // Draw Route Tracking Line to selected vendor or custom pin
   useEffect(() => {
     if (!mapRef.current) return;
 
-    if (selectedMarkerId && showRoute) {
-      const selectedMarker = markers.find(m => m.id === selectedMarkerId);
-      if (selectedMarker && selectedMarker.lat && selectedMarker.lng) {
-        // If we are currently simulating, do not fetch/redraw the route line
-        if (isSimulating && routeLineRef.current) {
-          return;
-        }
+    if ((selectedMarkerId || customPin) && showRoute) {
+      let endPoint: [number, number];
 
-        let startPoint: [number, number] = liveCoords || center;
-        const endPoint: [number, number] = [selectedMarker.lat, selectedMarker.lng];
+      if (selectedMarkerId) {
+        const selectedMarker = markers.find(m => m.id === selectedMarkerId);
+        if (!selectedMarker || !selectedMarker.lat || !selectedMarker.lng) return;
+        endPoint = [selectedMarker.lat, selectedMarker.lng];
+      } else if (customPin) {
+        endPoint = [customPin.lat, customPin.lng];
+      } else {
+        return;
+      }
+
+      // If we are currently simulating, do not fetch/redraw the route line
+      if (isSimulating && routeLineRef.current) {
+        return;
+      }
+
+      let startPoint: [number, number] = liveCoords || center;
 
         // Ensure we calculate routing locally to guarantee beautiful, natural road turns.
         // If the start and destination are in different cities or far apart (>10 km),
@@ -572,7 +597,6 @@ export default function MapComponent({
             setRoutingError("Road-based routing unavailable. Showing direct line.");
             drawFallbackLine();
           });
-      }
     } else {
       // Clear route line if selection is cleared or showRoute is false
       if (routeLineRef.current) {
@@ -583,7 +607,7 @@ export default function MapComponent({
       setRoutingError(null);
       routePointsRef.current = [];
     }
-  }, [selectedMarkerId, markers, center, liveCoords, showRoute, isSimulating]);
+  }, [selectedMarkerId, markers, center, liveCoords, showRoute, isSimulating, customPin]);
 
   // Clean up route line, custom pin marker, and simulation interval when map component unmounts
   useEffect(() => {
@@ -816,7 +840,7 @@ export default function MapComponent({
       </div>
 
       {/* Floating Simulation Button */}
-      {showRoute && selectedMarkerId && (
+      {showRoute && (selectedMarkerId || customPin) && (
         <button
           onClick={handleSimulateNavigation}
           className={`absolute bottom-48 right-3.5 z-[400] flex items-center justify-center w-10 h-10 rounded-xl border border-white/10 shadow-xl transition-all cursor-pointer group ${

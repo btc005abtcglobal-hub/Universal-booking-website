@@ -568,6 +568,7 @@ export default function MapsPage() {
                 onMapClick={(lat, lng) => {
                   setCustomPin({ lat, lng });
                   setSelectedService(null);
+                  setShowNavigationRoute(false);
                 }}
                 onMarkerClick={(marker) => {
                   if (selectedService && selectedService.id === marker.id) {
@@ -577,6 +578,7 @@ export default function MapsPage() {
                     if (match) {
                       setSelectedService(match);
                       setCustomPin(null);
+                      setShowNavigationRoute(false);
                     }
                   }
                 }}
@@ -662,7 +664,26 @@ export default function MapsPage() {
                 
                 <div className="flex gap-3 w-full sm:w-auto border-t sm:border-t-0 border-[color:var(--color-outline-variant)]/10 pt-3 sm:pt-0 shrink-0 justify-end">
                   <button
-                    onClick={() => setCustomPin(null)}
+                    onClick={() => setShowNavigationRoute(!showNavigationRoute)}
+                    className={`flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-xs font-bold shadow active:scale-[0.97] transition-all cursor-pointer border ${
+                      showNavigationRoute
+                        ? 'bg-rose-600 hover:bg-rose-700 text-white border-rose-500 animate-pulse'
+                        : 'bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-400 border-indigo-500/20'
+                    }`}
+                  >
+                    {showNavigationRoute ? (
+                      <>✕ Hide Route</>
+                    ) : (
+                      <>
+                        <Navigation className="h-3.5 w-3.5" /> Navigate
+                      </>
+                    )}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setCustomPin(null);
+                      setShowNavigationRoute(false);
+                    }}
                     className="px-4 py-2.5 rounded-xl border border-[color:var(--color-outline-variant)]/40 hover:bg-[color:var(--color-surface-dim)]/50 text-xs font-bold text-[color:var(--color-on-surface-variant)] transition-all cursor-pointer"
                   >
                     Clear Pin
@@ -672,6 +693,7 @@ export default function MapsPage() {
                       const readableName = `${customPin.lat.toFixed(4)}° N, ${customPin.lng.toFixed(4)}° E`;
                       setLocation(customPin.lat, customPin.lng, readableName);
                       setCustomPin(null);
+                      setShowNavigationRoute(false);
                     }}
                     className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 px-4 py-2.5 text-xs font-bold text-white shadow hover:from-emerald-600 hover:to-teal-700 active:scale-[0.97] transition-all cursor-pointer animate-pulse"
                   >

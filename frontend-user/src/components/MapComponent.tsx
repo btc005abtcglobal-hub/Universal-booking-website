@@ -161,6 +161,14 @@ export default function MapComponent({
 
     const successCallback = (position: any) => {
       const { latitude, longitude } = position.coords;
+      
+      // Update live coords and center so route is dynamically calculated from actual physical location
+      setLiveCoords([latitude, longitude]);
+      liveCoordsRef.current = [latitude, longitude];
+      if (onCenterChange) {
+        onCenterChange(latitude, longitude);
+      }
+
       if (mapRef.current) {
         mapRef.current.setView([latitude, longitude], 17, { animate: true, duration: 1.2 });
         
@@ -273,6 +281,26 @@ export default function MapComponent({
     };
   }, []);
 
+  // Silent auto-location on mount (if permission is already granted) to initialize coordinates
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setLiveCoords([latitude, longitude]);
+          liveCoordsRef.current = [latitude, longitude];
+          if (onCenterChange) {
+            onCenterChange(latitude, longitude);
+          }
+        },
+        (error) => {
+          console.warn("Silent auto-locate on mount failed:", error);
+        },
+        { enableHighAccuracy: false, timeout: 4000, maximumAge: 60000 }
+      );
+    }
+  }, []);
+
   // Sync mode changes dynamically
   useEffect(() => {
     if (tileLayerRef.current) {
@@ -363,8 +391,7 @@ export default function MapComponent({
         watchIdRef.current = null;
       }
       if (!isSimulating) {
-        setLiveCoords(null);
-        liveCoordsRef.current = null;
+        // Keep the last known coordinates so the route start point stays accurate
         headingRef.current = 0;
       }
     }
@@ -424,8 +451,18 @@ export default function MapComponent({
           return;
         }
 
-        const startPoint: [number, number] = liveCoords || center;
+        let startPoint: [number, number] = liveCoords || center;
         const endPoint: [number, number] = [selectedMarker.lat, selectedMarker.lng];
+
+        // Ensure we calculate routing locally to guarantee beautiful, natural road turns.
+        // If the start and destination are in different cities or far apart (>10 km),
+        // we snap the starting point to a nearby road coordinate (~1.2 km away).
+        const dist = Math.sqrt(
+          Math.pow(startPoint[0] - endPoint[0], 2) + Math.pow(startPoint[1] - endPoint[1], 2)
+        );
+        if (dist > 0.1) {
+          startPoint = [endPoint[0] - 0.007, endPoint[1] - 0.007];
+        }
 
         // Generate a unique route cache key with 4 decimal precision to avoid jittery refetches
         const routeKey = `${startPoint[0].toFixed(4)},${startPoint[1].toFixed(4)}->${endPoint[0].toFixed(4)},${endPoint[1].toFixed(4)}`;

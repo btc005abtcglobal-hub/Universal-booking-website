@@ -1,9 +1,22 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Locate, Navigation } from 'lucide-react';
+import { Locate, Navigation, Play, Pause } from 'lucide-react';
+
+function calculateBearing(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const lat1Rad = lat1 * Math.PI / 180;
+  const lat2Rad = lat2 * Math.PI / 180;
+
+  const y = Math.sin(dLon) * Math.cos(lat2Rad);
+  const x = Math.cos(lat1Rad) * Math.sin(lat2Rad) -
+            Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLon);
+  
+  let brng = Math.atan2(y, x) * 180 / Math.PI;
+  return (brng + 360) % 360;
+}
 
 
 interface MarkerData {
@@ -61,6 +74,69 @@ export default function MapComponent({
   const lastFetchedRouteKeyRef = useRef<string>('');
   const customPinMarkerRef = useRef<L.Marker | null>(null);
   const [routingError, setRoutingError] = useState<string | null>(null);
+
+  const [isSimulating, setIsSimulating] = useState(false);
+  const simulationIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const routePointsRef = useRef<[number, number][]>([]);
+  const liveCoordsRef = useRef<[number, number] | null>(null);
+  const headingRef = useRef<number>(0);
+
+  const handleSimulateNavigation = () => {
+    if (isSimulating) {
+      if (simulationIntervalRef.current) {
+        clearInterval(simulationIntervalRef.current);
+        simulationIntervalRef.current = null;
+      }
+      setIsSimulating(false);
+      setLiveCoords(null);
+      liveCoordsRef.current = null;
+      return;
+    }
+
+    if (routePointsRef.current.length < 2) {
+      alert("No active route found to simulate. Please select a shop to show navigation first.");
+      return;
+    }
+
+    setIsSimulating(true);
+    setIsTracking(false);
+
+    let currentStep = 0;
+    const points = routePointsRef.current;
+
+    setLiveCoords(points[0]);
+    liveCoordsRef.current = points[0];
+    headingRef.current = 0;
+    if (mapRef.current) {
+      mapRef.current.setView(points[0], 18, { animate: true, duration: 0.5 });
+    }
+
+    simulationIntervalRef.current = setInterval(() => {
+      currentStep++;
+      if (currentStep >= points.length) {
+        if (simulationIntervalRef.current) {
+          clearInterval(simulationIntervalRef.current);
+          simulationIntervalRef.current = null;
+        }
+        setIsSimulating(false);
+        alert("🎉 You have arrived at your destination!");
+        return;
+      }
+
+      const prevPoint = points[currentStep - 1];
+      const nextPoint = points[currentStep];
+
+      const bearing = calculateBearing(prevPoint[0], prevPoint[1], nextPoint[0], nextPoint[1]);
+      headingRef.current = bearing;
+
+      setLiveCoords(nextPoint);
+      liveCoordsRef.current = nextPoint;
+
+      if (mapRef.current) {
+        mapRef.current.setView(nextPoint, 18, { animate: true, duration: 0.6 });
+      }
+    }, 1000);
+  };
 
   // Reset fit bounds flag when the center/city changes
   if (prevCenterRef.current[0] !== center[0] || prevCenterRef.current[1] !== center[1]) {
@@ -231,7 +307,24 @@ export default function MapComponent({
         return navigator.geolocation.watchPosition(
           (position) => {
             const { latitude, longitude } = position.coords;
+            const rawHeading = position.coords.heading;
+
+            // Resolve heading
+            let newHeading = headingRef.current;
+            if (rawHeading !== null && rawHeading !== undefined && !isNaN(rawHeading)) {
+              newHeading = rawHeading;
+            } else if (liveCoordsRef.current) {
+              const [prevLat, prevLng] = liveCoordsRef.current;
+              // Check if they are actually different coordinates to avoid jittering
+              if (prevLat !== latitude || prevLng !== longitude) {
+                newHeading = calculateBearing(prevLat, prevLng, latitude, longitude);
+              }
+            }
+
+            headingRef.current = newHeading;
+            liveCoordsRef.current = [latitude, longitude];
             setLiveCoords([latitude, longitude]);
+
             if (mapRef.current) {
               mapRef.current.setView([latitude, longitude], 17, { animate: true, duration: 1.0 });
             }
@@ -249,6 +342,7 @@ export default function MapComponent({
               const shiftLat = center[0] + (Math.random() - 0.5) * 0.015;
               const shiftLng = center[1] + (Math.random() - 0.5) * 0.015;
               setLiveCoords([shiftLat, shiftLng]);
+              liveCoordsRef.current = [shiftLat, shiftLng];
               if (mapRef.current) {
                 mapRef.current.setView([shiftLat, shiftLng], 17, { animate: true, duration: 1.0 });
               }
@@ -268,7 +362,11 @@ export default function MapComponent({
         navigator.geolocation.clearWatch(watchIdRef.current);
         watchIdRef.current = null;
       }
-      setLiveCoords(null);
+      if (!isSimulating) {
+        setLiveCoords(null);
+        liveCoordsRef.current = null;
+        headingRef.current = 0;
+      }
     }
 
     return () => {
@@ -276,7 +374,7 @@ export default function MapComponent({
         navigator.geolocation.clearWatch(watchIdRef.current);
       }
     };
-  }, [isTracking]);
+  }, [isTracking, isSimulating]);
 
   // Render Live Tracker Marker
   useEffect(() => {
@@ -288,12 +386,15 @@ export default function MapComponent({
     }
 
     if (liveCoords) {
+      const currentHeading = headingRef.current;
       const liveIcon = L.divIcon({
         className: 'live-tracking-marker',
         html: `
-          <div class="relative flex items-center justify-center w-8 h-8">
-            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400/40 opacity-75"></span>
-            <div class="relative flex h-4 w-4 items-center justify-center rounded-full border-2 border-white bg-emerald-500 shadow-md"></div>
+          <div class="relative flex items-center justify-center w-8 h-8" style="transform: rotate(${currentHeading}deg); transition: transform 0.25s cubic-bezier(0.1, 0.8, 0.2, 1);">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400/25 opacity-75"></span>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0px 3px 6px rgba(0,0,0,0.4));">
+              <path d="M12 2L4.5 20.29L5.21 21L12 18L18.79 21L19.5 20.29L12 2Z" fill="#1a73e8" stroke="#ffffff" stroke-width="2.2" stroke-linejoin="round"/>
+            </svg>
           </div>
         `,
         iconSize: [32, 32],
@@ -318,11 +419,16 @@ export default function MapComponent({
     if (selectedMarkerId && showRoute) {
       const selectedMarker = markers.find(m => m.id === selectedMarkerId);
       if (selectedMarker && selectedMarker.lat && selectedMarker.lng) {
+        // If we are currently simulating, do not fetch/redraw the route line
+        if (isSimulating && routeLineRef.current) {
+          return;
+        }
+
         const startPoint: [number, number] = liveCoords || center;
         const endPoint: [number, number] = [selectedMarker.lat, selectedMarker.lng];
 
-        // Generate a unique route cache key
-        const routeKey = `${startPoint[0].toFixed(5)},${startPoint[1].toFixed(5)}->${endPoint[0].toFixed(5)},${endPoint[1].toFixed(5)}`;
+        // Generate a unique route cache key with 4 decimal precision to avoid jittery refetches
+        const routeKey = `${startPoint[0].toFixed(4)},${startPoint[1].toFixed(4)}->${endPoint[0].toFixed(4)},${endPoint[1].toFixed(4)}`;
 
         // If the route hasn't changed and the route line is already active, return early
         if (lastFetchedRouteKeyRef.current === routeKey && routeLineRef.current) {
@@ -337,16 +443,27 @@ export default function MapComponent({
 
         lastFetchedRouteKeyRef.current = routeKey;
 
-        // Draw straight line fallback immediately first
+        // Draw straight line fallback immediately first (double layered casing/core)
         const drawFallbackLine = () => {
           if (routeLineRef.current) routeLineRef.current.remove();
-          routeLineRef.current = L.polyline([startPoint, endPoint], {
-            color: '#6366f1', // Indigo-500
-            weight: 3,
-            dashArray: '8, 8',
-            opacity: 0.8,
+          
+          const casing = L.polyline([startPoint, endPoint], {
+            color: 'rgba(99, 102, 241, 0.35)',
+            weight: 9,
+            lineCap: 'round',
             lineJoin: 'round'
-          }).addTo(mapRef.current!);
+          });
+
+          const core = L.polyline([startPoint, endPoint], {
+            color: '#6366f1',
+            weight: 4,
+            dashArray: '8, 8',
+            lineCap: 'round',
+            lineJoin: 'round'
+          });
+
+          routeLineRef.current = L.featureGroup([casing, core]).addTo(mapRef.current!) as any;
+          routePointsRef.current = [startPoint, endPoint];
         };
 
         // Draw straight line fallback immediately as placeholder/loading state
@@ -389,16 +506,26 @@ export default function MapComponent({
             
             if (routeLineRef.current) routeLineRef.current.remove();
 
-            // Draw beautiful actual road polyline
-            routeLineRef.current = L.polyline(routePoints, {
-              color: '#4f46e5', // Indigo-600
-              weight: 4,
-              opacity: 0.85,
+            // Draw beautiful Google Maps style road polyline (Casing + Core)
+            const casing = L.polyline(routePoints, {
+              color: 'rgba(37, 99, 235, 0.35)', // transparent blue glow
+              weight: 11,
+              lineCap: 'round',
               lineJoin: 'round'
-            }).addTo(mapRef.current!);
+            });
+
+            const core = L.polyline(routePoints, {
+              color: '#1a73e8', // Google Maps navigation blue core
+              weight: 5,
+              lineCap: 'round',
+              lineJoin: 'round'
+            });
+
+            routeLineRef.current = L.featureGroup([casing, core]).addTo(mapRef.current!) as any;
+            routePointsRef.current = routePoints;
 
             // adjust bounds to show the entire route
-            if (mapRef.current) {
+            if (mapRef.current && routeLineRef.current) {
               mapRef.current.fitBounds(routeLineRef.current.getBounds().pad(0.2), { animate: true });
             }
           })
@@ -417,10 +544,11 @@ export default function MapComponent({
       }
       lastFetchedRouteKeyRef.current = '';
       setRoutingError(null);
+      routePointsRef.current = [];
     }
-  }, [selectedMarkerId, markers, center, liveCoords, showRoute]);
+  }, [selectedMarkerId, markers, center, liveCoords, showRoute, isSimulating]);
 
-  // Clean up route line and custom pin marker when map component unmounts
+  // Clean up route line, custom pin marker, and simulation interval when map component unmounts
   useEffect(() => {
     return () => {
       if (routeLineRef.current) {
@@ -430,6 +558,10 @@ export default function MapComponent({
       if (customPinMarkerRef.current) {
         customPinMarkerRef.current.remove();
         customPinMarkerRef.current = null;
+      }
+      if (simulationIntervalRef.current) {
+        clearInterval(simulationIntervalRef.current);
+        simulationIntervalRef.current = null;
       }
     };
   }, []);
@@ -645,6 +777,23 @@ export default function MapComponent({
           Satellite
         </button>
       </div>
+
+      {/* Floating Simulation Button */}
+      {showRoute && selectedMarkerId && (
+        <button
+          onClick={handleSimulateNavigation}
+          className={`absolute bottom-48 right-3.5 z-[400] flex items-center justify-center w-10 h-10 rounded-xl border border-white/10 shadow-xl transition-all cursor-pointer group ${
+            isSimulating ? 'bg-amber-600 text-white animate-pulse' : 'bg-slate-900/90 hover:bg-amber-600 text-white'
+          }`}
+          title={isSimulating ? "Pause Simulation" : "Simulate Navigation"}
+        >
+          {isSimulating ? (
+            <Pause className="h-4.5 w-4.5 text-white" />
+          ) : (
+            <Play className="h-4.5 w-4.5 text-slate-300 group-hover:text-white transition-colors" />
+          )}
+        </button>
+      )}
 
       {/* Floating Live Tracking Button */}
       <button

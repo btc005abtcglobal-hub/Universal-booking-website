@@ -493,29 +493,6 @@ export function TopNav() {
           </div>
         </div>
       )}
-      {/* Floating GPS Widget */}
-      {mounted && latitude !== null && longitude !== null && (
-        <div className="fixed bottom-20 md:bottom-24 left-6 z-40 animate-fade-in">
-          <div 
-            className="flex items-center gap-3 bg-[color:var(--color-surface-container-high)]/90 border border-[color:var(--color-primary)]/20 px-4 py-2.5 rounded-2xl shadow-xl backdrop-blur-md group hover:border-[color:var(--color-primary)]/50 transition-all duration-300 select-none cursor-default"
-            title={`GPS Status: ACTIVE\nAccuracy: Real-time\nCoordinates: ${latitude}°, ${longitude}°`}
-          >
-            <div className="relative flex h-2 w-2 shrink-0">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[color:var(--color-primary)] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[color:var(--color-primary)]"></span>
-            </div>
-            <div className="flex flex-col gap-0.5">
-              <div className="flex items-center gap-1.5">
-                <span className="text-[9px] uppercase tracking-widest text-[color:var(--color-outline)] font-bold">GPS Signals Locked</span>
-                <span className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />
-              </div>
-              <span className="text-[11px] font-mono font-bold text-[color:var(--color-on-surface)] tracking-wide animate-pulse">
-                {latitude.toFixed(6)}° N, {longitude.toFixed(6)}° E
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }

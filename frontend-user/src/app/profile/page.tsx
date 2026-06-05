@@ -7,9 +7,8 @@ import {
   Award, Sparkles, Check, CheckCircle2, Sliders, ShieldCheck, Heart 
 } from 'lucide-react';
 import { TopNav } from '../../components/TopNav';
-import { SideNav } from '../../components/SideNav';
 import { BottomNav } from '../../components/BottomNav';
-import { useUserStore } from '../../lib/store';
+import { useUserStore, useUIStore } from '../../lib/store';
 
 const AVATAR_PRESETS = [
   { id: 'jetsetter', label: 'Jetsetter', emoji: '✈️', color: 'from-amber-400 to-yellow-600' },
@@ -21,6 +20,7 @@ const AVATAR_PRESETS = [
 export default function ProfilePage() {
   const router = useRouter();
   const { logout } = useUserStore();
+  const { theme, setTheme } = useUIStore();
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
@@ -104,11 +104,8 @@ export default function ProfilePage() {
   return (
     <>
       <TopNav />
-      <div className="hidden lg:block">
-        <SideNav />
-      </div>
       
-      <main className="page-content-with-sidenav px-4 md:px-8 lg:pr-8 pb-24 animate-fade-in">
+      <main className="page-content px-4 md:px-8 lg:pr-8 pb-24 animate-fade-in">
         <div className="mx-auto max-w-5xl pt-4">
           
           {/* Header section with brand accent */}
@@ -339,6 +336,37 @@ export default function ProfilePage() {
                         </select>
                       </div>
 
+                    </div>
+                  </div>
+
+                  {/* APPEARANCE SECTION */}
+                  <div className="pt-4 border-t border-[color:var(--color-outline-variant)]/30">
+                    <h3 className="text-xs uppercase tracking-wider text-[color:var(--color-outline)] font-bold mb-3 flex items-center gap-1.5">
+                      <Sliders size={13} className="text-[color:var(--color-primary)]" />
+                      <span>App Appearance</span>
+                    </h3>
+                    
+                    <div className="grid gap-3 md:grid-cols-2">
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[9px] uppercase tracking-wide text-[color:var(--color-outline)] font-semibold">Theme Mode</span>
+                        <div className="relative">
+                          <select
+                            value={theme}
+                            onChange={(e) => setTheme(e.target.value as 'system' | 'light' | 'dark')}
+                            className="w-full bg-[color:var(--color-surface-dim)] border border-[color:var(--color-outline-variant)]/30 rounded-xl px-3 py-2 text-[11px] text-[color:var(--color-on-surface)] outline-none cursor-pointer hover:border-[color:var(--color-primary)]/30 transition-all appearance-none"
+                            style={{
+                              backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%23A8A8C0\' stroke-width=\'2.5\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M19 9l-7 7-7-7\'/%3E%3C/svg%3E")',
+                              backgroundPosition: 'right 12px center',
+                              backgroundSize: '10px',
+                              backgroundRepeat: 'no-repeat'
+                            }}
+                          >
+                            <option value="system" className="bg-[color:var(--color-surface-container)] text-[color:var(--color-on-surface)]">🖥️ System Default (Auto)</option>
+                            <option value="light" className="bg-[color:var(--color-surface-container)] text-[color:var(--color-on-surface)]">☀️ Light Theme</option>
+                            <option value="dark" className="bg-[color:var(--color-surface-container)] text-[color:var(--color-on-surface)]">🌙 Dark Theme</option>
+                          </select>
+                        </div>
+                      </div>
                     </div>
                   </div>
 

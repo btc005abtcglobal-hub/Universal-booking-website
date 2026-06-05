@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { Search, Heart, ShoppingBag, Sparkles, MapPin, Map, X } from 'lucide-react';
-import { ThemeToggle } from './ThemeToggle';
 import { useLocationStore } from '../lib/store';
 import { LiveClock } from './LiveClock';
 
@@ -249,7 +248,7 @@ export function TopNav() {
           </div>
 
           {/* Right Column: Actions Capsule */}
-          <div className="flex-1 flex justify-end">
+          <div className="flex-1 flex justify-end items-center gap-3">
             {/* Desktop Actions Capsule (>= lg) */}
             <div className="hidden lg:flex items-center bg-[color:var(--color-surface-container)]/60 border border-[color:var(--color-outline-variant)]/30 rounded-full pl-4 pr-1.5 py-1.5 gap-3.5 shadow-lg backdrop-blur-md">
               <div className="relative flex items-center group">
@@ -272,23 +271,15 @@ export function TopNav() {
                 <ShoppingBag size={16} strokeWidth={2} />
                 <span className="absolute top-0 right-0 w-1.5 h-1.5 bg-[color:var(--color-primary)] rounded-full shadow-[0_0_8px_rgba(255,215,0,0.6)]" />
               </button>
-
-              <div className="flex items-center gap-1.5 px-1">
-                <span className="text-[10px] text-[color:var(--color-outline)] font-bold tracking-widest uppercase hidden xl:inline">SYS TIME:</span>
-                <LiveClock />
-              </div>
-
-              <span className="w-[1px] h-4 bg-[color:var(--color-outline-variant)]/40" />
-
-              <ThemeToggle />
-
-              <Link
-                href="/profile"
-                className="bg-[color:var(--color-primary)] text-[color:var(--color-on-primary)] hover:bg-[color:var(--color-primary-fixed-dim)] px-5 py-2 rounded-full font-extrabold text-[13px] tracking-wide hover:scale-102 active:scale-98 transition-all duration-200 cursor-pointer shadow-sm shadow-[color:var(--color-primary)]/10"
-              >
-                Profile
-              </Link>
             </div>
+
+            {/* Desktop Separate Profile Button */}
+            <Link
+              href="/profile"
+              className="hidden lg:flex bg-[color:var(--color-primary)] text-[color:var(--color-on-primary)] hover:bg-[color:var(--color-primary-fixed-dim)] px-6 py-2.5 rounded-full font-extrabold text-[13px] tracking-wide hover:scale-102 active:scale-98 transition-all duration-200 cursor-pointer shadow-md shadow-[color:var(--color-primary)]/10"
+            >
+              Profile
+            </Link>
 
             {/* Mobile Actions Capsule (< lg) */}
             <div className="lg:hidden flex items-center bg-[color:var(--color-surface-container)]/60 border border-[color:var(--color-outline-variant)]/30 rounded-full pl-4 pr-1.5 py-1.5 shadow-md backdrop-blur-md gap-2.5">
@@ -329,15 +320,6 @@ export function TopNav() {
                 </select>
               </div>
               
-              <span className="w-[1px] h-3.5 bg-[color:var(--color-outline-variant)]/40" />
-
-              <div className="hidden md:flex items-center">
-                <LiveClock />
-              </div>
-
-              <span className="w-[1px] h-3.5 bg-[color:var(--color-outline-variant)]/40 hidden md:inline" />
-
-              <ThemeToggle />
               <Link
                 href="/profile"
                 className="w-7 h-7 rounded-full bg-[color:var(--color-primary)] text-[color:var(--color-on-primary)] flex items-center justify-center font-extrabold text-[11px] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"

@@ -4,7 +4,6 @@ import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { TopNav } from '../../components/TopNav';
-import { SideNav } from '../../components/SideNav';
 import { BottomNav } from '../../components/BottomNav';
 import { 
   Plane, TrainFront, Bus, Car, Search, X, 
@@ -263,11 +262,8 @@ function TracksContent() {
   return (
     <>
       <TopNav />
-      <div className="hidden lg:block">
-        <SideNav />
-      </div>
       
-      <main className="page-content-with-sidenav px-4 md:px-8 lg:pr-8 pb-24">
+      <main className="page-content px-4 md:px-8 lg:pr-8 pb-24">
         <div className="mx-auto max-w-5xl">
           
           {/* Active Live Journey Tracker View */}

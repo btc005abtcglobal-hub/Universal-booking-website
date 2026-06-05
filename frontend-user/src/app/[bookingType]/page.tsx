@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, ChevronRight, MapPin } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { ThemeToggle } from '../../components/ThemeToggle';
 import { useLocationStore } from '../../lib/store';
 import { getProvidersByCategory } from '../../lib/mockData';
 
@@ -268,7 +267,6 @@ export default function CategoryPage() {
               <span className="text-white">{data.name}</span>
             </div>
           </div>
-          <ThemeToggle />
         </div>
       </nav>
 

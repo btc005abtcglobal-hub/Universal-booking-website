@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { CheckCircle2, QrCode, Calendar, Clock, MapPin, Download, Share2, ArrowLeft, ChevronRight, Check } from 'lucide-react';
-import { ThemeToggle } from '../../../components/ThemeToggle';
 import { useSearchParams } from 'next/navigation';
 import { useBookingFlowStore } from '../../../lib/store';
 import { useState, Suspense } from 'react';
@@ -149,7 +148,6 @@ export default function BookingSuccessPage() {
               <span className="text-[color:var(--color-on-surface)]">Booking Confirmed</span>
             </div>
           </div>
-          <ThemeToggle />
         </div>
       </nav>
 

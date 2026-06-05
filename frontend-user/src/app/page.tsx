@@ -6,7 +6,6 @@ import dynamic from 'next/dynamic';
 import { MapPin, Star, Compass, ArrowRight } from 'lucide-react';
 import { TopNav } from '../components/TopNav';
 import { BottomNav } from '../components/BottomNav';
-import { SideNav } from '../components/SideNav';
 import { ShortcutDock } from '../components/shortcuts/ShortcutDock';
 import { ShortcutManagerModal } from '../components/shortcuts/ShortcutManagerModal';
 import { ActionModalManager } from '../components/shortcuts/ActionModalManager';
@@ -36,16 +35,12 @@ const CITY_COORDINATES: Record<string, { lat: number; lng: number }> = {
   delhi: { lat: 28.6139, lng: 77.2090 }
 };
 
-const PRIMARY_CATEGORIES = [
-  { id: 'travel-transport', label: 'Travel & Transport', icon: 'directions_car', from: '#60A5FA', to: '#3B82F6', glow: 'rgba(96,165,250,0.40)', href: '/travel-transport' },
-  { id: 'stay-accommodation', label: 'Stay & Accommodation', icon: 'hotel', from: '#FBBF24', to: '#F59E0B', glow: 'rgba(251,191,36,0.40)', href: '/stay-accommodation' },
-  { id: 'entertainment-events', label: 'Entertainment & Events', icon: 'movie', from: '#F472B6', to: '#EC4899', glow: 'rgba(244,114,182,0.40)', href: '/entertainment-events' },
-  { id: 'sports-turf', label: 'Sports & Turf', icon: 'sports_soccer', from: '#34D399', to: '#10B981', glow: 'rgba(52,211,153,0.40)', href: '/sports-turf' },
-  { id: 'lifestyle-local', label: 'Lifestyle & Local Services', icon: 'restaurant', from: '#A78BFA', to: '#8B5CF6', glow: 'rgba(167,139,250,0.40)', href: '/lifestyle-local' },
-  { id: 'business-professional', label: 'Business & Professional', icon: 'business', from: '#818CF8', to: '#4F46E5', glow: 'rgba(129,140,248,0.40)', href: '/business-professional' },
-  { id: 'religious-government', label: 'Religious & Gov Services', icon: 'account_balance', from: '#F97316', to: '#EA580C', glow: 'rgba(249,115,22,0.40)', href: '/religious-government' },
-  { id: 'rental-equipment', label: 'Rental & Equipment', icon: 'shopping_bag', from: '#2DD4BF', to: '#0D9488', glow: 'rgba(45,212,191,0.40)', href: '/rental-equipment' },
-  { id: 'personal-misc', label: 'Personal & Misc Services', icon: 'pets', from: '#F87171', to: '#EF4444', glow: 'rgba(248,113,113,0.40)', href: '/personal-misc' },
+const OTHER_ITEMS = [
+  { id: 'trending', label: 'Trending', icon: 'local_fire_department', from: '#F87171', to: '#EF4444', glow: 'rgba(248,113,113,0.40)', href: '/search?q=trending' },
+  { id: 'news', label: 'News & Updates', icon: 'newspaper', from: '#60A5FA', to: '#3B82F6', glow: 'rgba(96,165,250,0.40)', href: '/search?q=news' },
+  { id: 'offers', label: 'Offers & Discounts', icon: 'sell', from: '#FBBF24', to: '#F59E0B', glow: 'rgba(251,191,36,0.40)', href: '/search?q=offers' },
+  { id: 'events', label: 'Local Events', icon: 'event', from: '#34D399', to: '#10B981', glow: 'rgba(52,211,153,0.40)', href: '/search?q=events' },
+  { id: 'featured', label: 'Featured Partners', icon: 'star', from: '#A78BFA', to: '#8B5CF6', glow: 'rgba(167,139,250,0.40)', href: '/search?q=featured' },
 ];
 
 function CategoryCard({
@@ -298,12 +293,38 @@ export default function HomePage() {
       <ShortcutManagerModal />
       <ActionModalManager />
       <TopNav />
-      <div className="hidden lg:block">
-        <SideNav />
-      </div>
 
-      <main className="page-content-with-sidenav px-4 md:px-8 lg:pr-8">
+      <main className="page-content px-4 md:px-8 lg:pr-8">
         <div className="mx-auto max-w-7xl">
+          {/* Ad Banner at the top of the dashboard overview */}
+          <section
+            id="ad-banner-hero"
+            data-ad-slot=""
+            aria-label="Advertisement"
+            className="ad-block mb-6"
+          >
+            <div
+              className="w-full h-[172px] md:h-[212px] rounded-2xl overflow-hidden relative border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)] card-glass"
+              style={{ boxShadow: 'inset 0 0 0 1px rgba(255,215,0,0.06)' }}
+            >
+              <div className="absolute inset-0 overflow-hidden">
+                <div
+                  className="absolute top-0 bottom-0 w-1/3 animate-shimmer"
+                  style={{ background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.04), transparent)' }}
+                />
+              </div>
+              <div className="relative flex flex-col items-center justify-center h-full gap-3 opacity-35">
+                <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(255,215,0,0.10)' }}>
+                  <span className="material-symbols-outlined text-[color:var(--color-primary)] text-[26px]">ad_group</span>
+                </div>
+                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[color:var(--color-outline)]">
+                  Advertisement
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* Dashboard Overview */}
           <section className="mb-6 md:mb-8">
             <div className="card-glass rounded-[28px] p-5 md:p-8 overflow-hidden relative">
               <div className="absolute inset-0 opacity-[0.06]" style={{ background: 'radial-gradient(circle at top right, rgba(255,215,0,0.55), transparent 42%)' }} />
@@ -335,33 +356,6 @@ export default function HomePage() {
             </div>
           </section>
 
-          <section
-            id="ad-banner-hero"
-            data-ad-slot=""
-            aria-label="Advertisement"
-            className="ad-block mt-5 mb-8"
-          >
-            <div
-              className="w-full h-[172px] md:h-[212px] rounded-2xl overflow-hidden relative border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)] card-glass"
-              style={{ boxShadow: 'inset 0 0 0 1px rgba(255,215,0,0.06)' }}
-            >
-              <div className="absolute inset-0 overflow-hidden">
-                <div
-                  className="absolute top-0 bottom-0 w-1/3 animate-shimmer"
-                  style={{ background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.04), transparent)' }}
-                />
-              </div>
-              <div className="relative flex flex-col items-center justify-center h-full gap-3 opacity-35">
-                <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(255,215,0,0.10)' }}>
-                  <span className="material-symbols-outlined text-[color:var(--color-primary)] text-[26px]">ad_group</span>
-                </div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[color:var(--color-outline)]">
-                  Advertisement
-                </p>
-              </div>
-            </div>
-          </section>
-
           <section className="mb-8">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-[15px] font-bold tracking-wide text-[color:var(--color-on-surface)]">
@@ -374,10 +368,11 @@ export default function HomePage() {
             </div>
           </section>
 
+          {/* Other Sections (formerly Browse Categories) */}
           <section className="mb-8">
-            <SectionHeader title="Browse Categories" sub="Select a category to start booking services" href="/categories" />
+            <SectionHeader title="Other" sub="Trending updates, news topics, and special offerings" href="/categories" />
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-              {PRIMARY_CATEGORIES.map((cat) => (
+              {OTHER_ITEMS.map((cat) => (
                 <CategoryCard key={cat.id} {...cat} />
               ))}
             </div>

@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { Star, Clock, MapPin, Heart, Share2, ChevronLeft, ChevronRight, Check, Users, ArrowLeft, AlertCircle } from 'lucide-react';
-import { ThemeToggle } from '../../../components/ThemeToggle';
 import { api } from '../../../lib/api';
 import { useBookingFlowStore } from '../../../lib/store';
 
@@ -133,7 +132,6 @@ export default function ServiceDetailPage() {
               <span className="text-[var(--text-primary)]">{service.name}</span>
             </div>
           </div>
-          <ThemeToggle />
         </div>
       </nav>
 

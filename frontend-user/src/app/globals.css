@@ -173,6 +173,61 @@
   --color-outline-variant:          #C4C4D4;
 }
 
+.dark {
+  --color-primary:                  #FFD700;
+  --color-primary-fixed:            #FFF0A0;
+  --color-primary-fixed-dim:        #F0C000;
+  --color-on-primary:               #0A0800;
+  --color-on-primary-fixed:         #0A0800;
+  --color-on-primary-fixed-variant: #3A2E00;
+  --color-primary-container:        #3D3000;
+  --color-on-primary-container:     #FFE680;
+
+  --color-surface-dim:              #060608;
+  --color-surface:                  #0C0C10;
+  --color-surface-container-lowest: #000000;
+  --color-surface-container-low:    #111116;
+  --color-surface-container:        #18181F;
+  --color-surface-container-high:   #1F1F28;
+  --color-surface-container-highest:#282832;
+  --color-surface-variant:          #242430;
+  --color-surface-bright:           #2E2E3E;
+  --color-background:               #0C0C10;
+  --color-on-background:            #F0F0F8;
+  --color-on-surface:               #F0F0F8;
+  --color-on-surface-variant:       #A8A8C0;
+  --color-inverse-surface:          #F0F0F8;
+  --color-inverse-on-surface:       #1A1A24;
+  --color-outline:                  #606078;
+  --color-outline-variant:          #2A2A3A;
+
+  --color-secondary:                #C0C0D8;
+  --color-secondary-container:      #2A2A3A;
+  --color-on-secondary:             #0C0C18;
+  --color-on-secondary-container:   #D8D8F0;
+  --color-secondary-fixed:          #E8E8F8;
+  --color-secondary-fixed-dim:      #C0C0D8;
+  --color-on-secondary-fixed:       #080818;
+  --color-on-secondary-fixed-variant:#2A2A3A;
+
+  --color-tertiary:                 #E0E0F0;
+  --color-tertiary-container:       #282838;
+  --color-on-tertiary:              #080818;
+  --color-on-tertiary-container:    #D0D0E8;
+  --color-tertiary-fixed:           #E8E8F8;
+  --color-tertiary-fixed-dim:       #C8C8E0;
+  --color-on-tertiary-fixed:        #080818;
+  --color-on-tertiary-fixed-variant:#282838;
+
+  --color-error:                    #FF6B6B;
+  --color-error-container:          #4A0010;
+  --color-on-error:                 #1A0005;
+  --color-on-error-container:       #FFBABA;
+
+  --color-surface-tint:             #FFD700;
+  --color-inverse-primary:          #7A6000;
+}
+
 :root {
   /* Legacy/fallback variable mappings for compatibility with all pages */
   --border: var(--color-outline-variant);
@@ -295,9 +350,6 @@
   @media (min-width: 1024px) {
     .page-content, .page-content-with-sidenav {
       padding-top: 104px;
-    }
-    .page-content-with-sidenav {
-      padding-left: calc(var(--sidenav-width) + var(--sidenav-offset) + var(--sidenav-gap));
     }
   }
 

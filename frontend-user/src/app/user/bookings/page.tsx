@@ -3,10 +3,8 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Calendar, Clock, MapPin, QrCode, CheckCircle2, XCircle, ArrowLeft, ChevronRight, AlertCircle, Sparkles } from 'lucide-react';
-import { ThemeToggle } from '../../../components/ThemeToggle';
 import { useBookingFlowStore } from '../../../lib/store';
 import { TopNav } from '../../../components/TopNav';
-import { SideNav } from '../../../components/SideNav';
 import { BottomNav } from '../../../components/BottomNav';
 
 export default function UserBookingsPage() {
@@ -22,11 +20,8 @@ export default function UserBookingsPage() {
   return (
     <>
       <TopNav />
-      <div className="hidden lg:block">
-        <SideNav />
-      </div>
       
-      <main className="page-content-with-sidenav px-4 md:px-8 lg:pr-8">
+      <main className="page-content px-4 md:px-8 lg:pr-8">
         <div className="mx-auto max-w-4xl py-6 sm:py-8">
           <div className="w-full">
             <div className="flex items-center justify-between mb-6">

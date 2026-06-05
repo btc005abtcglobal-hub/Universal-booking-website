@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Shield, CreditCard, Clock, MapPin, ArrowLeft, ChevronRight, AlertCircle, Sparkles } from 'lucide-react';
-import { ThemeToggle } from '../../../components/ThemeToggle';
 import { useBookingFlowStore } from '../../../lib/store';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -50,7 +49,6 @@ export default function CheckoutPage() {
                 <span className="text-[var(--color-on-surface)]">Checkout</span>
               </div>
             </div>
-            <ThemeToggle />
           </div>
         </nav>
         <div className="pt-32 flex flex-col items-center justify-center py-20 text-center px-4">
@@ -162,7 +160,6 @@ export default function CheckoutPage() {
               <span className="text-[color:var(--color-on-surface)]">Checkout</span>
             </div>
           </div>
-          <ThemeToggle />
         </div>
       </nav>
 

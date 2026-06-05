@@ -11,7 +11,6 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { ThemeToggle } from '../../../components/ThemeToggle';
 import { useLocationStore } from '../../../lib/store';
 import { api, Service } from '../../../lib/api';
 import { calculateDistance } from '../../../lib/mockData';
@@ -1330,7 +1329,6 @@ export default function ProviderDiscoveryPage() {
                 <span className="text-[var(--text-primary)] font-bold truncate">Loading...</span>
               </div>
             </div>
-            <ThemeToggle />
           </div>
         </nav>
         <div className="pt-24 container-main py-8">
@@ -1405,7 +1403,6 @@ export default function ProviderDiscoveryPage() {
                 <span className="text-[var(--text-primary)] font-bold truncate">Loading...</span>
               </div>
             </div>
-            <ThemeToggle />
           </div>
         </nav>
         <div className="pt-28 container-main py-8">
@@ -1447,7 +1444,6 @@ export default function ProviderDiscoveryPage() {
               <span className="text-[var(--text-primary)] truncate">{categoryName}</span>
             </div>
           </div>
-          <ThemeToggle />
         </div>
       </nav>
 

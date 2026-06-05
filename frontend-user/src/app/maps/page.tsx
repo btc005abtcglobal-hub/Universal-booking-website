@@ -2,7 +2,6 @@
 
 import { MapPin, Star, Navigation, Compass, Loader, ArrowRight, Grid, List as ListIcon, Search } from 'lucide-react';
 import { TopNav } from '../../components/TopNav';
-import { SideNav } from '../../components/SideNav';
 import { BottomNav } from '../../components/BottomNav';
 import { useState, useEffect, useMemo } from 'react';
 import { useLocationStore, useBookingFlowStore } from '../../lib/store';
@@ -420,10 +419,7 @@ export default function MapsPage() {
   return (
     <>
       <TopNav />
-      <div className="hidden lg:block">
-        <SideNav />
-      </div>
-      <main className="page-content-with-sidenav h-screen flex flex-col bg-[color:var(--color-background)]">
+      <main className="page-content h-screen flex flex-col bg-[color:var(--color-background)]">
         <div className="flex h-full relative overflow-hidden">
           
           {/* Sidebar Panel */}

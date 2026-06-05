@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { TopNav } from '../../components/TopNav';
-import { SideNav } from '../../components/SideNav';
 import { BottomNav } from '../../components/BottomNav';
 
 const SERVICE_GROUPS = [
@@ -429,10 +428,7 @@ export default function CategoriesPage() {
   return (
     <>
       <TopNav />
-      <div className="hidden lg:block">
-        <SideNav />
-      </div>
-      <main className="page-content-with-sidenav px-4 md:px-8 lg:pr-8">
+      <main className="page-content px-4 md:px-8 lg:pr-8">
         <div className="mx-auto max-w-7xl">
         <div className="mb-8">
           <p className="text-[11px] uppercase tracking-[0.28em] text-[color:var(--color-outline)]">Categories</p>

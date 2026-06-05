@@ -5,7 +5,6 @@ import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ChevronRight, Star, Clock, MapPin, Shield, Phone, Mail, Calendar, Info } from 'lucide-react';
 import { useState } from 'react';
-import { ThemeToggle } from '../../../../components/ThemeToggle';
 import { useLocationStore } from '../../../../lib/store';
 import { getMerchantBySlug } from '../../../../lib/mockData';
 
@@ -38,7 +37,6 @@ export default function MerchantDetailPage() {
               <span className="text-[var(--text-primary)] truncate">{merchant.name}</span>
             </div>
           </div>
-          <ThemeToggle />
         </div>
       </nav>
 

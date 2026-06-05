@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import { useUIStore } from '../lib/store';
 
 interface MarkerData {
@@ -120,7 +120,15 @@ export default function GoogleMapComponent({
   const [sdkLoaded, setSdkLoaded] = useState(false);
   const { theme } = useUIStore();
 
-  const activeTheme = theme || 'light';
+  const activeTheme = useMemo(() => {
+    if (theme === 'system') {
+      if (typeof window !== 'undefined') {
+        return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      }
+      return 'dark';
+    }
+    return theme || 'dark';
+  }, [theme]);
 
   // Load Google Maps Script
   useEffect(() => {

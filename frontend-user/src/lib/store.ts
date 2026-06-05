@@ -174,8 +174,9 @@ export const useBookingFlowStore = create<BookingFlowState>()(
 );
 
 interface UIState {
-  theme: 'light' | 'dark';
+  theme: 'system' | 'light' | 'dark';
   sidebarOpen: boolean;
+  setTheme: (theme: 'system' | 'light' | 'dark') => void;
   toggleTheme: () => void;
   toggleSidebar: () => void;
 }
@@ -183,9 +184,12 @@ interface UIState {
 export const useUIStore = create<UIState>()(
   persist(
     (set) => ({
-      theme: 'light',
+      theme: 'system',
       sidebarOpen: false,
-      toggleTheme: () => set((state) => ({ theme: state.theme === 'light' ? 'dark' : 'light' })),
+      setTheme: (theme) => set({ theme }),
+      toggleTheme: () => set((state) => ({ 
+        theme: state.theme === 'light' ? 'dark' : state.theme === 'dark' ? 'system' : 'light' 
+      })),
       toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
     }),
     { name: 'ui-storage' },

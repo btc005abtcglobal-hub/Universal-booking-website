@@ -33,21 +33,31 @@ export function ShortcutManagerModal() {
 
         <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
           <div className="flex justify-between items-center mb-4">
-            <span className="font-label-md text-primary uppercase tracking-widest">{Array.isArray(activeShortcuts) ? activeShortcuts.length : 0} Selected</span>
+            <span className="font-label-md text-primary uppercase tracking-widest">{Array.isArray(activeShortcuts) ? activeShortcuts.length : 0} / 6 Selected</span>
+            {Array.isArray(activeShortcuts) && activeShortcuts.length >= 6 && (
+              <span className="text-[11px] text-amber-500 font-semibold uppercase tracking-wider animate-pulse">Max limit of 6 reached</span>
+            )}
           </div>
           
           <div className="space-y-2">
             {AVAILABLE_SHORTCUTS.map(shortcut => {
               const isActive = Array.isArray(activeShortcuts) ? activeShortcuts.includes(shortcut.id) : false;
+              const isMaxReached = Array.isArray(activeShortcuts) && activeShortcuts.length >= 6;
+              const isDisabled = !isActive && isMaxReached;
 
               return (
                 <div 
                   key={shortcut.id}
-                  onClick={() => toggleShortcut(shortcut.id)}
-                  className={`flex items-center justify-between p-4 rounded-xl border transition-all cursor-pointer ${
+                  onClick={() => {
+                    if (isDisabled) return;
+                    toggleShortcut(shortcut.id);
+                  }}
+                  className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
                     isActive 
-                      ? 'bg-primary/10 border-primary text-primary' 
-                      : 'bg-surface-container-high border-outline/10 hover:border-primary/30 hover:bg-surface-variant text-on-surface'
+                      ? 'bg-primary/10 border-primary text-primary cursor-pointer' 
+                      : isDisabled
+                        ? 'opacity-40 border-outline/10 bg-surface-container-high cursor-not-allowed'
+                        : 'bg-surface-container-high border-outline/10 hover:border-primary/30 hover:bg-surface-variant text-on-surface cursor-pointer'
                   }`}
                 >
                   <div className="flex items-center gap-4">

@@ -110,6 +110,9 @@ export const useShortcutStore = create<ShortcutState>()(
         if (isActive) {
           return { activeShortcuts: state.activeShortcuts.filter(s => s !== id) };
         } else {
+          if (state.activeShortcuts.length >= 6) {
+            return {};
+          }
           return { activeShortcuts: [...state.activeShortcuts, id] };
         }
       }),

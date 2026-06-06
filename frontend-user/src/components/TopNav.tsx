@@ -40,6 +40,27 @@ export function TopNav() {
 
   const { toggleTheme } = useUIStore();
 
+  const navItems = [
+    { name: 'Home', path: '/', widthPx: 80 },
+    { name: 'Categories', path: '/categories', widthPx: 112 },
+    { name: 'Tracks', path: '/tracks', widthPx: 96 },
+  ];
+
+  const activeIndex = navItems.findIndex(item => item.path === pathname);
+
+  const getSliderStyle = () => {
+    if (activeIndex === -1) return { opacity: 0 };
+    let left = 6;
+    for (let i = 0; i < activeIndex; i++) {
+      left += navItems[i].widthPx + 4;
+    }
+    return {
+      left: `${left}px`,
+      width: `${navItems[activeIndex].widthPx}px`,
+      opacity: 1,
+    };
+  };
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -188,7 +209,7 @@ export function TopNav() {
 
   return (
     <>
-      <header className="bg-[color:var(--color-surface)]/80 border-b border-[color:var(--color-outline-variant)]/10 backdrop-blur-xl fixed top-0 left-0 w-full z-50 transition-all duration-300">
+      <header className="bg-[color:var(--color-surface)]/65 border-b border-[color:var(--color-outline-variant)]/15 backdrop-blur-2xl fixed top-0 left-0 w-full z-50 transition-all duration-300 shadow-sm shadow-black/5">
         <div className="flex justify-between items-center w-full px-6 lg:px-12 py-3 lg:py-4 max-w-7xl mx-auto">
           {/* Left Column: Logo & Brand + Location Selector (Desktop) */}
           <div className="flex-1 flex justify-start items-center gap-6">
@@ -257,31 +278,39 @@ export function TopNav() {
           {/* Center Column: Floating Navigation Menu */}
           <div className="hidden lg:flex flex-none justify-center">
             <nav className="flex items-center gap-1 bg-[color:var(--color-surface-container)]/30 border border-[color:var(--color-outline-variant)]/20 px-1.5 py-1.5 rounded-full backdrop-blur-md shadow-lg relative">
+              {/* Apple Sliding background indicator */}
+              <div 
+                className="absolute top-1.5 bottom-1.5 rounded-full bg-[color:var(--color-primary)]/15 border border-[color:var(--color-primary)]/45 transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] shadow-[0_0_12px_rgba(255,215,0,0.12)] backdrop-blur-md pointer-events-none"
+                style={getSliderStyle()}
+              />
+              
               <Link
                 href="/"
-                className={`rounded-full px-6 py-2 text-[14px] font-extrabold tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border ${pathname === '/'
-                    ? 'bg-[color:var(--color-primary)]/15 border-[color:var(--color-primary)]/40 text-[color:var(--color-primary)] shadow-[0_0_15px_rgba(255,215,0,0.15)] backdrop-blur-md'
-                    : 'border-transparent text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-high)]/30 hover:border-[color:var(--color-outline-variant)]/10 hover:backdrop-blur-sm'
-                  }`}
+                className={`w-20 text-center py-2 text-[14px] font-extrabold tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] relative z-10 ${
+                  pathname === '/'
+                    ? 'text-[color:var(--color-primary)]'
+                    : 'text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)]'
+                }`}
               >
                 Home
               </Link>
               <Link
                 href="/categories"
-                className={`rounded-full px-6 py-2 text-[14px] font-extrabold tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border ${pathname === '/categories'
-                    ? 'bg-[color:var(--color-primary)]/15 border-[color:var(--color-primary)]/40 text-[color:var(--color-primary)] shadow-[0_0_15px_rgba(255,215,0,0.15)] backdrop-blur-md'
-                    : 'border-transparent text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-high)]/30 hover:border-[color:var(--color-outline-variant)]/10 hover:backdrop-blur-sm'
-                  }`}
+                className={`w-28 text-center py-2 text-[14px] font-extrabold tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] relative z-10 ${
+                  pathname === '/categories'
+                    ? 'text-[color:var(--color-primary)]'
+                    : 'text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)]'
+                }`}
               >
                 Categories
               </Link>
-
               <Link
                 href="/tracks"
-                className={`rounded-full px-6 py-2 text-[14px] font-extrabold tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border ${pathname === '/tracks'
-                    ? 'bg-[color:var(--color-primary)]/15 border-[color:var(--color-primary)]/40 text-[color:var(--color-primary)] shadow-[0_0_15px_rgba(255,215,0,0.15)] backdrop-blur-md'
-                    : 'border-transparent text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-high)]/30 hover:border-[color:var(--color-outline-variant)]/10 hover:backdrop-blur-sm'
-                  }`}
+                className={`w-24 text-center py-2 text-[14px] font-extrabold tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] relative z-10 ${
+                  pathname === '/tracks'
+                    ? 'text-[color:var(--color-primary)]'
+                    : 'text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)]'
+                }`}
               >
                 Tracks
               </Link>

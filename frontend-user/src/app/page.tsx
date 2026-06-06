@@ -219,6 +219,7 @@ export default function HomePage() {
   const { city, latitude, longitude } = useLocationStore();
   const { activeShortcuts, setShortcutModalOpen, openActionModal } = useShortcutStore();
   const [mounted, setMounted] = useState(false);
+  const [activeExploreTab, setActiveExploreTab] = useState('trending');
   const [selectedNearbyService, setSelectedNearbyService] = useState<any | null>(null);
   const [userPannedCenter, setUserPannedCenter] = useState<[number, number] | null>(null);
   const [realServices, setRealServices] = useState<any[]>([]);
@@ -401,160 +402,202 @@ export default function HomePage() {
             </div>
           </section>
 
-          {/* Dashboard Overview - Compact Single Line */}
-          <section className="mb-6 md:mb-8">
-            <div className="card-glass rounded-[20px] px-4 py-3 md:px-6 md:py-4 overflow-hidden relative">
-              <div className="absolute inset-0 opacity-[0.06]" style={{ background: 'radial-gradient(circle at top right, rgba(255,215,0,0.55), transparent 42%)' }} />
-              <div className="relative flex flex-col xl:flex-row items-center justify-between gap-4">
-                
-                {/* Stats Container (Essentials on the Left) */}
-                <div className="flex items-center gap-4 lg:gap-6 shrink-0 border-r border-[color:var(--color-outline-variant)]/20 pr-4 lg:pr-6">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[14px] md:text-[16px] font-black text-[color:var(--color-on-surface)]">{String(activeCount)}</span>
-                    <span className="text-[10px] md:text-[11px] text-[color:var(--color-on-surface-variant)] uppercase tracking-wider">Active</span>
-                  </div>
-                  <div className="h-3.5 w-[1px] bg-[color:var(--color-outline-variant)]/30" />
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[14px] md:text-[16px] font-black text-[color:var(--color-on-surface)]">28</span>
-                    <span className="text-[10px] md:text-[11px] text-[color:var(--color-on-surface-variant)] uppercase tracking-wider">Saved</span>
-                  </div>
-                  <div className="h-3.5 w-[1px] bg-[color:var(--color-outline-variant)]/30" />
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[14px] md:text-[16px] font-black text-[color:var(--color-on-surface)]">98%</span>
-                    <span className="text-[10px] md:text-[11px] text-[color:var(--color-on-surface-variant)] uppercase tracking-wider">Score</span>
-                  </div>
+          {/* Dashboard Overview - Stacked Bars */}
+          <section className="mb-6 md:mb-8 space-y-4">
+            
+            {/* Bar 1: Stats & Shortcut Manager Trigger */}
+            <div className="card-glass rounded-2xl px-5 py-3.5 flex flex-col md:flex-row items-center justify-between gap-4 border border-[color:var(--color-outline-variant)]/20 shadow-lg relative overflow-hidden">
+              <div className="absolute inset-0 opacity-[0.04]" style={{ background: 'radial-gradient(circle at top right, rgba(255,215,0,0.55), transparent 42%)' }} />
+              <div className="flex items-center gap-1.5 shrink-0">
+                <span className="material-symbols-outlined text-[16px] text-[color:var(--color-primary)] animate-pulse">analytics</span>
+                <span className="text-[10px] uppercase tracking-[0.2em] font-extrabold text-[color:var(--color-outline)]">Dashboard Overview</span>
+              </div>
+              
+              <div className="flex flex-wrap items-center justify-center gap-6 lg:gap-8">
+                <div className="flex items-center gap-2">
+                  <span className="text-[15px] font-black text-[color:var(--color-on-surface)]">{String(activeCount)}</span>
+                  <span className="text-[11px] text-[color:var(--color-on-surface-variant)] uppercase tracking-wider font-semibold">Active Bookings</span>
                 </div>
-
-                {/* Shortcuts & Scroller Layout */}
-                <div className="flex-1 flex flex-col md:flex-row items-center gap-3.5 min-w-0 w-full xl:w-auto">
-                  {/* Shortcut Button adjacent to overview */}
-                  <button
-                    onClick={() => setShortcutModalOpen(true)}
-                    className="flex items-center gap-1.5 bg-gradient-to-r from-[color:var(--color-primary)] to-[color:var(--color-primary-fixed-dim)] text-[color:var(--color-on-primary)] px-3.5 py-2 rounded-xl font-bold text-xs hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 shadow-md shadow-[color:var(--color-primary)]/15 whitespace-nowrap shrink-0 cursor-pointer"
-                  >
-                    <span>Shortcut</span>
-                    <span className="material-symbols-outlined text-[16px]">add</span>
-                  </button>
-
-                  {/* Active Shortcuts (Max 6) */}
-                  <div className="flex flex-wrap items-center gap-2 shrink-0 border-r border-[color:var(--color-outline-variant)]/20 pr-3.5">
-                    {Array.isArray(activeShortcuts) &&
-                      activeShortcuts.slice(0, 6).map(id => AVAILABLE_SHORTCUTS.find(s => s.id === id)).filter(Boolean).map(shortcut => {
-                        if (!shortcut) return null;
-                        const handleAction = () => {
-                          if (shortcut.actionType === 'modal') {
-                            openActionModal(shortcut.actionTarget);
-                          } else {
-                            window.location.href = shortcut.actionTarget;
-                          }
-                        };
-                        return (
-                          <button
-                            key={shortcut.id}
-                            onClick={handleAction}
-                            title={shortcut.label}
-                            className="h-8 px-3 rounded-lg border border-[color:var(--color-outline-variant)]/20 bg-[color:var(--color-surface-container)] hover:border-[color:var(--color-primary)]/30 hover:bg-[color:var(--color-surface-container-high)] transition-all flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)]"
-                          >
-                            <span className="material-symbols-outlined text-[16px] text-[color:var(--color-primary)]">{shortcut.icon}</span>
-                            <span className="max-w-[70px] truncate">{shortcut.label}</span>
-                          </button>
-                        );
-                      })}
-                  </div>
-
-                  {/* Other Shortcuts (Scrollable Row) */}
-                  <div className="flex-1 overflow-x-auto custom-scrollbar flex items-center gap-2 py-0.5 min-w-0 scroll-smooth w-full md:w-auto">
-                    {AVAILABLE_SHORTCUTS.filter(s => !activeShortcuts.includes(s.id)).map(shortcut => {
-                      const handleAction = () => {
-                        if (shortcut.actionType === 'modal') {
-                          openActionModal(shortcut.actionTarget);
-                        } else {
-                          window.location.href = shortcut.actionTarget;
-                        }
-                      };
-                      return (
-                        <button
-                          key={shortcut.id}
-                          onClick={handleAction}
-                          title={`${shortcut.label} (Access directly)`}
-                          className="h-8 px-3 rounded-lg border border-dashed border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container-low)]/40 hover:border-[color:var(--color-outline)]/40 hover:bg-[color:var(--color-surface-container)] transition-all flex items-center gap-1.5 cursor-pointer text-xs font-medium text-[color:var(--color-outline)] hover:text-[color:var(--color-on-surface)] shrink-0"
-                        >
-                          <span className="material-symbols-outlined text-[15px]">{shortcut.icon}</span>
-                          <span className="max-w-[80px] truncate">{shortcut.label}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
+                <div className="h-3.5 w-[1px] bg-[color:var(--color-outline-variant)]/30" />
+                <div className="flex items-center gap-2">
+                  <span className="text-[15px] font-black text-[color:var(--color-on-surface)]">28</span>
+                  <span className="text-[11px] text-[color:var(--color-on-surface-variant)] uppercase tracking-wider font-semibold">Saved Places</span>
                 </div>
+                <div className="h-3.5 w-[1px] bg-[color:var(--color-outline-variant)]/30" />
+                <div className="flex items-center gap-2">
+                  <span className="text-[15px] font-black text-[color:var(--color-on-surface)]">98%</span>
+                  <span className="text-[11px] text-[color:var(--color-on-surface-variant)] uppercase tracking-wider font-semibold">Support Score</span>
+                </div>
+              </div>
 
+              <button
+                onClick={() => setShortcutModalOpen(true)}
+                className="flex items-center gap-1.5 bg-gradient-to-r from-[color:var(--color-primary)] to-[color:var(--color-primary-fixed-dim)] text-[color:var(--color-on-primary)] px-4 py-2 rounded-xl font-black text-xs hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 shadow-md shadow-[color:var(--color-primary)]/15 whitespace-nowrap cursor-pointer shrink-0"
+              >
+                <span>Shortcut</span>
+                <span className="material-symbols-outlined text-[16px]">add</span>
+              </button>
+            </div>
+
+            {/* Bar 2: Active Shortcuts (My Docks) */}
+            <div className="card-glass rounded-2xl px-5 py-3 flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4 border border-[color:var(--color-outline-variant)]/20 shadow-md relative overflow-hidden">
+              <div className="flex items-center gap-1.5 shrink-0 min-w-[130px]">
+                <span className="material-symbols-outlined text-[16px] text-[color:var(--color-primary)]">star</span>
+                <span className="text-[10px] uppercase tracking-wider font-extrabold text-[color:var(--color-on-surface-variant)]">My Docks (Max 6)</span>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                {Array.isArray(activeShortcuts) && activeShortcuts.length > 0 ? (
+                  activeShortcuts.slice(0, 6).map(id => AVAILABLE_SHORTCUTS.find(s => s.id === id)).filter(Boolean).map(shortcut => {
+                    if (!shortcut) return null;
+                    const handleAction = () => {
+                      if (shortcut.actionType === 'modal') {
+                        openActionModal(shortcut.actionTarget);
+                      } else {
+                        window.location.href = shortcut.actionTarget;
+                      }
+                    };
+                    return (
+                      <button
+                        key={shortcut.id}
+                        onClick={handleAction}
+                        title={shortcut.label}
+                        className="h-8 px-3.5 rounded-lg border border-[color:var(--color-outline-variant)]/20 bg-[color:var(--color-surface-container)] hover:border-[color:var(--color-primary)]/30 hover:bg-[color:var(--color-surface-container-high)] transition-all flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)]"
+                      >
+                        <span className="material-symbols-outlined text-[16px] text-[color:var(--color-primary)]">{shortcut.icon}</span>
+                        <span className="max-w-[100px] truncate">{shortcut.label}</span>
+                      </button>
+                    );
+                  })
+                ) : (
+                  <span className="text-xs text-[color:var(--color-outline)] italic">No shortcuts added yet. Click 'Shortcut +' to add.</span>
+                )}
               </div>
             </div>
+
+            {/* Bar 3: Quick Access Library (Scrollable Row) */}
+            <div className="card-glass rounded-2xl px-5 py-3 flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4 border border-[color:var(--color-outline-variant)]/20 shadow-md relative overflow-hidden">
+              <div className="flex items-center gap-1.5 shrink-0 min-w-[130px]">
+                <span className="material-symbols-outlined text-[16px] text-[color:var(--color-outline)]">explore</span>
+                <span className="text-[10px] uppercase tracking-wider font-extrabold text-[color:var(--color-outline)]">Quick Library</span>
+              </div>
+              <div className="flex-1 overflow-x-auto custom-scrollbar flex items-center gap-2 py-0.5 min-w-0 scroll-smooth w-full">
+                {AVAILABLE_SHORTCUTS.filter(s => !activeShortcuts.includes(s.id)).map(shortcut => {
+                  const handleAction = () => {
+                    if (shortcut.actionType === 'modal') {
+                      openActionModal(shortcut.actionTarget);
+                    } else {
+                      window.location.href = shortcut.actionTarget;
+                    }
+                  };
+                  return (
+                    <button
+                      key={shortcut.id}
+                      onClick={handleAction}
+                      title={`${shortcut.label} (Access directly)`}
+                      className="h-8 px-3 rounded-lg border border-dashed border-[color:var(--color-outline-variant)]/35 bg-[color:var(--color-surface-container-low)]/30 hover:border-[color:var(--color-outline)]/40 hover:bg-[color:var(--color-surface-container)] transition-all flex items-center gap-1.5 cursor-pointer text-xs font-medium text-[color:var(--color-outline)] hover:text-[color:var(--color-on-surface)] shrink-0"
+                    >
+                      <span className="material-symbols-outlined text-[15px]">{shortcut.icon}</span>
+                      <span className="max-w-[110px] truncate">{shortcut.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
           </section>
 
-          {/* Explore More - High Fidelity Vertical Stack of Blocks */}
+          {/* Explore More - High Fidelity Tabbed Panel Layout */}
           <section className="mb-10">
             <SectionHeader title="Explore More" sub="Trending updates, news topics, and special offerings" href="/categories" />
             
-            <div className="space-y-8">
-              {EXPLORE_SECTIONS.map((sec) => (
-                <div key={sec.id} className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-stretch">
-                  {/* Decorative Gradient Box (Left) */}
-                  <div className="lg:col-span-1 h-[210px]">
+            {/* Horizontal Glass tabs row */}
+            <div className="flex flex-wrap items-center gap-2.5 mb-6 bg-[color:var(--color-surface-container)]/30 p-2 rounded-2xl border border-[color:var(--color-outline-variant)]/20 backdrop-blur-md">
+              {EXPLORE_SECTIONS.map((sec) => {
+                const isActive = activeExploreTab === sec.id;
+                return (
+                  <button
+                    key={sec.id}
+                    onClick={() => setActiveExploreTab(sec.id)}
+                    className={`px-5 py-2.5 rounded-xl text-xs font-black tracking-wider transition-all duration-300 flex items-center gap-2 cursor-pointer border ${
+                      isActive
+                        ? `text-white shadow-lg`
+                        : 'bg-transparent border-transparent text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-high)]/40 hover:border-[color:var(--color-outline-variant)]/10'
+                    }`}
+                    style={isActive ? {
+                      background: `linear-gradient(135deg, ${sec.from}, ${sec.to})`,
+                      borderColor: sec.to,
+                      boxShadow: `0 4px 14px ${sec.glow}`
+                    } : undefined}
+                  >
+                    <span>{sec.emoji}</span>
+                    <span>{sec.title}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Selected Tab's Stacked Layout (Scrolls below header card) */}
+            {(() => {
+              const sec = EXPLORE_SECTIONS.find(s => s.id === activeExploreTab) || EXPLORE_SECTIONS[0];
+              return (
+                <div className="flex flex-col gap-5">
+                  {/* Themed Main Banner (Card on Top) */}
+                  <div 
+                    className="card-glass rounded-3xl p-6 overflow-hidden relative border border-[color:var(--color-outline-variant)]/30"
+                    style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.3)' }}
+                  >
                     <div 
-                      className="card-glass rounded-3xl p-5 overflow-hidden relative h-full flex flex-col items-center justify-center border border-[color:var(--color-outline-variant)]/30 text-center"
-                      style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.35)' }}
-                    >
-                      <div 
-                        className="absolute inset-0 opacity-[0.08]" 
-                        style={{ background: `linear-gradient(135deg, ${sec.from}, ${sec.to})` }}
-                      />
-                      <div className="absolute inset-0 opacity-10" style={{ background: `radial-gradient(circle at top right, ${sec.from}, transparent 45%)` }} />
-                      <div className="relative z-10">
-                        <div className="text-5xl mb-2.5 transition-transform duration-300 hover:scale-110 select-none">{sec.emoji}</div>
-                        <h3 className="text-[17px] font-black text-[color:var(--color-on-surface)] mb-1.5">{sec.title}</h3>
-                        <p className="text-[11px] text-[color:var(--color-on-surface-variant)] leading-normal mb-3.5 max-w-[170px] mx-auto">{sec.description}</p>
-                        <Link href={sec.href} className="inline-flex items-center gap-1.5 bg-[color:var(--color-primary)] text-[color:var(--color-on-primary)] px-3.5 py-1.5 rounded-lg font-bold text-[11px] hover:scale-105 active:scale-95 transition-all shadow-md shadow-[color:var(--color-primary)]/10">
-                          Explore
-                          <span className="material-symbols-outlined text-[12px]">arrow_forward</span>
-                        </Link>
+                      className="absolute inset-0 opacity-[0.08]" 
+                      style={{ background: `linear-gradient(135deg, ${sec.from}, ${sec.to})` }}
+                    />
+                    <div className="absolute inset-0 opacity-10" style={{ background: `radial-gradient(circle at top right, ${sec.from}, transparent 45%)` }} />
+                    <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                      <div className="flex items-center gap-4">
+                        <div className="text-5xl select-none animate-pulse">{sec.emoji}</div>
+                        <div className="text-left">
+                          <h3 className="text-[18px] font-black text-[color:var(--color-on-surface)]">{sec.title}</h3>
+                          <p className="text-[12px] text-[color:var(--color-on-surface-variant)] mt-1 max-w-md">{sec.description}</p>
+                        </div>
                       </div>
+                      <Link href={sec.href} className="inline-flex items-center gap-2 bg-[color:var(--color-primary)] text-[color:var(--color-on-primary)] px-5 py-2.5 rounded-xl font-bold text-xs hover:scale-105 active:scale-95 transition-all shadow-md shadow-[color:var(--color-primary)]/15 shrink-0">
+                        Explore Category
+                        <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                      </Link>
                     </div>
                   </div>
 
-                  {/* Scrollable List Feed (Right - 3 Columns) */}
-                  <div className="lg:col-span-3 h-[210px]">
-                    <div className="rounded-3xl border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)]/50 backdrop-blur p-4 h-full flex flex-col justify-between card-glass">
-                      <div className="overflow-y-auto custom-scrollbar flex-1 pr-1 space-y-2">
-                        {sec.items.map((item) => (
-                          <Link
-                            key={item.id}
-                            href={item.link}
-                            className="p-2.5 rounded-xl cursor-pointer border border-[color:var(--color-outline-variant)]/15 bg-[color:var(--color-surface-dim)]/20 hover:bg-[color:var(--color-surface-dim)]/50 transition-all flex items-center justify-between gap-3 group"
-                          >
-                            <div className="flex items-center gap-3 min-w-0">
-                              <div className="h-9 w-9 shrink-0 rounded-lg bg-[color:var(--color-surface-container-high)] border border-[color:var(--color-outline-variant)]/30 flex items-center justify-center text-lg select-none group-hover:scale-105 transition-transform">
-                                {item.emoji}
-                              </div>
-                              <div className="min-w-0 text-left">
-                                <h4 className="font-bold text-xs text-[color:var(--color-on-surface)] group-hover:text-[color:var(--color-primary)] transition-colors truncate leading-tight">{item.title}</h4>
-                                <p className="text-[10px] text-[color:var(--color-on-surface-variant)] truncate mt-0.5">{item.subtitle}</p>
-                              </div>
+                  {/* Scrollable List Feed (Scrolls placed Below) */}
+                  <div className="rounded-3xl border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)]/40 backdrop-blur-md p-4 max-h-[320px] min-h-[180px] overflow-hidden card-glass flex flex-col">
+                    <div className="overflow-y-auto custom-scrollbar pr-1 space-y-2 flex-1">
+                      {sec.items.map((item) => (
+                        <Link
+                          key={item.id}
+                          href={item.link}
+                          className="p-3 rounded-xl border border-[color:var(--color-outline-variant)]/15 bg-[color:var(--color-surface-dim)]/20 hover:bg-[color:var(--color-surface-dim)]/50 hover:border-[color:var(--color-primary)]/20 transition-all flex items-center justify-between gap-3 group"
+                        >
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div className="h-9 w-9 shrink-0 rounded-lg bg-[color:var(--color-surface-container-high)] border border-[color:var(--color-outline-variant)]/30 flex items-center justify-center text-lg select-none group-hover:scale-105 transition-transform">
+                              {item.emoji}
                             </div>
-                            <div className="flex items-center gap-3 shrink-0">
-                              <span className="text-[10px] text-[color:var(--color-primary)] font-extrabold bg-[color:var(--color-primary)]/10 px-2 py-0.5 rounded-md border border-[color:var(--color-primary)]/20">{item.tag}</span>
-                              <div className="flex items-center gap-0.5 text-[10px] font-bold text-[color:var(--color-on-surface-variant)] bg-[color:var(--color-surface-container-highest)] px-2 py-0.5 rounded-md border border-[color:var(--color-outline-variant)]/20">
-                                <Star className="h-2.5 w-2.5 text-yellow-500 fill-yellow-500" />
-                                <span>{item.rating}</span>
-                              </div>
+                            <div className="min-w-0 text-left">
+                              <h4 className="font-bold text-xs text-[color:var(--color-on-surface)] group-hover:text-[color:var(--color-primary)] transition-colors truncate leading-tight">{item.title}</h4>
+                              <p className="text-[10px] text-[color:var(--color-on-surface-variant)] truncate mt-0.5">{item.subtitle}</p>
                             </div>
-                          </Link>
-                        ))}
-                      </div>
+                          </div>
+                          <div className="flex items-center gap-3 shrink-0">
+                            <span className="text-[10px] text-[color:var(--color-primary)] font-extrabold bg-[color:var(--color-primary)]/10 px-2.5 py-0.5 rounded-md border border-[color:var(--color-primary)]/20">{item.tag}</span>
+                            <div className="flex items-center gap-0.5 text-[10px] font-bold text-[color:var(--color-on-surface-variant)] bg-[color:var(--color-surface-container-highest)] px-2.5 py-0.5 rounded-md border border-[color:var(--color-outline-variant)]/20">
+                              <Star className="h-2.5 w-2.5 text-yellow-500 fill-yellow-500" />
+                              <span>{item.rating}</span>
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
+              );
+            })()}
           </section>
 
           {/* Nearby Services Google Maps Live Radar */}

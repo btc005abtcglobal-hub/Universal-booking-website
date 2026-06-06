@@ -203,7 +203,7 @@ export function TopNav() {
             <div className="relative hidden lg:inline-block" ref={locationRef}>
               <button
                 onClick={() => setLocationDropdownOpen(!locationDropdownOpen)}
-                className="rounded-full px-5 py-2.5 text-[13px] font-extrabold tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] bg-[color:var(--color-surface-container)]/60 border border-[color:var(--color-outline-variant)]/30 text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-on-surface)]/[0.04] flex items-center gap-2 cursor-pointer backdrop-blur-md shrink-0 shadow-lg shadow-black/10"
+                className="rounded-full px-5 py-2.5 text-[13px] font-extrabold tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] bg-[color:var(--color-surface-container)]/30 border border-[color:var(--color-outline-variant)]/20 text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-high)]/40 flex items-center gap-2 cursor-pointer backdrop-blur-md shrink-0 shadow-md"
               >
                 <MapPin size={14} className={`text-[color:var(--color-primary)] ${status === 'detecting' ? 'animate-bounce' : ''}`} />
                 <span>{mounted ? city : 'Chennai'}</span>
@@ -256,21 +256,21 @@ export function TopNav() {
 
           {/* Center Column: Floating Navigation Menu */}
           <div className="hidden lg:flex flex-none justify-center">
-            <nav className="flex items-center gap-1 bg-[color:var(--color-surface-container)]/60 border border-[color:var(--color-outline-variant)]/30 px-1.5 py-1.5 rounded-full backdrop-blur-md shadow-lg relative">
+            <nav className="flex items-center gap-1 bg-[color:var(--color-surface-container)]/30 border border-[color:var(--color-outline-variant)]/20 px-1.5 py-1.5 rounded-full backdrop-blur-md shadow-lg relative">
               <Link
                 href="/"
-                className={`rounded-full px-6 py-2 text-[14px] font-extrabold tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] ${pathname === '/'
-                    ? 'bg-[color:var(--color-primary)] text-[color:var(--color-on-primary)] shadow-sm'
-                    : 'text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-on-surface)]/[0.04]'
+                className={`rounded-full px-6 py-2 text-[14px] font-extrabold tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border ${pathname === '/'
+                    ? 'bg-[color:var(--color-primary)]/15 border-[color:var(--color-primary)]/40 text-[color:var(--color-primary)] shadow-[0_0_15px_rgba(255,215,0,0.15)] backdrop-blur-md'
+                    : 'border-transparent text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-high)]/30 hover:border-[color:var(--color-outline-variant)]/10 hover:backdrop-blur-sm'
                   }`}
               >
                 Home
               </Link>
               <Link
                 href="/categories"
-                className={`rounded-full px-6 py-2 text-[14px] font-extrabold tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] ${pathname === '/categories'
-                    ? 'bg-[color:var(--color-primary)] text-[color:var(--color-on-primary)] shadow-sm'
-                    : 'text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-on-surface)]/[0.04]'
+                className={`rounded-full px-6 py-2 text-[14px] font-extrabold tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border ${pathname === '/categories'
+                    ? 'bg-[color:var(--color-primary)]/15 border-[color:var(--color-primary)]/40 text-[color:var(--color-primary)] shadow-[0_0_15px_rgba(255,215,0,0.15)] backdrop-blur-md'
+                    : 'border-transparent text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-high)]/30 hover:border-[color:var(--color-outline-variant)]/10 hover:backdrop-blur-sm'
                   }`}
               >
                 Categories
@@ -278,9 +278,9 @@ export function TopNav() {
 
               <Link
                 href="/tracks"
-                className={`rounded-full px-6 py-2 text-[14px] font-extrabold tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] ${pathname === '/tracks'
-                    ? 'bg-[color:var(--color-primary)] text-[color:var(--color-on-primary)] shadow-sm'
-                    : 'text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-on-surface)]/[0.04]'
+                className={`rounded-full px-6 py-2 text-[14px] font-extrabold tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border ${pathname === '/tracks'
+                    ? 'bg-[color:var(--color-primary)]/15 border-[color:var(--color-primary)]/40 text-[color:var(--color-primary)] shadow-[0_0_15px_rgba(255,215,0,0.15)] backdrop-blur-md'
+                    : 'border-transparent text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-high)]/30 hover:border-[color:var(--color-outline-variant)]/10 hover:backdrop-blur-sm'
                   }`}
               >
                 Tracks
@@ -291,18 +291,24 @@ export function TopNav() {
           {/* Right Column: Actions Capsule */}
           <div className="flex-1 flex justify-end items-center gap-3">
             {/* Desktop Actions Capsule (>= lg) */}
-            <div className="hidden lg:flex items-center bg-[color:var(--color-surface-container)]/60 border border-[color:var(--color-outline-variant)]/30 rounded-full px-3.5 py-1.5 gap-2.5 shadow-lg backdrop-blur-md">
-              <div className="relative flex items-center">
+            {/* Desktop Actions (Separated Glass Circles) */}
+            <div className="hidden lg:flex items-center gap-2.5">
+              {/* Search Icon Container */}
+              <div 
+                className={`relative rounded-full border border-[color:var(--color-outline-variant)]/20 bg-[color:var(--color-surface-container)]/30 backdrop-blur-md flex items-center shadow-md transition-all duration-300 ${
+                  searchOpen ? 'w-48 px-3.5 py-1.5' : 'w-10 h-10 justify-center'
+                }`}
+              >
                 <button
                   onClick={() => setSearchOpen(!searchOpen)}
-                  className="p-1 hover:bg-[color:var(--color-on-surface)]/[0.05] rounded-full text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-primary)] transition-all cursor-pointer flex items-center justify-center"
+                  className="p-1 hover:bg-[color:var(--color-on-surface)]/[0.05] rounded-full text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-primary)] transition-all cursor-pointer flex items-center justify-center shrink-0"
                   aria-label="Search"
                 >
                   <Search size={15} strokeWidth={2.5} />
                 </button>
                 <div
                   className={`overflow-hidden transition-all duration-300 flex items-center ${
-                    searchOpen ? 'w-32 xl:w-44 opacity-100 ml-2' : 'w-0 opacity-0'
+                    searchOpen ? 'w-32 xl:w-40 opacity-100 ml-2' : 'w-0 opacity-0'
                   }`}
                 >
                   <input
@@ -320,15 +326,21 @@ export function TopNav() {
                 </div>
               </div>
 
-              <span className="w-[1px] h-4 bg-[color:var(--color-outline-variant)]/40" />
-
-              <button className="p-1 text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-primary)] hover:bg-[color:var(--color-on-surface)]/[0.04] transition-all rounded-full cursor-pointer" aria-label="Wishlist">
+              {/* Wishlist Icon Container */}
+              <button 
+                className="w-10 h-10 rounded-full bg-[color:var(--color-surface-container)]/30 border border-[color:var(--color-outline-variant)]/20 backdrop-blur-md flex items-center justify-center shadow-md text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-primary)] hover:bg-[color:var(--color-surface-container-high)]/40 transition-all hover:scale-105 active:scale-95 cursor-pointer" 
+                aria-label="Wishlist"
+              >
                 <Heart size={16} strokeWidth={2} />
               </button>
 
-              <button className="p-1 text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-primary)] hover:bg-[color:var(--color-on-surface)]/[0.04] transition-all rounded-full cursor-pointer relative" aria-label="Cart">
+              {/* Cart Icon Container */}
+              <button 
+                className="w-10 h-10 rounded-full bg-[color:var(--color-surface-container)]/30 border border-[color:var(--color-outline-variant)]/20 backdrop-blur-md flex items-center justify-center shadow-md text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-primary)] hover:bg-[color:var(--color-surface-container-high)]/40 transition-all hover:scale-105 active:scale-95 cursor-pointer relative" 
+                aria-label="Cart"
+              >
                 <ShoppingBag size={16} strokeWidth={2} />
-                <span className="absolute top-0 right-0 w-1.5 h-1.5 bg-[color:var(--color-primary)] rounded-full shadow-[0_0_8px_rgba(255,215,0,0.6)]" />
+                <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-[color:var(--color-primary)] rounded-full shadow-[0_0_8px_rgba(255,215,0,0.6)]" />
               </button>
             </div>
 
@@ -336,7 +348,7 @@ export function TopNav() {
             <div className="hidden lg:flex relative" ref={profileRef}>
               <button
                 onClick={() => setProfileOpen(!profileOpen)}
-                className="flex items-center gap-2 bg-[color:var(--color-primary)] text-[color:var(--color-on-primary)] px-4 py-2 rounded-full font-extrabold text-[13px] tracking-wide hover:scale-102 active:scale-98 transition-all duration-200 cursor-pointer shadow-md shadow-[color:var(--color-primary)]/10"
+                className="flex items-center gap-2 bg-[color:var(--color-surface-container)]/30 border border-[color:var(--color-outline-variant)]/20 text-[color:var(--color-on-surface)] px-4 py-2 rounded-full font-extrabold text-[13px] tracking-wide hover:scale-102 active:scale-98 transition-all duration-200 cursor-pointer shadow-md backdrop-blur-md hover:bg-[color:var(--color-surface-container-high)]/40"
                 aria-label="Profile menu"
               >
                 {userName} <span role="img" aria-label="profile">{userEmoji}</span>

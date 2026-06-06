@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { MapPin, Star, Compass, ArrowRight } from 'lucide-react';
+import { MapPin, Star, Compass, ArrowRight, X, Sparkles } from 'lucide-react';
 import { TopNav } from '../components/TopNav';
 import { BottomNav } from '../components/BottomNav';
 import { ShortcutManagerModal } from '../components/shortcuts/ShortcutManagerModal';
@@ -214,11 +214,70 @@ function StatCard({
   );
 }
 
+const RECOMMENDED_ITEMS = [
+  {
+    id: 'r1',
+    title: 'Avengers: Secret Wars',
+    category: 'Avengers Movie',
+    emoji: '🎬',
+    rating: '4.9',
+    price: 'From ₹190',
+    link: '/entertainment-events/movies',
+    bgGradient: 'from-red-950/50 to-black/85',
+    borderColor: 'border-red-500/20'
+  },
+  {
+    id: 'r2',
+    title: 'Grand Palace Resorts',
+    category: 'Stay & Accomm',
+    emoji: '🏨',
+    rating: '4.8',
+    price: 'From ₹4,500',
+    link: '/stay-accommodation/hotels',
+    bgGradient: 'from-amber-950/50 to-black/85',
+    borderColor: 'border-amber-500/20'
+  },
+  {
+    id: 'r3',
+    title: 'Vande Bharat Express',
+    category: 'Your Next Train',
+    emoji: '🚆',
+    rating: '4.9',
+    price: 'From ₹850',
+    link: '/travel-transport/trains',
+    bgGradient: 'from-blue-950/50 to-black/85',
+    borderColor: 'border-blue-500/20'
+  },
+  {
+    id: 'r4',
+    title: 'Sunburn EDM Festival',
+    category: 'Events',
+    emoji: '🎪',
+    rating: '4.7',
+    price: 'From ₹1,200',
+    link: '/entertainment-events/events',
+    bgGradient: 'from-purple-950/50 to-black/85',
+    borderColor: 'border-purple-500/20'
+  },
+  {
+    id: 'r5',
+    title: 'Zen Strike Play Arena',
+    category: 'Play Time',
+    emoji: '🎮',
+    rating: '4.9',
+    price: 'From ₹400',
+    link: '/sports-turf/play-arena',
+    bgGradient: 'from-emerald-950/50 to-black/85',
+    borderColor: 'border-emerald-500/20'
+  }
+];
+
 export default function HomePage() {
   const { bookings } = useBookingFlowStore();
   const { city, latitude, longitude } = useLocationStore();
   const { activeShortcuts, setShortcutModalOpen, openActionModal } = useShortcutStore();
   const [mounted, setMounted] = useState(false);
+  const [dashboardOpen, setDashboardOpen] = useState(false);
   const [activeExploreTab, setActiveExploreTab] = useState('trending');
   const [selectedNearbyService, setSelectedNearbyService] = useState<any | null>(null);
   const [userPannedCenter, setUserPannedCenter] = useState<[number, number] | null>(null);
@@ -374,15 +433,45 @@ export default function HomePage() {
 
       <main className="page-content px-4 md:px-8 lg:pr-8">
         <div className="mx-auto max-w-7xl">
-          {/* Ad Banner at the top of the dashboard overview */}
+          {/* Row 1: Main Categories & Dashboard pill */}
+          <div className="flex items-center justify-between flex-wrap gap-4 mb-6 pt-2">
+            <div className="flex items-center gap-2 overflow-x-auto py-1 custom-scrollbar shrink-0 max-w-full lg:max-w-[70%] scroll-smooth">
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-[color:var(--color-outline)] mr-2 shrink-0">Categories:</span>
+              {[
+                { label: 'Travel & Transport', emoji: '✈️', href: '/travel-transport' },
+                { label: 'Stay & Accommodation', emoji: '🏨', href: '/stay-accommodation' },
+                { label: 'Entertainment & Events', emoji: '🎥', href: '/entertainment-events' },
+                { label: 'Sports & Turf', emoji: '⚽', href: '/sports-turf' },
+                { label: 'Lifestyle & Local', emoji: '💇', href: '/lifestyle-local' },
+              ].map((cat) => (
+                <Link
+                  key={cat.label}
+                  href={cat.href}
+                  className="px-3.5 py-1.5 rounded-full text-[11px] font-bold bg-[color:var(--color-surface-container)]/40 border border-[color:var(--color-outline-variant)]/20 text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-high)]/60 hover:scale-[1.03] transition-all flex items-center gap-1.5 shrink-0 backdrop-blur-md shadow-sm"
+                >
+                  <span>{cat.emoji}</span>
+                  <span>{cat.label}</span>
+                </Link>
+              ))}
+            </div>
+            <button
+              onClick={() => setDashboardOpen(true)}
+              className="px-4 py-2 rounded-full text-[11px] font-black tracking-widest bg-[color:var(--color-primary)]/10 border border-[color:var(--color-primary)]/40 text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/20 hover:scale-102 active:scale-98 transition-all flex items-center gap-1.5 cursor-pointer shrink-0 shadow-md backdrop-blur-md"
+            >
+              <span className="material-symbols-outlined text-[15px]">dashboard</span>
+              <span>DASHBOARD</span>
+            </button>
+          </div>
+
+          {/* Row 2: Ad Banner */}
           <section
             id="ad-banner-hero"
             data-ad-slot=""
             aria-label="Advertisement"
-            className="ad-block mb-6"
+            className="ad-block mb-8"
           >
             <div
-              className="w-full h-[172px] md:h-[212px] rounded-2xl overflow-hidden relative border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)] card-glass"
+              className="w-full h-[172px] md:h-[212px] rounded-3xl overflow-hidden relative border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)] card-glass"
               style={{ boxShadow: 'inset 0 0 0 1px rgba(255,215,0,0.06)' }}
             >
               <div className="absolute inset-0 overflow-hidden">
@@ -402,86 +491,19 @@ export default function HomePage() {
             </div>
           </section>
 
-          {/* Dashboard Overview - Stacked Bars */}
-          <section className="mb-6 md:mb-8 space-y-4">
+          {/* Row 3: Shortcuts Dock */}
+          <section className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[18px] text-[color:var(--color-primary)] animate-pulse">star</span>
+                <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-[color:var(--color-outline)]">My Docks</h3>
+              </div>
+            </div>
             
-            {/* Bar 1: Stats & Shortcut Manager Trigger */}
-            <div className="card-glass rounded-2xl px-5 py-3.5 flex flex-col md:flex-row items-center justify-between gap-4 border border-[color:var(--color-outline-variant)]/20 shadow-lg relative overflow-hidden">
-              <div className="absolute inset-0 opacity-[0.04]" style={{ background: 'radial-gradient(circle at top right, rgba(255,215,0,0.55), transparent 42%)' }} />
-              <div className="flex items-center gap-1.5 shrink-0">
-                <span className="material-symbols-outlined text-[16px] text-[color:var(--color-primary)] animate-pulse">analytics</span>
-                <span className="text-[10px] uppercase tracking-[0.2em] font-extrabold text-[color:var(--color-outline)]">Dashboard Overview</span>
-              </div>
-              
-              <div className="flex flex-wrap items-center justify-center gap-6 lg:gap-8">
-                <div className="flex items-center gap-2">
-                  <span className="text-[15px] font-black text-[color:var(--color-on-surface)]">{String(activeCount)}</span>
-                  <span className="text-[11px] text-[color:var(--color-on-surface-variant)] uppercase tracking-wider font-semibold">Active Bookings</span>
-                </div>
-                <div className="h-3.5 w-[1px] bg-[color:var(--color-outline-variant)]/30" />
-                <div className="flex items-center gap-2">
-                  <span className="text-[15px] font-black text-[color:var(--color-on-surface)]">28</span>
-                  <span className="text-[11px] text-[color:var(--color-on-surface-variant)] uppercase tracking-wider font-semibold">Saved Places</span>
-                </div>
-                <div className="h-3.5 w-[1px] bg-[color:var(--color-outline-variant)]/30" />
-                <div className="flex items-center gap-2">
-                  <span className="text-[15px] font-black text-[color:var(--color-on-surface)]">98%</span>
-                  <span className="text-[11px] text-[color:var(--color-on-surface-variant)] uppercase tracking-wider font-semibold">Support Score</span>
-                </div>
-              </div>
-
-              <button
-                onClick={() => setShortcutModalOpen(true)}
-                className="flex items-center gap-1.5 bg-gradient-to-r from-[color:var(--color-primary)] to-[color:var(--color-primary-fixed-dim)] text-[color:var(--color-on-primary)] px-4 py-2 rounded-xl font-black text-xs hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 shadow-md shadow-[color:var(--color-primary)]/15 whitespace-nowrap cursor-pointer shrink-0"
-              >
-                <span>Shortcut</span>
-                <span className="material-symbols-outlined text-[16px]">add</span>
-              </button>
-            </div>
-
-            {/* Bar 2: Active Shortcuts (My Docks) */}
-            <div className="card-glass rounded-2xl px-5 py-3 flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4 border border-[color:var(--color-outline-variant)]/20 shadow-md relative overflow-hidden">
-              <div className="flex items-center gap-1.5 shrink-0 min-w-[130px]">
-                <span className="material-symbols-outlined text-[16px] text-[color:var(--color-primary)]">star</span>
-                <span className="text-[10px] uppercase tracking-wider font-extrabold text-[color:var(--color-on-surface-variant)]">My Docks (Max 6)</span>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                {Array.isArray(activeShortcuts) && activeShortcuts.length > 0 ? (
-                  activeShortcuts.slice(0, 6).map(id => AVAILABLE_SHORTCUTS.find(s => s.id === id)).filter(Boolean).map(shortcut => {
-                    if (!shortcut) return null;
-                    const handleAction = () => {
-                      if (shortcut.actionType === 'modal') {
-                        openActionModal(shortcut.actionTarget);
-                      } else {
-                        window.location.href = shortcut.actionTarget;
-                      }
-                    };
-                    return (
-                      <button
-                        key={shortcut.id}
-                        onClick={handleAction}
-                        title={shortcut.label}
-                        className="h-8 px-3.5 rounded-lg border border-[color:var(--color-outline-variant)]/20 bg-[color:var(--color-surface-container)] hover:border-[color:var(--color-primary)]/30 hover:bg-[color:var(--color-surface-container-high)] transition-all flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)]"
-                      >
-                        <span className="material-symbols-outlined text-[16px] text-[color:var(--color-primary)]">{shortcut.icon}</span>
-                        <span className="max-w-[100px] truncate">{shortcut.label}</span>
-                      </button>
-                    );
-                  })
-                ) : (
-                  <span className="text-xs text-[color:var(--color-outline)] italic">No shortcuts added yet. Click 'Shortcut +' to add.</span>
-                )}
-              </div>
-            </div>
-
-            {/* Bar 3: Quick Access Library (Scrollable Row) */}
-            <div className="card-glass rounded-2xl px-5 py-3 flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4 border border-[color:var(--color-outline-variant)]/20 shadow-md relative overflow-hidden">
-              <div className="flex items-center gap-1.5 shrink-0 min-w-[130px]">
-                <span className="material-symbols-outlined text-[16px] text-[color:var(--color-outline)]">explore</span>
-                <span className="text-[10px] uppercase tracking-wider font-extrabold text-[color:var(--color-outline)]">Quick Library</span>
-              </div>
-              <div className="flex-1 overflow-x-auto custom-scrollbar flex items-center gap-2 py-0.5 min-w-0 scroll-smooth w-full">
-                {AVAILABLE_SHORTCUTS.filter(s => !activeShortcuts.includes(s.id)).map(shortcut => {
+            <div className="flex flex-wrap items-center gap-3">
+              {Array.isArray(activeShortcuts) && activeShortcuts.length > 0 ? (
+                activeShortcuts.slice(0, 6).map(id => AVAILABLE_SHORTCUTS.find(s => s.id === id)).filter(Boolean).map(shortcut => {
+                  if (!shortcut) return null;
                   const handleAction = () => {
                     if (shortcut.actionType === 'modal') {
                       openActionModal(shortcut.actionTarget);
@@ -493,20 +515,86 @@ export default function HomePage() {
                     <button
                       key={shortcut.id}
                       onClick={handleAction}
-                      title={`${shortcut.label} (Access directly)`}
-                      className="h-8 px-3 rounded-lg border border-dashed border-[color:var(--color-outline-variant)]/35 bg-[color:var(--color-surface-container-low)]/30 hover:border-[color:var(--color-outline)]/40 hover:bg-[color:var(--color-surface-container)] transition-all flex items-center gap-1.5 cursor-pointer text-xs font-medium text-[color:var(--color-outline)] hover:text-[color:var(--color-on-surface)] shrink-0"
+                      className="h-10 px-5 rounded-2xl border border-[color:var(--color-outline-variant)]/20 bg-[color:var(--color-surface-container)]/40 hover:border-[color:var(--color-primary)]/30 hover:bg-[color:var(--color-surface-container-high)]/60 hover:scale-[1.03] transition-all flex items-center gap-2 cursor-pointer text-xs font-extrabold text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)] shadow-sm backdrop-blur-md"
                     >
-                      <span className="material-symbols-outlined text-[15px]">{shortcut.icon}</span>
-                      <span className="max-w-[110px] truncate">{shortcut.label}</span>
+                      <span className="material-symbols-outlined text-[16px] text-[color:var(--color-primary)]">{shortcut.icon}</span>
+                      <span>{shortcut.label}</span>
                     </button>
                   );
-                })}
+                })
+              ) : (
+                <span className="text-xs text-[color:var(--color-outline)] italic mr-2">No shortcuts added yet.</span>
+              )}
+              
+              <button
+                onClick={() => setShortcutModalOpen(true)}
+                className="h-10 px-4 rounded-2xl border border-dashed border-[color:var(--color-primary)]/40 bg-[color:var(--color-primary)]/[0.03] hover:border-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/10 hover:scale-[1.03] transition-all flex items-center gap-1.5 cursor-pointer text-xs font-extrabold text-[color:var(--color-primary)]"
+              >
+                <span className="material-symbols-outlined text-[16px]">add</span>
+                <span>Shortcut +</span>
+              </button>
+            </div>
+          </section>
+
+          {/* Row 4: Recommended Section */}
+          <section className="mb-10">
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <h2 className="text-[18px] font-extrabold text-[color:var(--color-on-surface)] tracking-tight">Recommended For You</h2>
+                <p className="text-[11px] mt-0.5 text-[color:var(--color-outline)]">Curated bookings and activities tailored to your profile</p>
               </div>
             </div>
 
+            <div className="flex gap-4 overflow-x-auto pb-4 pt-1 custom-scrollbar scroll-smooth snap-x">
+              {RECOMMENDED_ITEMS.map((item) => (
+                <Link
+                  key={item.id}
+                  href={item.link}
+                  className="w-[200px] sm:w-[220px] shrink-0 snap-start group"
+                >
+                  <div
+                    className={`relative h-[270px] rounded-3xl p-5 overflow-hidden flex flex-col justify-between border ${item.borderColor} bg-gradient-to-b ${item.bgGradient} hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 card-glass shadow-lg`}
+                  >
+                    {/* Top category label & rating */}
+                    <div className="flex items-center justify-between gap-2 z-10">
+                      <span className="text-[9px] uppercase font-black tracking-widest text-[color:var(--color-primary)] bg-[color:var(--color-primary)]/15 px-2 py-0.5 rounded-md border border-[color:var(--color-primary)]/30 backdrop-blur-md">
+                        {item.category}
+                      </span>
+                      <div className="flex items-center gap-0.5 text-[9px] font-black text-yellow-500 bg-black/45 px-2 py-0.5 rounded-md border border-white/5 backdrop-blur-md">
+                        <Star className="h-2.5 w-2.5 fill-yellow-500 text-yellow-500" />
+                        <span>{item.rating}</span>
+                      </div>
+                    </div>
+
+                    {/* Big center emoji / illustration */}
+                    <div className="flex items-center justify-center my-4 z-10 transition-transform duration-300 group-hover:scale-110">
+                      <span className="text-6xl drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)] select-none">
+                        {item.emoji}
+                      </span>
+                    </div>
+
+                    {/* Bottom title & price info */}
+                    <div className="z-10 text-left">
+                      <h3 className="font-extrabold text-xs text-white leading-tight group-hover:text-[color:var(--color-primary)] transition-colors truncate">
+                        {item.title}
+                      </h3>
+                      <div className="flex items-center justify-between mt-2.5">
+                        <span className="text-[10px] font-bold text-gray-300">{item.price}</span>
+                        <span className="flex items-center gap-0.5 text-[9px] font-black uppercase text-[color:var(--color-primary)] opacity-0 group-hover:opacity-100 transition-opacity">
+                          Book <span className="material-symbols-outlined text-[10px]">arrow_forward</span>
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Ambient Glow */}
+                    <div className="absolute inset-0 bg-radial-gradient from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                  </div>
+                </Link>
+              ))}
+            </div>
           </section>
 
-          {/* Explore More - High Fidelity Tabbed Panel Layout */}
+          {/* Row 5: Explore More */}
           <section className="mb-10">
             <SectionHeader title="Explore More" sub="Trending updates, news topics, and special offerings" href="/categories" />
             
@@ -536,7 +624,7 @@ export default function HomePage() {
               })}
             </div>
 
-            {/* Selected Tab's Stacked Layout (Scrolls below header card) */}
+            {/* Selected Tab's Stacked Layout */}
             {(() => {
               const sec = EXPLORE_SECTIONS.find(s => s.id === activeExploreTab) || EXPLORE_SECTIONS[0];
               return (
@@ -600,7 +688,7 @@ export default function HomePage() {
             })()}
           </section>
 
-          {/* Nearby Services Google Maps Live Radar */}
+          {/* Row 6: Nearby Services */}
           <section className="mb-12">
             <div className="flex items-center justify-between mb-5">
               <div>
@@ -617,7 +705,7 @@ export default function HomePage() {
             </div>
 
             <div className="grid lg:grid-cols-3 gap-6 items-stretch">
-              {/* Map Canvas (Left 2 columns on desktop) */}
+              {/* Map Canvas */}
               <div className="lg:col-span-2 h-[380px] rounded-3xl overflow-hidden border border-[color:var(--color-outline-variant)]/30 shadow-2xl relative bg-slate-900/50">
                 <MapComponent
                   center={mapCenter}
@@ -647,7 +735,7 @@ export default function HomePage() {
                 />
               </div>
 
-              {/* Scrollable list card (Right 1 column on desktop) */}
+              {/* Scrollable list card */}
               <div className="lg:col-span-1 rounded-3xl border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)]/80 backdrop-blur p-4 flex flex-col justify-between h-[380px] card-glass">
                 <div className="overflow-y-auto custom-scrollbar flex-1 pr-1 space-y-2">
                   <span className="text-[10px] uppercase tracking-wider font-extrabold text-[color:var(--color-primary)] block mb-1">📡 Real-Time Sensing Feed</span>
@@ -697,8 +785,264 @@ export default function HomePage() {
               </div>
             </div>
           </section>
+
+          {/* Row 7: Detailed Footer */}
+          <footer className="mt-16 border-t border-[color:var(--color-outline-variant)]/20 bg-[color:var(--color-surface-container)]/10 backdrop-blur-xl pt-12 pb-24 px-6 md:px-12 rounded-t-[32px] card-glass relative overflow-hidden">
+            <div className="absolute inset-0 opacity-[0.02]" style={{ background: 'radial-gradient(circle at top right, var(--color-primary), transparent 60%)' }} />
+
+            {/* Top Row: Customer Support Socials & Newsletter */}
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-6 pb-8 border-b border-[color:var(--color-outline-variant)]/10 z-10 relative">
+              
+              {/* Left: Customer Support Social Handles */}
+              <div className="flex flex-col md:flex-row items-center gap-4 text-center md:text-left w-full lg:w-auto">
+                <span className="text-[10px] uppercase tracking-[0.25em] font-extrabold text-[color:var(--color-outline)]">
+                  Customer Support
+                </span>
+                <div className="flex items-center justify-center gap-2.5">
+                  {[
+                    { icon: 'public', label: 'FB', href: 'https://facebook.com', color: 'hover:text-blue-500' },
+                    { icon: 'share', label: 'TW', href: 'https://twitter.com', color: 'hover:text-sky-400' },
+                    { icon: 'photo_camera', label: 'IG', href: 'https://instagram.com', color: 'hover:text-pink-500' },
+                    { icon: 'smart_display', label: 'YT', href: 'https://youtube.com', color: 'hover:text-red-500' },
+                    { icon: 'send', label: 'TG', href: 'https://telegram.org', color: 'hover:text-sky-500' }
+                  ].map((social) => (
+                    <a
+                      key={social.label}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`w-9 h-9 rounded-full bg-[color:var(--color-surface-container-high)]/40 border border-[color:var(--color-outline-variant)]/20 flex items-center justify-center text-[color:var(--color-on-surface-variant)] transition-all hover:scale-105 active:scale-95 shadow-sm ${social.color}`}
+                      title={social.label}
+                    >
+                      <span className="material-symbols-outlined text-[16px]">{social.icon}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              {/* Right: Newsletter Subscription */}
+              <div className="w-full lg:w-auto flex flex-col md:flex-row items-center justify-center lg:justify-end gap-3">
+                <span className="text-[10px] uppercase tracking-[0.25em] font-extrabold text-[color:var(--color-outline)] shrink-0">
+                  Subscribe to Newsletter
+                </span>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const email = (e.currentTarget.elements.namedItem('email') as HTMLInputElement).value;
+                    if (email) {
+                      alert(`Thank you for subscribing, ${email}!`);
+                      e.currentTarget.reset();
+                    }
+                  }}
+                  className="flex items-center w-full md:w-80 rounded-2xl border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)]/50 p-1.5 focus-within:border-[color:var(--color-primary)]/45 transition-colors card-glass"
+                >
+                  <input
+                    name="email"
+                    type="email"
+                    required
+                    placeholder="Enter your email"
+                    className="flex-1 bg-transparent border-none outline-none text-xs text-[color:var(--color-on-surface)] placeholder-[color:var(--color-outline)] px-3 py-1"
+                  />
+                  <button
+                    type="submit"
+                    className="px-4 py-2 rounded-xl bg-[color:var(--color-primary)] text-[color:var(--color-on-primary)] hover:bg-[color:var(--color-primary-fixed-dim)] transition-colors text-[10px] font-black uppercase tracking-wider"
+                  >
+                    Subscribe
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            {/* Center Row: 4 Columns */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 py-10 z-10 relative">
+              
+              {/* Column 1: Exclusive Bookings */}
+              <div className="text-left space-y-3">
+                <h4 className="text-[11px] uppercase tracking-wider font-extrabold text-[color:var(--color-primary)]">
+                  Exclusive Bookings
+                </h4>
+                <ul className="space-y-2">
+                  {['New Events', 'Featured Venues', 'Top Locations', 'Ongoing Promos'].map((link) => (
+                    <li key={link}>
+                      <Link
+                        href="/categories"
+                        className="text-xs text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-primary)] transition-colors font-semibold"
+                      >
+                        {link}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Column 2: BokSpot */}
+              <div className="text-left space-y-3">
+                <h4 className="text-[11px] uppercase tracking-wider font-extrabold text-[color:var(--color-primary)]">
+                  BokSpot
+                </h4>
+                <ul className="space-y-2">
+                  {[
+                    { label: 'Home', href: '/' },
+                    { label: 'All Categories', href: '/categories' },
+                    { label: 'Live Radar Maps', href: '/maps' },
+                    { label: 'Active Tracks', href: '/tracks' }
+                  ].map((link) => (
+                    <li key={link.label}>
+                      <Link
+                        href={link.href}
+                        className="text-xs text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-primary)] transition-colors font-semibold"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Column 3: About Us */}
+              <div className="text-left space-y-3">
+                <h4 className="text-[11px] uppercase tracking-wider font-extrabold text-[color:var(--color-primary)]">
+                  About Us
+                </h4>
+                <ul className="space-y-2">
+                  {['Our Story', 'Company Bio', 'Careers', 'Press Kit', 'Privacy Policy'].map((link) => (
+                    <li key={link}>
+                      <Link
+                        href="/profile#settings"
+                        className="text-xs text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-primary)] transition-colors font-semibold"
+                      >
+                        {link}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Column 4: Customer Care Support */}
+              <div className="text-left space-y-3">
+                <h4 className="text-[11px] uppercase tracking-wider font-extrabold text-[color:var(--color-primary)]">
+                  Customer Care Support
+                </h4>
+                <ul className="space-y-2">
+                  {['Help Center / FAQs', 'Contact Support', 'Live Chat', 'Refund Policy', 'Terms of Service'].map((link) => (
+                    <li key={link}>
+                      <Link
+                        href="/profile#saved"
+                        className="text-xs text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-primary)] transition-colors font-semibold"
+                      >
+                        {link}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* Bottom Row: Logo & Copyright */}
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-8 border-t border-[color:var(--color-outline-variant)]/10 z-10 relative">
+              <Link
+                href="/"
+                className="flex items-center gap-2 font-['Playfair_Display'] text-[15px] tracking-[0.15em] text-[color:var(--color-primary)] uppercase font-extrabold hover:opacity-80 transition-opacity"
+              >
+                <Sparkles className="w-4 h-4 text-[color:var(--color-primary)]" />
+                <span>BOKSPOT</span>
+              </Link>
+              <p className="text-[10px] font-bold text-[color:var(--color-outline)] tracking-wider">
+                COPYRIGHT &copy; 2026 BOKSPOT. ALL RIGHTS RESERVED.
+              </p>
+            </div>
+          </footer>
         </div>
       </main>
+
+      {/* Glassmorphic Dashboard Drawer/Modal */}
+      {dashboardOpen && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-fade-in">
+          <div className="bg-[color:var(--color-surface-container)]/90 border border-[color:var(--color-outline-variant)]/30 rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl animate-fade-up card-glass">
+            
+            {/* Drawer Header */}
+            <div className="flex justify-between items-center px-6 py-5 border-b border-[color:var(--color-outline-variant)]/20">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-[20px] text-[color:var(--color-primary)]">analytics</span>
+                <h3 className="font-extrabold text-base text-[color:var(--color-on-surface)]">Dashboard Control Center</h3>
+              </div>
+              <button
+                onClick={() => setDashboardOpen(false)}
+                className="p-1.5 hover:bg-[color:var(--color-on-surface)]/[0.05] rounded-full text-[color:var(--color-outline)] hover:text-[color:var(--color-primary)] transition-colors cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-6 overflow-y-auto max-h-[70vh] custom-scrollbar">
+              {/* Stats Row */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <StatCard
+                  label="Active Bookings"
+                  value={String(activeCount)}
+                  note={activeNote}
+                  icon="event_available"
+                />
+                <StatCard
+                  label="Saved Places"
+                  value="28"
+                  note="Verified local venues"
+                  icon="bookmark"
+                />
+                <StatCard
+                  label="Support Score"
+                  value="98%"
+                  note="Instant response rating"
+                  icon="support_agent"
+                />
+              </div>
+
+              {/* Quick Access Library */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[16px] text-[color:var(--color-outline)]">explore</span>
+                  <span className="text-[10px] uppercase tracking-wider font-extrabold text-[color:var(--color-outline)]">Quick Library</span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {AVAILABLE_SHORTCUTS.map(shortcut => {
+                    const handleAction = () => {
+                      setDashboardOpen(false);
+                      if (shortcut.actionType === 'modal') {
+                        openActionModal(shortcut.actionTarget);
+                      } else {
+                        window.location.href = shortcut.actionTarget;
+                      }
+                    };
+                    return (
+                      <button
+                        key={shortcut.id}
+                        onClick={handleAction}
+                        className="h-10 px-3 rounded-xl border border-[color:var(--color-outline-variant)]/20 bg-[color:var(--color-surface-dim)]/50 hover:border-[color:var(--color-primary)]/45 hover:bg-[color:var(--color-surface-container-high)]/60 transition-all flex items-center gap-2 cursor-pointer text-xs font-semibold text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)] text-left truncate"
+                      >
+                        <span className="material-symbols-outlined text-[15px] text-[color:var(--color-primary)]">{shortcut.icon}</span>
+                        <span className="truncate">{shortcut.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Drawer Footer */}
+            <div className="px-6 py-4 bg-[color:var(--color-surface-dim)]/50 border-t border-[color:var(--color-outline-variant)]/25 flex justify-end">
+              <button
+                onClick={() => {
+                  setDashboardOpen(false);
+                  setShortcutModalOpen(true);
+                }}
+                className="px-5 py-2.5 rounded-xl bg-[color:var(--color-primary)] text-[color:var(--color-on-primary)] hover:bg-[color:var(--color-primary-fixed-dim)] transition-colors text-xs font-bold shadow-md"
+              >
+                Manage Docks
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <BottomNav />
     </>

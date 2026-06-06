@@ -218,7 +218,7 @@ export function TopNav() {
               className="flex items-center gap-2 font-['Playfair_Display'] text-[20px] lg:text-[24px] tracking-[0.15em] text-[color:var(--color-primary)] uppercase font-semibold hover:scale-102 active:scale-98 transition-all duration-300 shrink-0"
             >
               <Sparkles className="w-5 h-5 text-[color:var(--color-primary)] animate-pulse" />
-              <span>BETA</span>
+              <span>BOKSPOT</span>
             </Link>
 
             <div className="relative hidden lg:inline-block" ref={locationRef}>

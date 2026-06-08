@@ -75,6 +75,7 @@ export default function MapComponent({
   const customPinMarkerRef = useRef<L.Marker | null>(null);
   const [routingError, setRoutingError] = useState<string | null>(null);
 
+  const [mapZoom, setMapZoom] = useState(zoom);
   const [isSimulating, setIsSimulating] = useState(false);
   const simulationIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const routePointsRef = useRef<[number, number][]>([]);
@@ -240,6 +241,9 @@ export default function MapComponent({
       zoom: zoom,
       zoomControl: false,
       attributionControl: false,
+      scrollWheelZoom: false,
+      zoomSnap: 0.1,
+      zoomDelta: 0.1,
     });
 
     // Add custom zoom control
@@ -255,6 +259,9 @@ export default function MapComponent({
     tileLayerRef.current = tileLayer;
     markersGroupRef.current = L.layerGroup().addTo(map);
 
+    // Set initial map zoom state
+    setMapZoom(map.getZoom());
+
     // Listen to panned movements (moveend) to support real-time sensing of nearby shops
     map.on('moveend', () => {
       const newCenter = map.getCenter();
@@ -262,6 +269,28 @@ export default function MapComponent({
         onCenterChange(newCenter.lat, newCenter.lng);
       }
     });
+
+    // Listen to zoom changes to show/hide markers
+    map.on('zoomend', () => {
+      setMapZoom(map.getZoom());
+    });
+
+    // Enable custom zoom only when pinching (sets e.ctrlKey to true in browsers)
+    // or holding Ctrl while scrolling. This ensures regular two-finger swipes or scrolls
+    // never trigger any random zooms.
+    const container = mapContainerRef.current;
+    const handleWheel = (e: WheelEvent) => {
+      if (e.ctrlKey) {
+        e.preventDefault();
+        const delta = -e.deltaY;
+        const zoomFactor = 0.045;
+        const newZoom = map.getZoom() + delta * zoomFactor;
+        map.setZoom(newZoom);
+      }
+    };
+    if (container) {
+      container.addEventListener('wheel', handleWheel, { passive: false });
+    }
 
     // Listen to map click events for selecting and pinning locations
     map.on('click', (e: L.LeafletMouseEvent) => {
@@ -276,6 +305,9 @@ export default function MapComponent({
     }, 150);
 
     return () => {
+      if (container) {
+        container.removeEventListener('wheel', handleWheel);
+      }
       if (userMarkerRef.current) {
         userMarkerRef.current.remove();
         userMarkerRef.current = null;
@@ -334,6 +366,7 @@ export default function MapComponent({
       if (distance > 0.0005 || zoomChanged) {
         const targetZoom = (zoomChanged || isLargeDistance) ? zoom : currentZoom;
         mapRef.current.setView(center, targetZoom, { animate: true, duration: 0.8 });
+        setMapZoom(targetZoom);
       }
     }
   }, [center[0], center[1], zoom]);
@@ -713,10 +746,18 @@ export default function MapComponent({
 
     markersGroupRef.current.clearLayers();
 
+    const isZoomedIn = mapZoom >= 16;
+
     markers.forEach((marker) => {
       if (!marker.lat || !marker.lng) return;
 
       const isSelected = selectedMarkerId === marker.id;
+
+      // Google Maps style behavior: only show markers when zoomed in close (zoom >= 16),
+      // or if the marker is currently selected.
+      if (!isZoomedIn && !isSelected) {
+        return;
+      }
 
       // Custom marker label DivIcon
       const customIcon = L.divIcon({
@@ -725,8 +766,8 @@ export default function MapComponent({
           <div class="relative flex items-center justify-center w-10 h-10">
             ${
               isSelected
-                ? `<span class="absolute inline-flex h-8 w-8 animate-ping rounded-full bg-amber-500/40"></span>`
-                : ''
+                 ? `<span class="absolute inline-flex h-8 w-8 animate-ping rounded-full bg-amber-500/40"></span>`
+                 : ''
             }
             <div class="relative flex h-9 w-9 items-center justify-center rounded-full border-2 ${
               isSelected
@@ -803,7 +844,7 @@ export default function MapComponent({
         hasFitBoundsRef.current = true;
       }
     }
-  }, [markers, selectedMarkerId, customPin]);
+  }, [markers, selectedMarkerId, customPin, mapZoom]);
 
   return (
     <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-inner border border-[color:var(--color-outline-variant)]/20 bg-slate-950">

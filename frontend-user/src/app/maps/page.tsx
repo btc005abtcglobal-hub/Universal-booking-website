@@ -558,8 +558,8 @@ export default function MapsPage() {
             {/* Embedded interactive Leaflet map */}
             <div className="absolute inset-0 z-0">
               <MapComponent
-                center={mapCenter}
-                zoom={13}
+                center={selectedService ? [selectedService.lat, selectedService.lng] : (userPannedCenter || mapCenter)}
+                zoom={selectedService ? 17 : 13}
                 markers={leafletMarkers}
                 selectedMarkerId={selectedService?.id}
                 customPin={customPin}

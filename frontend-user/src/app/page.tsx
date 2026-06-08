@@ -856,8 +856,8 @@ export default function HomePage() {
               {/* Map Canvas */}
               <div className="lg:col-span-2 h-[380px] rounded-3xl overflow-hidden border border-[color:var(--color-outline-variant)]/30 shadow-2xl relative bg-slate-900/50">
                 <MapComponent
-                  center={mapCenter}
-                  zoom={13}
+                  center={selectedNearbyService ? [selectedNearbyService.lat, selectedNearbyService.lng] : (userPannedCenter || mapCenter)}
+                  zoom={selectedNearbyService ? 17 : 13}
                   selectedMarkerId={selectedNearbyService?.id}
                   onCenterChange={(lat, lng) => setUserPannedCenter([lat, lng])}
                   onMarkerClick={(marker) => {

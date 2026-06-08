@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { MapPin, Star, Compass, ArrowRight, X, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { TopNav } from '../components/TopNav';
 import { BottomNav } from '../components/BottomNav';
 import { ShortcutManagerModal } from '../components/shortcuts/ShortcutManagerModal';
@@ -66,7 +67,7 @@ const EXPLORE_SECTIONS = [
       { id: 'n1', title: 'Metro High-Speed Rail', subtitle: 'New Chennai routes opened today', tag: '10m ago', rating: 'New', emoji: '🚆', link: '/travel-transport/trains' },
       { id: 'n2', title: 'ZenFit Yoga Sessions', subtitle: 'New morning batches starting Monday', tag: '2h ago', rating: 'Yoga', emoji: '🧘', link: '/service/2' },
       { id: 'n3', title: 'Monsoon Safety Guidelines', subtitle: 'Travel advisories for hill stations', tag: '1d ago', rating: 'Alert', emoji: '🌧️', link: '/travel-transport/cabs' },
-      { id: 'n4', title: 'Govt RTO Online slots', subtitle: 'Instant booking available for DL test', tag: '2d ago', rating: 'Govt', emoji: '🚗', link: '/religious-government/rto' }
+      { id: 'n4', title: 'Kapaleeshwarar Temple Darshan', subtitle: 'Special festival booking slots open', tag: '2d ago', rating: 'Temple', emoji: '🛕', link: '/religious-government/darshan' }
     ]
   },
   {
@@ -278,10 +279,10 @@ export default function HomePage() {
   const { activeShortcuts, setShortcutModalOpen, openActionModal } = useShortcutStore();
   const [mounted, setMounted] = useState(false);
   const [dashboardOpen, setDashboardOpen] = useState(false);
-  const [activeExploreTab, setActiveExploreTab] = useState('trending');
   const [selectedNearbyService, setSelectedNearbyService] = useState<any | null>(null);
   const [userPannedCenter, setUserPannedCenter] = useState<[number, number] | null>(null);
   const [realServices, setRealServices] = useState<any[]>([]);
+  const [activeExploreTab, setActiveExploreTab] = useState('news');
 
   const cityCenter = useMemo(() => {
     return CITY_COORDINATES[(city || 'Chennai').toLowerCase()] || { lat: 13.0827, lng: 80.2707 };
@@ -438,11 +439,11 @@ export default function HomePage() {
             <div className="flex items-center gap-2 overflow-x-auto py-1 custom-scrollbar shrink-0 max-w-full lg:max-w-[70%] scroll-smooth">
               <span className="text-[10px] font-extrabold uppercase tracking-widest text-[color:var(--color-outline)] mr-2 shrink-0">Categories:</span>
               {[
-                { label: 'Travel & Transport', emoji: '✈️', href: '/travel-transport' },
-                { label: 'Stay & Accommodation', emoji: '🏨', href: '/stay-accommodation' },
-                { label: 'Entertainment & Events', emoji: '🎥', href: '/entertainment-events' },
-                { label: 'Sports & Turf', emoji: '⚽', href: '/sports-turf' },
-                { label: 'Lifestyle & Local', emoji: '💇', href: '/lifestyle-local' },
+                { label: 'Travel', emoji: '✈️', href: '/travel-transport' },
+                { label: 'Stay & Accomodation', emoji: '🏨', href: '/stay-accommodation' },
+                { label: 'Entertainment', emoji: '🎥', href: '/entertainment-events' },
+                { label: 'Sports&Turf', emoji: '⚽', href: '/sports-turf' },
+                { label: 'Lifestyle Services', emoji: '💇', href: '/lifestyle-local' },
               ].map((cat) => (
                 <Link
                   key={cat.label}
@@ -468,10 +469,10 @@ export default function HomePage() {
             id="ad-banner-hero"
             data-ad-slot=""
             aria-label="Advertisement"
-            className="ad-block mb-8"
+            className="ad-block mb-14"
           >
             <div
-              className="w-full h-[172px] md:h-[212px] rounded-3xl overflow-hidden relative border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)] card-glass"
+              className="w-full h-[260px] md:h-[360px] rounded-3xl overflow-hidden relative border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)] card-glass"
               style={{ boxShadow: 'inset 0 0 0 1px rgba(255,215,0,0.06)' }}
             >
               <div className="absolute inset-0 overflow-hidden">
@@ -557,7 +558,7 @@ export default function HomePage() {
                   >
                     {/* Top category label & rating */}
                     <div className="flex items-center justify-between gap-2 z-10">
-                      <span className="text-[9px] uppercase font-black tracking-widest text-[color:var(--color-primary)] bg-[color:var(--color-primary)]/15 px-2 py-0.5 rounded-md border border-[color:var(--color-primary)]/30 backdrop-blur-md">
+                      <span className="text-[9px] uppercase font-black tracking-widest text-[#FFD700] bg-black/65 px-2 py-0.5 rounded-md border border-[#FFD700]/30 backdrop-blur-md">
                         {item.category}
                       </span>
                       <div className="flex items-center gap-0.5 text-[9px] font-black text-yellow-500 bg-black/45 px-2 py-0.5 rounded-md border border-white/5 backdrop-blur-md">
@@ -575,12 +576,12 @@ export default function HomePage() {
 
                     {/* Bottom title & price info */}
                     <div className="z-10 text-left">
-                      <h3 className="font-extrabold text-xs text-white leading-tight group-hover:text-[color:var(--color-primary)] transition-colors truncate">
+                      <h3 className="font-extrabold text-xs text-white leading-tight group-hover:text-[#FFD700] transition-colors truncate">
                         {item.title}
                       </h3>
                       <div className="flex items-center justify-between mt-2.5">
                         <span className="text-[10px] font-bold text-gray-300">{item.price}</span>
-                        <span className="flex items-center gap-0.5 text-[9px] font-black uppercase text-[color:var(--color-primary)] opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span className="flex items-center gap-0.5 text-[9px] font-black uppercase text-[#FFD700] opacity-0 group-hover:opacity-100 transition-opacity">
                           Book <span className="material-symbols-outlined text-[10px]">arrow_forward</span>
                         </span>
                       </div>
@@ -594,87 +595,234 @@ export default function HomePage() {
             </div>
           </section>
 
-          {/* Row 5: Explore More */}
-          <section className="mb-10">
-            <SectionHeader title="Explore More" sub="Trending updates, news topics, and special offerings" href="/categories" />
+          {/* Row 5: Trending Now (Horizontal scrolling format below Recommended) */}
+          {(() => {
+            const sec = EXPLORE_SECTIONS.find(s => s.id === 'trending');
+            if (!sec) return null;
+            return (
+              <section className="mb-10 text-left">
+                <div className="flex items-center justify-between mb-5">
+                  <div>
+                    <h2 className="text-[18px] font-extrabold text-[color:var(--color-on-surface)] tracking-tight flex items-center gap-2">
+                      <span className="select-none text-xl">{sec.emoji}</span>
+                      <span>{sec.title}</span>
+                    </h2>
+                    <p className="text-[11px] mt-0.5 text-[color:var(--color-outline)]">{sec.description}</p>
+                  </div>
+                  <Link href={sec.href} className="flex items-center gap-1 text-[11px] font-bold text-[color:var(--color-primary)] hover:gap-1.5 transition-all duration-300">
+                    View All
+                    <span className="material-symbols-outlined text-[13px]">arrow_forward</span>
+                  </Link>
+                </div>
+
+                <div className="flex gap-4 overflow-x-auto pb-4 pt-1 custom-scrollbar scroll-smooth snap-x">
+                  {sec.items.map((item) => (
+                    <Link
+                      key={item.id}
+                      href={item.link}
+                      className="w-[200px] sm:w-[220px] shrink-0 snap-start group"
+                    >
+                      <div
+                        className="relative h-[270px] rounded-3xl p-5 overflow-hidden flex flex-col justify-between border border-[#F87171]/20 bg-gradient-to-b from-[#F87171]/20 to-black/85 hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 card-glass shadow-lg"
+                      >
+                        {/* Top category label & rating */}
+                        <div className="flex items-center justify-between gap-2 z-10">
+                          <span className="text-[9px] uppercase font-black tracking-widest text-[#FFD700] bg-black/65 px-2 py-0.5 rounded-md border border-[#FFD700]/30 backdrop-blur-md truncate max-w-[110px]" title={item.subtitle}>
+                            {item.subtitle}
+                          </span>
+                          <div className="flex items-center gap-0.5 text-[9px] font-black text-yellow-500 bg-black/45 px-2 py-0.5 rounded-md border border-white/5 backdrop-blur-md shrink-0">
+                            <Star className="h-2.5 w-2.5 fill-yellow-500 text-yellow-500" />
+                            <span>{item.rating}</span>
+                          </div>
+                        </div>
+
+                        {/* Big center emoji */}
+                        <div className="flex items-center justify-center my-4 z-10 transition-transform duration-300 group-hover:scale-110">
+                          <span className="text-6xl drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)] select-none">
+                            {item.emoji}
+                          </span>
+                        </div>
+
+                        {/* Bottom title & price info */}
+                        <div className="z-10 text-left">
+                          <h3 className="font-extrabold text-xs text-white leading-tight group-hover:text-[#FFD700] transition-colors truncate">
+                            {item.title}
+                          </h3>
+                          <div className="flex items-center justify-between mt-2.5">
+                            <span className="text-[10px] font-bold text-gray-300">{item.tag}</span>
+                            <span className="flex items-center gap-0.5 text-[9px] font-black uppercase text-[#FFD700] opacity-0 group-hover:opacity-100 transition-opacity">
+                              Book <span className="material-symbols-outlined text-[10px]">arrow_forward</span>
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Ambient Glow */}
+                        <div className="absolute inset-0 bg-radial-gradient from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            );
+          })()}
+
+          {/* Row 6: Local Events (Horizontal scrolling format below Trending Now) */}
+          {(() => {
+            const sec = EXPLORE_SECTIONS.find(s => s.id === 'events');
+            if (!sec) return null;
+            return (
+              <section className="mb-10 text-left">
+                <div className="flex items-center justify-between mb-5">
+                  <div>
+                    <h2 className="text-[18px] font-extrabold text-[color:var(--color-on-surface)] tracking-tight flex items-center gap-2">
+                      <span className="select-none text-xl">{sec.emoji}</span>
+                      <span>{sec.title}</span>
+                    </h2>
+                    <p className="text-[11px] mt-0.5 text-[color:var(--color-outline)]">{sec.description}</p>
+                  </div>
+                  <Link href={sec.href} className="flex items-center gap-1 text-[11px] font-bold text-[color:var(--color-primary)] hover:gap-1.5 transition-all duration-300">
+                    View All
+                    <span className="material-symbols-outlined text-[13px]">arrow_forward</span>
+                  </Link>
+                </div>
+
+                <div className="flex gap-4 overflow-x-auto pb-4 pt-1 custom-scrollbar scroll-smooth snap-x">
+                  {sec.items.map((item) => (
+                    <Link
+                      key={item.id}
+                      href={item.link}
+                      className="w-[200px] sm:w-[220px] shrink-0 snap-start group"
+                    >
+                      <div
+                        className="relative h-[270px] rounded-3xl p-5 overflow-hidden flex flex-col justify-between border border-[#34D399]/20 bg-gradient-to-b from-[#34D399]/20 to-black/85 hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 card-glass shadow-lg"
+                      >
+                        {/* Top category label & rating */}
+                        <div className="flex items-center justify-between gap-2 z-10">
+                          <span className="text-[9px] uppercase font-black tracking-widest text-[#FFD700] bg-black/65 px-2 py-0.5 rounded-md border border-[#FFD700]/30 backdrop-blur-md truncate max-w-[110px]" title={item.subtitle}>
+                            {item.subtitle}
+                          </span>
+                          <div className="flex items-center gap-0.5 text-[9px] font-black text-yellow-500 bg-black/45 px-2 py-0.5 rounded-md border border-white/5 backdrop-blur-md shrink-0">
+                            <Star className="h-2.5 w-2.5 fill-yellow-500 text-yellow-500" />
+                            <span>{item.rating}</span>
+                          </div>
+                        </div>
+
+                        {/* Big center emoji */}
+                        <div className="flex items-center justify-center my-4 z-10 transition-transform duration-300 group-hover:scale-110">
+                          <span className="text-6xl drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)] select-none">
+                            {item.emoji}
+                          </span>
+                        </div>
+
+                        {/* Bottom title & price info */}
+                        <div className="z-10 text-left">
+                          <h3 className="font-extrabold text-xs text-white leading-tight group-hover:text-[#FFD700] transition-colors truncate">
+                            {item.title}
+                          </h3>
+                          <div className="flex items-center justify-between mt-2.5">
+                            <span className="text-[10px] font-bold text-gray-300">{item.tag}</span>
+                            <span className="flex items-center gap-0.5 text-[9px] font-black uppercase text-[#FFD700] opacity-0 group-hover:opacity-100 transition-opacity">
+                              Book <span className="material-symbols-outlined text-[10px]">arrow_forward</span>
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Ambient Glow */}
+                        <div className="absolute inset-0 bg-radial-gradient from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            );
+          })()}
+
+          {/* Row 7: Explore More (News, Offers, Featured in tab switcher layout) */}
+          <section className="mb-10 text-left">
+            <h2 className="text-[18px] font-extrabold text-[color:var(--color-on-surface)] tracking-tight mb-4">Explore More</h2>
             
-            {/* Horizontal Glass tabs row */}
-            <div className="flex flex-wrap items-center gap-2.5 mb-6 bg-[color:var(--color-surface-container)]/30 p-2 rounded-2xl border border-[color:var(--color-outline-variant)]/20 backdrop-blur-md">
-              {EXPLORE_SECTIONS.map((sec) => {
-                const isActive = activeExploreTab === sec.id;
+            {/* Custom Horizontal Tabs Switcher Bar */}
+            <div className="flex items-center justify-between mb-5 border-b border-[color:var(--color-outline-variant)]/15 pb-2.5">
+              <div className="flex items-center gap-5 sm:gap-7 overflow-x-auto scrollbar-none scroll-smooth snap-x">
+                {EXPLORE_SECTIONS.filter(s => s.id !== 'trending' && s.id !== 'events').map((sec) => {
+                  const isActive = activeExploreTab === sec.id;
+                  return (
+                    <button
+                      key={sec.id}
+                      onClick={() => setActiveExploreTab(sec.id)}
+                      className={`text-[13.5px] font-black tracking-wide pb-2.5 relative z-10 transition-colors duration-200 cursor-pointer whitespace-nowrap ${
+                        isActive
+                          ? 'text-[color:var(--color-primary)]'
+                          : 'text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)]'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 px-1">
+                        <span className="text-base select-none">{sec.emoji}</span>
+                        <span>{sec.title}</span>
+                      </div>
+                      {isActive && (
+                        <motion.div
+                          layoutId="activeExploreTabIndicator"
+                          className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[color:var(--color-primary)] rounded-full shadow-[0_0_8px_rgba(255,215,0,0.6)]"
+                          transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                        />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+              
+              {/* Dynamic View All button pointing to active category */}
+              {(() => {
+                const activeSec = EXPLORE_SECTIONS.find(s => s.id === activeExploreTab);
+                if (!activeSec) return null;
                 return (
-                  <button
-                    key={sec.id}
-                    onClick={() => setActiveExploreTab(sec.id)}
-                    className={`px-5 py-2.5 rounded-xl text-xs font-black tracking-wider transition-all duration-300 flex items-center gap-2 cursor-pointer border ${
-                      isActive
-                        ? `text-white shadow-lg`
-                        : 'bg-transparent border-transparent text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-high)]/40 hover:border-[color:var(--color-outline-variant)]/10'
-                    }`}
-                    style={isActive ? {
-                      background: `linear-gradient(135deg, ${sec.from}, ${sec.to})`,
-                      borderColor: sec.to,
-                      boxShadow: `0 4px 14px ${sec.glow}`
-                    } : undefined}
-                  >
-                    <span>{sec.emoji}</span>
-                    <span>{sec.title}</span>
-                  </button>
+                  <Link href={activeSec.href} className="flex items-center gap-1 text-[11px] font-bold text-[color:var(--color-primary)] hover:gap-1.5 transition-all duration-300 shrink-0 ml-4 pb-2.5">
+                    View All
+                    <span className="material-symbols-outlined text-[13px]">arrow_forward</span>
+                  </Link>
                 );
-              })}
+              })()}
             </div>
 
-            {/* Selected Tab's Stacked Layout */}
+            {/* Display active tab content */}
             {(() => {
-              const sec = EXPLORE_SECTIONS.find(s => s.id === activeExploreTab) || EXPLORE_SECTIONS[0];
+              const activeSec = EXPLORE_SECTIONS.find(s => s.id === activeExploreTab);
+              if (!activeSec) return null;
               return (
-                <div className="flex flex-col gap-5">
-                  {/* Themed Main Banner (Card on Top) */}
-                  <div 
-                    className="card-glass rounded-3xl p-6 overflow-hidden relative border border-[color:var(--color-outline-variant)]/30"
-                    style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.3)' }}
-                  >
-                    <div 
-                      className="absolute inset-0 opacity-[0.08]" 
-                      style={{ background: `linear-gradient(135deg, ${sec.from}, ${sec.to})` }}
-                    />
-                    <div className="absolute inset-0 opacity-10" style={{ background: `radial-gradient(circle at top right, ${sec.from}, transparent 45%)` }} />
-                    <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4">
-                      <div className="flex items-center gap-4">
-                        <div className="text-5xl select-none animate-pulse">{sec.emoji}</div>
-                        <div className="text-left">
-                          <h3 className="text-[18px] font-black text-[color:var(--color-on-surface)]">{sec.title}</h3>
-                          <p className="text-[12px] text-[color:var(--color-on-surface-variant)] mt-1 max-w-md">{sec.description}</p>
-                        </div>
-                      </div>
-                      <Link href={sec.href} className="inline-flex items-center gap-2 bg-[color:var(--color-primary)] text-[color:var(--color-on-primary)] px-5 py-2.5 rounded-xl font-bold text-xs hover:scale-105 active:scale-95 transition-all shadow-md shadow-[color:var(--color-primary)]/15 shrink-0">
-                        Explore Category
-                        <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
-                      </Link>
-                    </div>
-                  </div>
+                <div className="flex flex-col text-left animate-fade-up">
+                  {/* Category Description */}
+                  <p className="text-[11px] text-[color:var(--color-on-surface-variant)] font-medium mb-4">— {activeSec.description}</p>
 
-                  {/* Scrollable List Feed (Scrolls placed Below) */}
-                  <div className="rounded-3xl border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)]/40 backdrop-blur-md p-4 max-h-[320px] min-h-[180px] overflow-hidden card-glass flex flex-col">
-                    <div className="overflow-y-auto custom-scrollbar pr-1 space-y-2 flex-1">
-                      {sec.items.map((item) => (
+                  {/* Content Box (Glass Card) */}
+                  <div className="rounded-3xl border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)]/25 backdrop-blur-md p-5 card-glass shadow-lg relative overflow-hidden">
+                    {/* Subtle themed gradient background glow */}
+                    <div 
+                      className="absolute inset-0 opacity-[0.03] pointer-events-none" 
+                      style={{ background: `linear-gradient(135deg, ${activeSec.from}, ${activeSec.to})` }}
+                    />
+                    
+                    {/* Vertical list of items (placed down one after another, filling the space) */}
+                    <div className="flex flex-col gap-2.5">
+                      {activeSec.items.map((item) => (
                         <Link
                           key={item.id}
                           href={item.link}
-                          className="p-3 rounded-xl border border-[color:var(--color-outline-variant)]/15 bg-[color:var(--color-surface-dim)]/20 hover:bg-[color:var(--color-surface-dim)]/50 hover:border-[color:var(--color-primary)]/20 transition-all flex items-center justify-between gap-3 group"
+                          className="p-3.5 rounded-2xl border border-[color:var(--color-outline-variant)]/15 bg-[color:var(--color-surface-dim)]/20 hover:bg-[color:var(--color-surface-dim)]/50 hover:border-[color:var(--color-primary)]/20 transition-all flex items-center justify-between gap-4 group w-full relative overflow-hidden"
                         >
-                          <div className="flex items-center gap-3 min-w-0">
-                            <div className="h-9 w-9 shrink-0 rounded-lg bg-[color:var(--color-surface-container-high)] border border-[color:var(--color-outline-variant)]/30 flex items-center justify-center text-lg select-none group-hover:scale-105 transition-transform">
+                          <div className="flex items-center gap-3.5 min-w-0">
+                            <div className="h-9 w-9 shrink-0 rounded-xl bg-[color:var(--color-surface-container-high)] border border-[color:var(--color-outline-variant)]/30 flex items-center justify-center text-lg select-none group-hover:scale-105 transition-transform">
                               {item.emoji}
                             </div>
                             <div className="min-w-0 text-left">
-                              <h4 className="font-bold text-xs text-[color:var(--color-on-surface)] group-hover:text-[color:var(--color-primary)] transition-colors truncate leading-tight">{item.title}</h4>
+                              <h4 className="font-extrabold text-[12.5px] text-[color:var(--color-on-surface)] group-hover:text-[color:var(--color-primary)] transition-colors truncate leading-tight">{item.title}</h4>
                               <p className="text-[10px] text-[color:var(--color-on-surface-variant)] truncate mt-0.5">{item.subtitle}</p>
                             </div>
                           </div>
+                          
                           <div className="flex items-center gap-3 shrink-0">
-                            <span className="text-[10px] text-[color:var(--color-primary)] font-extrabold bg-[color:var(--color-primary)]/10 px-2.5 py-0.5 rounded-md border border-[color:var(--color-primary)]/20">{item.tag}</span>
-                            <div className="flex items-center gap-0.5 text-[10px] font-bold text-[color:var(--color-on-surface-variant)] bg-[color:var(--color-surface-container-highest)] px-2.5 py-0.5 rounded-md border border-[color:var(--color-outline-variant)]/20">
+                            <span className="text-[9px] text-[color:var(--color-primary)] font-extrabold bg-[color:var(--color-primary)]/10 px-2.5 py-0.5 rounded-md border border-[color:var(--color-primary)]/20">{item.tag}</span>
+                            <div className="flex items-center gap-0.5 text-[9px] font-bold text-[color:var(--color-on-surface-variant)] bg-[color:var(--color-surface-container-highest)] px-2.5 py-0.5 rounded-md border border-[color:var(--color-outline-variant)]/20">
                               <Star className="h-2.5 w-2.5 text-yellow-500 fill-yellow-500" />
                               <span>{item.rating}</span>
                             </div>

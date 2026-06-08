@@ -16,7 +16,7 @@ const CATEGORY_DATA: Record<string, {
   }[];
 }> = {
   'travel-transport': {
-    name: 'Travel & Transport', emoji: '🌍', gradient: 'from-blue-500 to-cyan-400',
+    name: 'Travel', emoji: '🌍', gradient: 'from-blue-500 to-cyan-400',
     desc: 'All movement and travel-related bookings, including public transit and personal rentals',
     sections: [
       {
@@ -41,7 +41,7 @@ const CATEGORY_DATA: Record<string, {
     ],
   },
   'stay-accommodation': {
-    name: 'Stay & Accommodation', emoji: '🏨', gradient: 'from-amber-400 to-amber-600',
+    name: 'Stay & Accomodation', emoji: '🏨', gradient: 'from-amber-400 to-amber-600',
     desc: 'Hotels, resorts, luxury villas, homestays, and outdoor camping experiences',
     sections: [
       {
@@ -57,7 +57,7 @@ const CATEGORY_DATA: Record<string, {
     ],
   },
   'entertainment-events': {
-    name: 'Entertainment & Events', emoji: '🎬', gradient: 'from-pink-500 to-rose-600',
+    name: 'Entertainment', emoji: '🎬', gradient: 'from-pink-500 to-rose-600',
     desc: 'Movies, concerts, live plays, festivals, workshops, and gaming slots',
     sections: [
       {
@@ -85,7 +85,7 @@ const CATEGORY_DATA: Record<string, {
     ],
   },
   'sports-turf': {
-    name: 'Sports & Turf', emoji: '⚽', gradient: 'from-emerald-500 to-teal-600',
+    name: 'Sports&Turf', emoji: '⚽', gradient: 'from-emerald-500 to-teal-600',
     desc: 'Sports turfs, courts, grounds, swimming, and indoor recreation zones',
     sections: [
       {
@@ -113,7 +113,7 @@ const CATEGORY_DATA: Record<string, {
     ],
   },
   'lifestyle-local': {
-    name: 'Lifestyle & Local Services', emoji: '🍽️', gradient: 'from-purple-500 to-pink-500',
+    name: 'Lifestyle Services', emoji: '🍽️', gradient: 'from-purple-500 to-pink-500',
     desc: 'Restaurant reservations, wellness appointments, clinical care, and home utilities',
     sections: [
       {
@@ -153,7 +153,7 @@ const CATEGORY_DATA: Record<string, {
     ],
   },
   'business-professional': {
-    name: 'Business & Professional', emoji: '🏢', gradient: 'from-indigo-500 to-violet-600',
+    name: 'Business', emoji: '🏢', gradient: 'from-indigo-500 to-violet-600',
     desc: 'Workspaces, professional podcast studios, conference halls, and training sessions',
     sections: [
       {
@@ -179,8 +179,8 @@ const CATEGORY_DATA: Record<string, {
     ],
   },
   'religious-government': {
-    name: 'Religious & Government Services', emoji: '🛕', gradient: 'from-orange-500 to-amber-500',
-    desc: 'Temple darshan passes, pooja bookings, passport, RTO, and official appointments',
+    name: 'Religious Services', emoji: '🛕', gradient: 'from-orange-500 to-amber-500',
+    desc: 'Temple darshan passes, pooja bookings, and specialized pilgrimage packages',
     sections: [
       {
         subheading: 'Temple & Religious',
@@ -189,20 +189,11 @@ const CATEGORY_DATA: Record<string, {
           { name: 'Pooja Slot Booking', emoji: '🪔', slug: 'pooja', desc: 'Book slots for specific temple rituals and poojas' },
           { name: 'Pilgrimage Packages', emoji: '🚕', slug: 'pilgrimage', desc: 'Book specialized travel packages for pilgrimage sites' },
         ]
-      },
-      {
-        subheading: 'Government Services',
-        categories: [
-          { name: 'Exam Slot Booking', emoji: '🎓', slug: 'exams', desc: 'Schedule exams, tests, and certification slots' },
-          { name: 'Passport Appointment', emoji: '🪪', slug: 'passport', desc: 'Book appointments at local passport offices' },
-          { name: 'RTO Appointment', emoji: '🚘', slug: 'rto', desc: 'Schedule appointments for license, registration, and RTO visits' },
-          { name: 'Government Office Appointment', emoji: '🏛️', slug: 'gov-office', desc: 'Schedule appointments at district offices and secretariats' },
-        ]
       }
     ],
   },
   'rental-equipment': {
-    name: 'Rental & Equipment Booking', emoji: '🛍️', gradient: 'from-teal-500 to-cyan-600',
+    name: 'Equipment Rentals', emoji: '🛍️', gradient: 'from-teal-500 to-cyan-600',
     desc: 'Rent cycles, sports bikes, cameras, sound systems, and event items',
     sections: [
       {
@@ -218,7 +209,7 @@ const CATEGORY_DATA: Record<string, {
     ],
   },
   'personal-misc': {
-    name: 'Personal & Miscellaneous Services', emoji: '🐶', gradient: 'from-red-500 to-rose-600',
+    name: 'Personal Services', emoji: '🐶', gradient: 'from-red-500 to-rose-600',
     desc: 'Grooming, elder care, babysitting, and event planning specialists',
     sections: [
       {

@@ -600,3 +600,172 @@
     50%       { box-shadow: 0 0 20px rgba(255, 215, 0, 0.7), 0 0 40px rgba(255, 215, 0, 0.2); }
   }
   .glow-gold { animation: goldPulse 2.5s ease-in-out infinite; }
+
+  /* Custom Navbar Styling - Dynamic Theme Adaptive */
+  .custom-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 50;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+  }
+
+  /* Dark Mode Styling */
+  .dark .custom-navbar {
+    background-color: rgba(12, 12, 16, 0.92); /* Opaque deep black for readability */
+    border-bottom: 1px solid rgba(42, 42, 58, 0.6);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Light Mode Styling - Solid Clean White with Crisp Slate Border */
+  .light .custom-navbar {
+    background-color: #FFFFFF; /* 100% solid white to completely block scrolling background text */
+    border-bottom: 1px solid #E2E8F0; /* Slate-200, very clean border */
+    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04); /* Subtle layout shadow */
+  }
+
+  /* Button Styling */
+  .custom-nav-btn {
+    border-radius: 9999px;
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .dark .custom-nav-btn {
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #F0F0F8;
+  }
+  .dark .custom-nav-btn:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: scale(1.02);
+  }
+  .dark .custom-nav-btn:active {
+    transform: scale(0.98);
+  }
+
+  .light .custom-nav-btn {
+    background-color: #F1F5F9; /* Slate-100, very clear */
+    border: 1px solid #CBD5E1; /* Slate-300 */
+    color: #0F172A; /* Slate-900, extremely clear */
+  }
+  .light .custom-nav-btn:hover {
+    background-color: #E2E8F0; /* Slate-200 */
+    border-color: #94A3B8; /* Slate-400 */
+    transform: scale(1.02);
+  }
+  .light .custom-nav-btn:active {
+    transform: scale(0.98);
+  }
+
+  /* Capsule Menu Styling */
+  .custom-nav-capsule {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px;
+    border-radius: 9999px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+  }
+
+  .dark .custom-nav-capsule {
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .light .custom-nav-capsule {
+    background-color: #F1F5F9; /* Slate-100 */
+    border: 1px solid #E2E8F0; /* Slate-200 */
+  }
+
+  /* Link Items */
+  .custom-nav-link-inactive {
+    transition: color 0.2s ease;
+  }
+
+  .dark .custom-nav-link-inactive {
+    color: rgba(255, 255, 255, 0.65);
+  }
+  .dark .custom-nav-link-inactive:hover {
+    color: #FFFFFF;
+  }
+
+  .light .custom-nav-link-inactive {
+    color: #475569; /* Slate-600, high contrast */
+  }
+  .light .custom-nav-link-inactive:hover {
+    color: #0F172A; /* Slate-900 */
+  }
+
+  /* Active Nav Link */
+  .dark .custom-nav-link-active {
+    color: var(--color-primary); /* Neon gold in dark mode */
+  }
+  
+  .light .custom-nav-link-active {
+    color: #0F172A; /* Slate-900, solid and extremely readable in light mode */
+    font-weight: 900;
+  }
+
+  /* Icon Button Containers */
+  .custom-nav-icon-container {
+    position: relative;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  
+  .dark .custom-nav-icon-container {
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+  
+  .light .custom-nav-icon-container {
+    border: 1px solid #CBD5E1;
+    background-color: #F1F5F9;
+  }
+
+  .custom-nav-icon-btn {
+    border-radius: 9999px;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  
+  .dark .custom-nav-icon-btn {
+    color: rgba(255, 255, 255, 0.8);
+  }
+  .dark .custom-nav-icon-btn:hover {
+    color: #FFFFFF;
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .light .custom-nav-icon-btn {
+    color: #475569; /* Slate-600 */
+  }
+  .light .custom-nav-icon-btn:hover {
+    color: #0F172A; /* Slate-900 */
+    background-color: #E2E8F0;
+  }
+

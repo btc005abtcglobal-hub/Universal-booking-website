@@ -123,9 +123,9 @@ const bookingTypes = [
     ],
   },
   {
-    name: 'Religious & Government Services',
+    name: 'Religious Services',
     slug: 'religious-government',
-    description: 'Temple darshan passes, pooja bookings, passport, RTO, and official appointments',
+    description: 'Temple darshan passes, pooja bookings, and specialized pilgrimage packages',
     iconName: 'account_balance',
     color: '#F97316',
     gradient: 'linear-gradient(135deg, #F97316, #EA580C)',
@@ -135,10 +135,6 @@ const bookingTypes = [
       { name: 'Temple Darshan Booking', slug: 'darshan', iconName: 'landmark', color: '#F97316' },
       { name: 'Pooja Slot Booking', slug: 'pooja', iconName: 'flame', color: '#F97316' },
       { name: 'Pilgrimage Packages', slug: 'pilgrimage', iconName: 'map', color: '#F97316' },
-      { name: 'Exam Slot Booking', slug: 'exams', iconName: 'file-text', color: '#F97316' },
-      { name: 'Passport Appointment', slug: 'passport', iconName: 'book-open', color: '#F97316' },
-      { name: 'RTO Appointment', slug: 'rto', iconName: 'car-front', color: '#F97316' },
-      { name: 'Government Office Appointment', slug: 'gov-office', iconName: 'building-2', color: '#F97316' },
     ],
   },
   {

@@ -64,14 +64,10 @@ export const AVAILABLE_SHORTCUTS: Shortcut[] = [
   { id: 'conference', label: 'Conference Hall', icon: 'co_present', actionType: 'link', actionTarget: '/business-professional/conference' },
   { id: 'training', label: 'Training Sessions', icon: 'school', actionType: 'link', actionTarget: '/business-professional/training' },
 
-  // Religious & Government Services
+  // Religious Services
   { id: 'darshan', label: 'Temple Darshan Booking', icon: 'temple_hindu', actionType: 'link', actionTarget: '/religious-government/darshan' },
   { id: 'pooja', label: 'Pooja Slot Booking', icon: 'self_care', actionType: 'link', actionTarget: '/religious-government/pooja' },
   { id: 'pilgrimage', label: 'Pilgrimage Packages', icon: 'map', actionType: 'link', actionTarget: '/religious-government/pilgrimage' },
-  { id: 'exams', label: 'Exam Slot Booking', icon: 'description', actionType: 'link', actionTarget: '/religious-government/exams' },
-  { id: 'passport', label: 'Passport Appointment', icon: 'badge', actionType: 'link', actionTarget: '/religious-government/passport' },
-  { id: 'rto', label: 'RTO Appointment', icon: 'directions_car', actionType: 'link', actionTarget: '/religious-government/rto' },
-  { id: 'gov-office', label: 'Government Office Appointment', icon: 'account_balance', actionType: 'link', actionTarget: '/religious-government/gov-office' },
 
   // Rental & Equipment Booking
   { id: 'cycle-rental', label: 'Cycle Rental', icon: 'pedal_bike', actionType: 'link', actionTarget: '/rental-equipment/cycle-rental' },

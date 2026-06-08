@@ -8,7 +8,7 @@ import { BottomNav } from '../../components/BottomNav';
 
 const SERVICE_GROUPS = [
   {
-    title: 'Travel & Transport',
+    title: 'Travel',
     description: 'Flight, Train, Bus, Cab/Taxi, Ferry, Shuttle, Helicopter, and Rental vehicle bookings',
     icon: 'directions_car',
     subcategories: [
@@ -34,7 +34,7 @@ const SERVICE_GROUPS = [
     ]
   },
   {
-    title: 'Stay & Accommodation',
+    title: 'Stay & Accomodation',
     description: 'Hotels, resorts, villas, hostels, homestays, and camping options',
     icon: 'hotel',
     subcategories: [
@@ -51,7 +51,7 @@ const SERVICE_GROUPS = [
     ]
   },
   {
-    title: 'Entertainment & Events',
+    title: 'Entertainment',
     description: 'Cinema, theatre, concerts, festivals, gaming, and workshops',
     icon: 'movie',
     subcategories: [
@@ -80,7 +80,7 @@ const SERVICE_GROUPS = [
     ]
   },
   {
-    title: 'Sports & Turf',
+    title: 'Sports&Turf',
     description: 'Turfs, grounds, indoor courts, swimming pools, and play arenas',
     icon: 'sports_soccer',
     subcategories: [
@@ -109,7 +109,7 @@ const SERVICE_GROUPS = [
     ]
   },
   {
-    title: 'Lifestyle & Local Services',
+    title: 'Lifestyle Services',
     description: 'Dining, wellness, beauty, medical, and home technician/creative services',
     icon: 'restaurant',
     subcategories: [
@@ -150,7 +150,7 @@ const SERVICE_GROUPS = [
     ]
   },
   {
-    title: 'Business & Professional',
+    title: 'Business',
     description: 'Co-working spaces, meeting rooms, podcast studios, and conference halls',
     icon: 'business',
     subcategories: [
@@ -177,8 +177,8 @@ const SERVICE_GROUPS = [
     ]
   },
   {
-    title: 'Religious & Government Services',
-    description: 'Darshan, poojas, exam slots, passports, and official government visits',
+    title: 'Religious Services',
+    description: 'Temple darshan passes, pooja slot bookings, and pilgrimage tour packages',
     icon: 'account_balance',
     subcategories: [
       {
@@ -188,20 +188,11 @@ const SERVICE_GROUPS = [
           { name: 'Pooja Slot Booking', emoji: '🪔' },
           { name: 'Pilgrimage Packages', emoji: '🚕' }
         ]
-      },
-      {
-        name: 'Government Services',
-        items: [
-          { name: 'Exam Slot Booking', emoji: '🎓' },
-          { name: 'Passport Appointment', emoji: '🪪' },
-          { name: 'RTO Appointment', emoji: '🚘' },
-          { name: 'Government Office Appointment', emoji: '🏛️' }
-        ]
       }
     ]
   },
   {
-    title: 'Rental & Equipment Booking',
+    title: 'Equipment Rentals',
     description: 'Rent cycles, sports bikes, cameras, sound systems, and event equipment',
     icon: 'shopping_bag',
     subcategories: [
@@ -218,7 +209,7 @@ const SERVICE_GROUPS = [
     ]
   },
   {
-    title: 'Personal & Miscellaneous Services',
+    title: 'Personal Services',
     description: 'Pet grooming, babysitting, elder care, and event organizers',
     icon: 'pets',
     subcategories: [
@@ -306,14 +297,10 @@ function getHrefForCategoryItem(groupTitle: string, item: string): string {
   else if (itemLower.includes('conference')) slug = 'conference';
   else if (itemLower.includes('training')) slug = 'training';
   
-  // Religious & Government Services
+  // Religious Services
   else if (itemLower.includes('darshan')) slug = 'darshan';
   else if (itemLower.includes('pooja')) slug = 'pooja';
   else if (itemLower.includes('pilgrimage')) slug = 'pilgrimage';
-  else if (itemLower.includes('exam')) slug = 'exams';
-  else if (itemLower.includes('passport')) slug = 'passport';
-  else if (itemLower.includes('rto')) slug = 'rto';
-  else if (itemLower.includes('government') || itemLower.includes('gov')) slug = 'gov-office';
   
   // Rental & Equipment Booking
   else if (itemLower.includes('cycle')) slug = 'cycle-rental';

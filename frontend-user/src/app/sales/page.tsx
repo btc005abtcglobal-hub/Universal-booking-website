@@ -140,14 +140,10 @@ const CATEGORIES = [
   'Conference Hall',
   'Training Sessions',
 
-  // Religious & Government Services
+  // Religious Services
   'Temple Darshan Booking',
   'Pooja Slot Booking',
   'Pilgrimage Packages',
-  'Exam Slot Booking',
-  'Passport Appointment',
-  'RTO Appointment',
-  'Government Office Appointment',
 
   // Rental & Equipment Booking
   'Cycle Rental',

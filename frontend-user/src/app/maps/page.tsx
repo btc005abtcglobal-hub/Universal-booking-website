@@ -77,7 +77,7 @@ function matchesCategory(activeCategory: string, categoryName: string): boolean 
     return catLower.includes('temple') || catLower.includes('pooja') || catLower.includes('darshan') || catLower.includes('pilgrimage') || catLower.includes('shrine') || catLower.includes('worship') || catLower.includes('religious');
   }
   if (activeCategory === 'shop') {
-    return catLower.includes('shop') || catLower.includes('store') || catLower.includes('market') || catLower.includes('supermarket') || catLower.includes('grocery') || catLower.includes('boutique') || catLower.includes('retail') || catLower.includes('space') || catLower.includes('room') || catLower.includes('studio') || catLower.includes('hall') || catLower.includes('conference') || catLower.includes('meeting') || catLower.includes('office') || catLower.includes('coworking') || catLower.includes('business') || catLower.includes('exam') || catLower.includes('passport') || catLower.includes('rto') || catLower.includes('government') || catLower.includes('appointment');
+    return catLower.includes('shop') || catLower.includes('store') || catLower.includes('market') || catLower.includes('supermarket') || catLower.includes('grocery') || catLower.includes('boutique') || catLower.includes('retail') || catLower.includes('space') || catLower.includes('room') || catLower.includes('studio') || catLower.includes('hall') || catLower.includes('conference') || catLower.includes('meeting') || catLower.includes('office') || catLower.includes('coworking') || catLower.includes('business') || catLower.includes('appointment');
   }
   if (activeCategory === 'plumber') {
     return catLower.includes('plumber') || catLower.includes('plumbing') || catLower.includes('pipe') || catLower.includes('leak');

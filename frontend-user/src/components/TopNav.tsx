@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { Search, Heart, ShoppingBag, Sparkles, MapPin, Map, X } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useLocationStore, useUIStore } from '../lib/store';
 import { LiveClock } from './LiveClock';
 
@@ -28,6 +29,7 @@ export function TopNav() {
   const [mounted, setMounted] = useState(false);
   const [userName, setUserName] = useState('Alex');
   const [userEmoji, setUserEmoji] = useState('🧑');
+  const [userEmail, setUserEmail] = useState('sssandy_1@bnxmail.com');
   // UI toggle states
   const [searchOpen, setSearchOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -40,26 +42,7 @@ export function TopNav() {
 
   const { toggleTheme } = useUIStore();
 
-  const navItems = [
-    { name: 'Home', path: '/', widthPx: 80 },
-    { name: 'Categories', path: '/categories', widthPx: 112 },
-    { name: 'Tracks', path: '/tracks', widthPx: 96 },
-  ];
 
-  const activeIndex = navItems.findIndex(item => item.path === pathname);
-
-  const getSliderStyle = () => {
-    if (activeIndex === -1) return { opacity: 0 };
-    let left = 6;
-    for (let i = 0; i < activeIndex; i++) {
-      left += navItems[i].widthPx + 4;
-    }
-    return {
-      left: `${left}px`,
-      width: `${navItems[activeIndex].widthPx}px`,
-      opacity: 1,
-    };
-  };
 
   useEffect(() => {
     setMounted(true);
@@ -209,7 +192,7 @@ export function TopNav() {
 
   return (
     <>
-      <header className="bg-[color:var(--color-surface)]/65 border-b border-[color:var(--color-outline-variant)]/15 backdrop-blur-2xl fixed top-0 left-0 w-full z-50 transition-all duration-300 shadow-sm shadow-black/5">
+      <header className="custom-navbar">
         <div className="flex justify-between items-center w-full px-6 lg:px-12 py-3 lg:py-4 max-w-7xl mx-auto">
           {/* Left Column: Logo & Brand + Location Selector (Desktop) */}
           <div className="flex-1 flex justify-start items-center gap-6">
@@ -224,14 +207,14 @@ export function TopNav() {
             <div className="relative hidden lg:inline-block" ref={locationRef}>
               <button
                 onClick={() => setLocationDropdownOpen(!locationDropdownOpen)}
-                className="rounded-full px-5 py-2.5 text-[13px] font-extrabold tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] bg-[color:var(--color-surface-container)]/30 border border-[color:var(--color-outline-variant)]/20 text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-high)]/40 flex items-center gap-2 cursor-pointer backdrop-blur-md shrink-0 shadow-md"
+                className="custom-nav-btn px-5 py-2.5 shadow-md duration-200"
               >
-                <MapPin size={14} className={`text-[color:var(--color-primary)] ${status === 'detecting' ? 'animate-bounce' : ''}`} />
+                <MapPin size={14} className={status === 'detecting' ? 'animate-bounce' : ''} />
                 <span>{mounted ? city : 'Chennai'}</span>
                 <span className="material-symbols-outlined text-[16px] transition-transform duration-200" style={{ transform: locationDropdownOpen ? 'rotate(180deg)' : 'none' }}>keyboard_arrow_down</span>
               </button>
               {locationDropdownOpen && (
-                <div className="absolute left-0 mt-2 w-56 bg-[color:var(--color-surface-container)] rounded-2xl shadow-2xl border border-[color:var(--color-outline-variant)]/30 z-50 overflow-hidden backdrop-blur-md animate-fade-up">
+                <div className="absolute left-0 top-full mt-3 w-56 bg-[color:var(--color-surface-container)] rounded-2xl shadow-2xl border border-[color:var(--color-outline-variant)]/30 z-50 overflow-hidden backdrop-blur-md animate-fade-up">
                   <div className="py-2 divide-y divide-[color:var(--color-outline-variant)]/10">
                     <button
                       onClick={() => {
@@ -277,41 +260,56 @@ export function TopNav() {
 
           {/* Center Column: Floating Navigation Menu */}
           <div className="hidden lg:flex flex-none justify-center">
-            <nav className="flex items-center gap-1 bg-[color:var(--color-surface-container)]/30 border border-[color:var(--color-outline-variant)]/20 px-1.5 py-1.5 rounded-full backdrop-blur-md shadow-lg relative">
-              {/* Apple Sliding background indicator */}
-              <div 
-                className="absolute top-1.5 bottom-1.5 rounded-full bg-[color:var(--color-primary)]/15 border border-[color:var(--color-primary)]/45 transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] shadow-[0_0_12px_rgba(255,215,0,0.12)] backdrop-blur-md pointer-events-none"
-                style={getSliderStyle()}
-              />
-              
+            <nav className="custom-nav-capsule shadow-lg relative">
               <Link
                 href="/"
-                className={`w-20 text-center py-2 text-[14px] font-extrabold tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] relative z-10 ${
+                className={`w-20 text-center py-2 text-[14px] font-extrabold tracking-wide hover:scale-[1.02] active:scale-[0.98] relative z-10 custom-nav-link ${
                   pathname === '/'
-                    ? 'text-[color:var(--color-primary)]'
-                    : 'text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)]'
+                    ? 'custom-nav-link-active'
+                    : 'custom-nav-link-inactive'
                 }`}
               >
+                {pathname === '/' && (
+                  <motion.div
+                    layoutId="activeNavIndicator"
+                    className="absolute inset-0 rounded-full bg-[color:var(--color-primary)]/20 border border-[color:var(--color-primary)]/45 shadow-[0_0_12px_rgba(255,215,0,0.15)] backdrop-blur-md -z-10"
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  />
+                )}
                 Home
               </Link>
               <Link
                 href="/categories"
-                className={`w-28 text-center py-2 text-[14px] font-extrabold tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] relative z-10 ${
+                className={`w-28 text-center py-2 text-[14px] font-extrabold tracking-wide hover:scale-[1.02] active:scale-[0.98] relative z-10 custom-nav-link ${
                   pathname === '/categories'
-                    ? 'text-[color:var(--color-primary)]'
-                    : 'text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)]'
+                    ? 'custom-nav-link-active'
+                    : 'custom-nav-link-inactive'
                 }`}
               >
+                {pathname === '/categories' && (
+                  <motion.div
+                    layoutId="activeNavIndicator"
+                    className="absolute inset-0 rounded-full bg-[color:var(--color-primary)]/20 border border-[color:var(--color-primary)]/45 shadow-[0_0_12px_rgba(255,215,0,0.15)] backdrop-blur-md -z-10"
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  />
+                )}
                 Categories
               </Link>
               <Link
                 href="/tracks"
-                className={`w-24 text-center py-2 text-[14px] font-extrabold tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] relative z-10 ${
+                className={`w-24 text-center py-2 text-[14px] font-extrabold tracking-wide hover:scale-[1.02] active:scale-[0.98] relative z-10 custom-nav-link ${
                   pathname === '/tracks'
-                    ? 'text-[color:var(--color-primary)]'
-                    : 'text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)]'
+                    ? 'custom-nav-link-active'
+                    : 'custom-nav-link-inactive'
                 }`}
               >
+                {pathname === '/tracks' && (
+                  <motion.div
+                    layoutId="activeNavIndicator"
+                    className="absolute inset-0 rounded-full bg-[color:var(--color-primary)]/20 border border-[color:var(--color-primary)]/45 shadow-[0_0_12px_rgba(255,215,0,0.15)] backdrop-blur-md -z-10"
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  />
+                )}
                 Tracks
               </Link>
             </nav>
@@ -324,13 +322,13 @@ export function TopNav() {
             <div className="hidden lg:flex items-center gap-2.5">
               {/* Search Icon Container */}
               <div 
-                className={`relative rounded-full border border-[color:var(--color-outline-variant)]/20 bg-[color:var(--color-surface-container)]/30 backdrop-blur-md flex items-center shadow-md transition-all duration-300 ${
+                className={`custom-nav-icon-container shadow-md transition-all duration-300 ${
                   searchOpen ? 'w-48 px-3.5 py-1.5' : 'w-10 h-10 justify-center'
                 }`}
               >
                 <button
                   onClick={() => setSearchOpen(!searchOpen)}
-                  className="p-1 hover:bg-[color:var(--color-on-surface)]/[0.05] rounded-full text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-primary)] transition-all cursor-pointer flex items-center justify-center shrink-0"
+                  className="custom-nav-icon-btn p-1 shrink-0"
                   aria-label="Search"
                 >
                   <Search size={15} strokeWidth={2.5} />
@@ -343,7 +341,7 @@ export function TopNav() {
                   <input
                     type="text"
                     placeholder="Search..."
-                    className="bg-transparent border-none outline-none text-xs text-[color:var(--color-on-surface)] placeholder-[color:var(--color-outline)] w-full"
+                    className="bg-transparent border-none outline-none text-xs text-[color:var(--color-on-surface)] placeholder-[color:var(--color-on-surface-variant)]/50 w-full"
                     onKeyDown={handleSearchKeyDown}
                     onBlur={(e) => {
                       if (!e.currentTarget.value) {
@@ -357,7 +355,7 @@ export function TopNav() {
 
               {/* Wishlist Icon Container */}
               <button 
-                className="w-10 h-10 rounded-full bg-[color:var(--color-surface-container)]/30 border border-[color:var(--color-outline-variant)]/20 backdrop-blur-md flex items-center justify-center shadow-md text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-primary)] hover:bg-[color:var(--color-surface-container-high)]/40 transition-all hover:scale-105 active:scale-95 cursor-pointer" 
+                className="custom-nav-icon-container custom-nav-icon-btn w-10 h-10 shadow-md transition-all hover:scale-105 active:scale-95" 
                 aria-label="Wishlist"
               >
                 <Heart size={16} strokeWidth={2} />
@@ -365,7 +363,7 @@ export function TopNav() {
 
               {/* Cart Icon Container */}
               <button 
-                className="w-10 h-10 rounded-full bg-[color:var(--color-surface-container)]/30 border border-[color:var(--color-outline-variant)]/20 backdrop-blur-md flex items-center justify-center shadow-md text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-primary)] hover:bg-[color:var(--color-surface-container-high)]/40 transition-all hover:scale-105 active:scale-95 cursor-pointer relative" 
+                className="custom-nav-icon-container custom-nav-icon-btn w-10 h-10 shadow-md transition-all hover:scale-105 active:scale-95 relative" 
                 aria-label="Cart"
               >
                 <ShoppingBag size={16} strokeWidth={2} />
@@ -374,62 +372,110 @@ export function TopNav() {
             </div>
 
             {/* Desktop Profile Dropdown */}
-            <div className="hidden lg:flex relative" ref={profileRef}>
+            <div className="hidden lg:flex items-center gap-2 relative" ref={profileRef}>
+              {/* 1. Dropdown arrow button on the left (circle outline and down arrow inside like Google Mail) */}
               <button
                 onClick={() => setProfileOpen(!profileOpen)}
-                className="flex items-center gap-2 bg-[color:var(--color-surface-container)]/30 border border-[color:var(--color-outline-variant)]/20 text-[color:var(--color-on-surface)] px-4 py-2 rounded-full font-extrabold text-[13px] tracking-wide hover:scale-102 active:scale-98 transition-all duration-200 cursor-pointer shadow-md backdrop-blur-md hover:bg-[color:var(--color-surface-container-high)]/40"
-                aria-label="Profile menu"
+                className="h-10 w-10 rounded-full flex items-center justify-center custom-nav-btn shadow-md hover:scale-[1.02] active:scale-[0.98]"
+                aria-label="Toggle profile menu"
+                title="Profile Settings"
               >
-                {userName} <span role="img" aria-label="profile">{userEmoji}</span>
+                <span className="material-symbols-outlined text-[18px] transition-transform duration-200" style={{ transform: profileOpen ? 'rotate(180deg)' : 'none' }}>keyboard_arrow_down</span>
               </button>
+
+              {/* 2. User name capsule in the middle */}
+              <div className="rounded-full px-4 py-2 bg-[color:var(--color-surface-container-high)]/40 border border-[color:var(--color-outline-variant)]/40 text-[color:var(--color-on-surface)] text-[13px] font-extrabold tracking-wide shadow-sm select-none shrink-0">
+                {userName}
+              </div>
+
+              {/* 3. Profile pic/emoji circle on the right */}
+              <div 
+                onClick={() => setProfileOpen(!profileOpen)}
+                className="h-10 w-10 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-[18px] shadow-md border border-white/20 select-none cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-transform shrink-0"
+                title="Account Settings"
+              >
+                {userEmoji}
+              </div>
               {profileOpen && (
-                <div className="absolute right-0 mt-2 w-52 bg-[color:var(--color-surface-container)] rounded-2xl shadow-2xl border border-[color:var(--color-outline-variant)]/30 z-20 overflow-hidden backdrop-blur-md">
-                  <ul className="py-2 divide-y divide-[color:var(--color-outline-variant)]/20">
+                <div className="absolute right-0 top-full mt-3 w-64 bg-[color:var(--color-surface-container)] rounded-2xl shadow-2xl border border-[color:var(--color-outline-variant)]/30 z-20 overflow-hidden backdrop-blur-md animate-fade-up">
+                  {/* User Profile Header */}
+                  <div className="px-5 py-4 bg-[color:var(--color-surface-container-high)]/40 border-b border-[color:var(--color-outline-variant)]/20 flex items-center justify-between gap-3">
+                    <div className="flex flex-col min-w-0 text-left">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-[color:var(--color-outline)]">Signed in as</span>
+                      <span className="font-extrabold text-[13px] text-[color:var(--color-on-surface)] mt-1 truncate max-w-[165px]" title={userEmail}>
+                        {userEmail}
+                      </span>
+                      <span className="text-[11px] text-[color:var(--color-on-surface-variant)] flex items-center gap-1.5 mt-1 font-medium">
+                        <span>🇮🇳</span> India
+                      </span>
+                    </div>
+                    {/* Switch Account Button */}
+                    <button 
+                      className="p-2 rounded-xl bg-[color:var(--color-surface-container-high)] hover:bg-[color:var(--color-surface-container-highest)] text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-primary)] transition-all cursor-pointer flex items-center justify-center shrink-0 border border-[color:var(--color-outline-variant)]/20 shadow-sm hover:scale-105 active:scale-95"
+                      title="Switch Account"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">switch_account</span>
+                    </button>
+                  </div>
+                  
+                  {/* Dropdown Options */}
+                  <ul className="py-2">
                     <li>
-                      <Link href="/profile#settings" className="flex items-center gap-3 px-4 py-3 text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-highest)] transition-colors text-sm">
-                        <span className="material-symbols-outlined text-[18px]">settings</span>Profile Settings
+                      <Link href="/profile#settings" className="flex items-center justify-between px-5 py-3 text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-highest)] transition-colors text-sm group">
+                        <div className="flex items-center gap-3">
+                          <span className="material-symbols-outlined text-[18px] text-[color:var(--color-on-surface-variant)] group-hover:text-[color:var(--color-primary)] transition-colors">person</span>
+                          <span className="font-semibold text-[13px]">Account Profile</span>
+                        </div>
                       </Link>
                     </li>
                     <li>
-                      <button
-                        onClick={() => {
-                          toggleTheme();
-                        }}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-highest)] transition-colors text-sm font-semibold text-left cursor-pointer"
-                      >
-                        <span className="material-symbols-outlined text-[18px]">palette</span>Theme
-                      </button>
-                    </li>
-                    <li>
-                      <Link href="/profile#currency" className="flex items-center gap-3 px-4 py-3 text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-highest)] transition-colors text-sm">
-                        <span className="material-symbols-outlined text-[18px]">attach_money</span>Currency
+                      <Link href="/profile#language" className="flex items-center justify-between px-5 py-3 text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-highest)] transition-colors text-sm group">
+                        <div className="flex items-center gap-3">
+                          <span className="material-symbols-outlined text-[18px] text-[color:var(--color-on-surface-variant)] group-hover:text-[color:var(--color-primary)] transition-colors">language</span>
+                          <span className="font-semibold text-[13px]">Language</span>
+                        </div>
+                        <span className="text-xs text-[color:var(--color-outline)] font-medium">English</span>
                       </Link>
                     </li>
                     <li>
-                      <Link href="/profile#wallet" className="flex items-center gap-3 px-4 py-3 text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-highest)] transition-colors text-sm">
-                        <span className="material-symbols-outlined text-[18px]">account_balance_wallet</span>Wallet
+                      <Link href="/profile#currency" className="flex items-center justify-between px-5 py-3 text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-highest)] transition-colors text-sm group">
+                        <div className="flex items-center gap-3">
+                          <span className="material-symbols-outlined text-[18px] text-[color:var(--color-on-surface-variant)] group-hover:text-[color:var(--color-primary)] transition-colors">payments</span>
+                          <span className="font-semibold text-[13px]">Currency</span>
+                        </div>
+                        <span className="text-xs text-[color:var(--color-outline)] font-medium">INR (₹)</span>
                       </Link>
                     </li>
                     <li>
-                      <Link href="/profile#notifications" className="flex items-center gap-3 px-4 py-3 text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-highest)] transition-colors text-sm">
-                        <span className="material-symbols-outlined text-[18px]">notifications</span>Notifications
+                      <Link href="/profile#country" className="flex items-center justify-between px-5 py-3 text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-highest)] transition-colors text-sm group">
+                        <div className="flex items-center gap-3">
+                          <span className="material-symbols-outlined text-[18px] text-[color:var(--color-on-surface-variant)] group-hover:text-[color:var(--color-primary)] transition-colors">flag</span>
+                          <span className="font-semibold text-[13px]">Country</span>
+                        </div>
+                        <span className="text-xs text-[color:var(--color-outline)] font-medium">India</span>
                       </Link>
                     </li>
                     <li>
-                      <Link href="/profile#saved" className="flex items-center gap-3 px-4 py-3 text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-highest)] transition-colors text-sm">
-                        <span className="material-symbols-outlined text-[18px]">bookmark</span>Saved Places
+                      <Link href="/profile#trust" className="flex items-center justify-between px-5 py-3 text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-highest)] transition-colors text-sm group">
+                        <div className="flex items-center gap-3">
+                          <span className="material-symbols-outlined text-[18px] text-[color:var(--color-on-surface-variant)] group-hover:text-[color:var(--color-primary)] transition-colors">verified_user</span>
+                          <span className="font-semibold text-[13px]">Beta Trust</span>
+                        </div>
+                        <span className="text-xs text-emerald-500 font-extrabold tracking-wide">85%</span>
                       </Link>
                     </li>
                   </ul>
-                  <div className="border-t border-[color:var(--color-outline-variant)]/20 px-2 py-2">
+                  
+                  {/* Bottom Divider & Sign Out */}
+                  <div className="border-t border-[color:var(--color-outline-variant)]/20 px-2.5 py-2.5 bg-[color:var(--color-surface-container-low)]/20">
                     <button
                       onClick={() => {
                         setProfileOpen(false);
                         // Handle logout
                       }}
-                      className="w-full flex items-center gap-3 px-3 py-2 text-[#ff4d4f] hover:bg-[#ff4d4f]/10 transition-colors rounded-lg text-sm font-semibold"
+                      className="w-full flex items-center gap-3 px-3.5 py-2.5 text-[#ff4d4f] hover:bg-[#ff4d4f]/10 transition-colors rounded-xl text-sm font-bold cursor-pointer"
                     >
-                      <span className="material-symbols-outlined text-[18px]">logout</span>Logout
+                      <span className="material-symbols-outlined text-[18px]">logout</span>Sign out
                     </button>
                   </div>
                 </div>

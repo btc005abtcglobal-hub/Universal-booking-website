@@ -82,14 +82,10 @@ const CATEGORY_NAMES: Record<string, string> = {
   conference: 'Conference Hall',
   training: 'Training Sessions',
 
-  // Religious & Government Services
+  // Religious Services
   darshan: 'Temple Darshan Booking',
   pooja: 'Pooja Slot Booking',
   pilgrimage: 'Pilgrimage Packages',
-  exams: 'Exam Slot Booking',
-  passport: 'Passport Appointment',
-  rto: 'RTO Appointment',
-  'gov-office': 'Government Office Appointment',
 
   // Rental & Equipment Booking
   'cycle-rental': 'Cycle Rental',

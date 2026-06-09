@@ -7,27 +7,27 @@
  * ================================================================ */
 
 @theme {
-  /* ── Neon Gold Accent ───────────────────────────────────────── */
-  --color-primary:              #FFD700;   /* pure neon gold    */
-  --color-primary-fixed:        #FFF0A0;   /* pale gold tint    */
-  --color-primary-fixed-dim:    #F0C000;   /* deep gold         */
-  --color-on-primary:           #0A0800;   /* near-black on gold*/
-  --color-on-primary-fixed:     #0A0800;
-  --color-on-primary-fixed-variant: #3A2E00;
+  /* ── Brand Theme Colors (New Palette) ───────────────────────── */
+  --color-primary:              #f2c53d;   /* gold/yellow       */
+  --color-primary-fixed:        #fceea7;   /* pale gold tint    */
+  --color-primary-fixed-dim:    #cca022;   /* deep gold         */
+  --color-on-primary:           #031020;   /* dark blue on gold */
+  --color-on-primary-fixed:     #031020;
+  --color-on-primary-fixed-variant: #523E00;
   --color-primary-container:    #3D3000;   /* dark gold surface */
   --color-on-primary-container: #FFE680;
 
-  /* ── Dark Surfaces (default/dark theme) ─────────────────────── */
-  --color-surface-dim:              #060608;   /* deepest black     */
-  --color-surface:                  #0C0C10;   /* main background   */
-  --color-surface-container-lowest: #000000;
-  --color-surface-container-low:    #111116;
-  --color-surface-container:        #18181F;
-  --color-surface-container-high:   #1F1F28;
-  --color-surface-container-highest:#282832;
-  --color-surface-variant:          #242430;
-  --color-surface-bright:           #2E2E3E;
-  --color-background:               #0C0C10;
+  /* ── Dark Surfaces (Deep Blue #0a3161 base) ─────────────────── */
+  --color-surface-dim:              #051a33;   /* deepest blue      */
+  --color-surface:                  #0a3161;   /* main background   */
+  --color-surface-container-lowest: #031020;
+  --color-surface-container-low:    #07254a;
+  --color-surface-container:        #0d3d78;
+  --color-surface-container-high:   #114b91;
+  --color-surface-container-highest:#1558aa;
+  --color-surface-variant:          #0e4587;
+  --color-surface-bright:           #1c6cc8;
+  --color-background:               #0a3161;
   --color-on-background:            #F0F0F8;
 
   /* ── Text ───────────────────────────────────────────────────── */
@@ -38,27 +38,27 @@
 
   /* ── Borders ────────────────────────────────────────────────── */
   --color-outline:                  #606078;
-  --color-outline-variant:          #2A2A3A;
+  --color-outline-variant:          #1a4a80;
 
-  /* ── Secondary (silver/white tones) ─────────────────────────── */
-  --color-secondary:                #C0C0D8;
-  --color-secondary-container:      #2A2A3A;
-  --color-on-secondary:             #0C0C18;
-  --color-on-secondary-container:   #D8D8F0;
-  --color-secondary-fixed:          #E8E8F8;
-  --color-secondary-fixed-dim:      #C0C0D8;
-  --color-on-secondary-fixed:       #080818;
-  --color-on-secondary-fixed-variant:#2A2A3A;
+  /* ── Secondary (Orange/Red #ff6325 base) ────────────────────── */
+  --color-secondary:                #ff6325;
+  --color-secondary-container:      #3d1405;
+  --color-on-secondary:             #ffffff;
+  --color-on-secondary-container:   #ffcca8;
+  --color-secondary-fixed:          #ffe4d6;
+  --color-secondary-fixed-dim:      #ff986e;
+  --color-on-secondary-fixed:       #3d1405;
+  --color-on-secondary-fixed-variant:#7a2c0f;
 
-  /* ── Tertiary (accent silver) ───────────────────────────────── */
-  --color-tertiary:                 #E0E0F0;
-  --color-tertiary-container:       #282838;
-  --color-on-tertiary:              #080818;
-  --color-on-tertiary-container:    #D0D0E8;
-  --color-tertiary-fixed:           #E8E8F8;
-  --color-tertiary-fixed-dim:       #C8C8E0;
-  --color-on-tertiary-fixed:        #080818;
-  --color-on-tertiary-fixed-variant:#282838;
+  /* ── Tertiary (Orange/Red #ff6325 base) ─────────────────────── */
+  --color-tertiary:                 #ff6325;
+  --color-tertiary-container:       #3d1405;
+  --color-on-tertiary:              #ffffff;
+  --color-on-tertiary-container:    #ffcca8;
+  --color-tertiary-fixed:           #ffe4d6;
+  --color-tertiary-fixed-dim:       #ff986e;
+  --color-on-tertiary-fixed:        #3d1405;
+  --color-on-tertiary-fixed-variant:#7a2c0f;
 
   /* ── Error ──────────────────────────────────────────────────── */
   --color-error:                    #FF6B6B;

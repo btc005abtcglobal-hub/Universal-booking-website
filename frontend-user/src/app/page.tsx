@@ -273,6 +273,59 @@ const RECOMMENDED_ITEMS = [
   }
 ];
 
+const MOCK_ADS = [
+  {
+    id: 1,
+    title: "Summer Resort Getaway",
+    desc: "Luxury beachfront, hill, and forest resorts.",
+    image: "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?w=1000&auto=format&fit=crop&q=80",
+    tag: "STAY OFFER",
+    tagBg: "bg-amber-500/20 text-amber-400 border-amber-500/30",
+    actionText: "Book Stay",
+    href: "/stay-accommodation/resorts"
+  },
+  {
+    id: 2,
+    title: "Vande Bharat Express",
+    desc: "Experience high-speed, premium train travel.",
+    image: "https://images.unsplash.com/photo-1517999144091-3d9dca6d1e43?w=1000&auto=format&fit=crop&q=80",
+    tag: "TRAIN UPDATE",
+    tagBg: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+    actionText: "Check Slots",
+    href: "/travel-transport/trains"
+  },
+  {
+    id: 3,
+    title: "Elite Turf Booking",
+    desc: "Reserve premium football turfs and cricket nets.",
+    image: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1000&auto=format&fit=crop&q=80",
+    tag: "SPORTS EVENT",
+    tagBg: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+    actionText: "Reserve Turf",
+    href: "/sports-turf/play-arena"
+  },
+  {
+    id: 4,
+    title: "Sunburn EDM Festival",
+    desc: "Passes selling fast for the biggest music event.",
+    image: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1000&auto=format&fit=crop&q=80",
+    tag: "CONCERT PASSES",
+    tagBg: "bg-purple-500/20 text-purple-400 border-purple-500/30",
+    actionText: "Buy Tickets",
+    href: "/entertainment-events/concerts"
+  },
+  {
+    id: 5,
+    title: "Luxury Spa & Wellness",
+    desc: "Rejuvenate your body with premium spa therapies.",
+    image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=1000&auto=format&fit=crop&q=80",
+    tag: "WELLNESS OFFER",
+    tagBg: "bg-rose-500/20 text-rose-400 border-rose-500/30",
+    actionText: "Book Session",
+    href: "/lifestyle-local/beauty-wellness"
+  }
+];
+
 export default function HomePage() {
   const { bookings } = useBookingFlowStore();
   const { city, latitude, longitude } = useLocationStore();
@@ -283,6 +336,22 @@ export default function HomePage() {
   const [userPannedCenter, setUserPannedCenter] = useState<[number, number] | null>(null);
   const [realServices, setRealServices] = useState<any[]>([]);
   const [activeExploreTab, setActiveExploreTab] = useState('news');
+  const [adIndex, setAdIndex] = useState(0);
+
+  // Advertisement auto-play rotation
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setAdIndex((prev) => (prev + 1) % 5);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const getDiff = (idx: number) => {
+    let d = idx - adIndex;
+    if (d < -2) d += 5;
+    if (d > 2) d -= 5;
+    return d;
+  };
 
   const cityCenter = useMemo(() => {
     return CITY_COORDINATES[(city || 'Chennai').toLowerCase()] || { lat: 13.0827, lng: 80.2707 };
@@ -469,26 +538,115 @@ export default function HomePage() {
             id="ad-banner-hero"
             data-ad-slot=""
             aria-label="Advertisement"
-            className="ad-block mb-6"
+            className="ad-block mb-6 flex flex-col items-center gap-3 w-full"
           >
-            <div
-              className="w-full h-[260px] md:h-[320px] rounded-3xl overflow-hidden relative border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)] card-glass"
-              style={{ boxShadow: 'inset 0 0 0 1px rgba(255,215,0,0.06)' }}
-            >
-              <div className="absolute inset-0 overflow-hidden">
-                <div
-                  className="absolute top-0 bottom-0 w-1/3 animate-shimmer"
-                  style={{ background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.04), transparent)' }}
+            {/* Carousel Container */}
+            <div className="w-full h-[260px] md:h-[320px] relative overflow-hidden flex items-center justify-center">
+              {MOCK_ADS.map((ad, idx) => {
+                const diff = getDiff(idx);
+                
+                // Position and styling depending on diff
+                let transformStr = "";
+                let opacityClass = "";
+                let zIndexClass = "";
+                let pointerEventsClass = "";
+                
+                if (diff === 0) {
+                  // Center / Active Card
+                  transformStr = "translate3d(0, 0, 0) scale(1)";
+                  opacityClass = "opacity-100";
+                  zIndexClass = "z-20";
+                  pointerEventsClass = "pointer-events-auto";
+                } else if (diff === -1) {
+                  // Left peeking card
+                  transformStr = "translate3d(-40%, 0, 0) scale(0.8)";
+                  opacityClass = "opacity-50";
+                  zIndexClass = "z-10";
+                  pointerEventsClass = "pointer-events-auto cursor-pointer";
+                } else if (diff === 1) {
+                  // Right peeking card
+                  transformStr = "translate3d(40%, 0, 0) scale(0.8)";
+                  opacityClass = "opacity-50";
+                  zIndexClass = "z-10";
+                  pointerEventsClass = "pointer-events-auto cursor-pointer";
+                } else {
+                  // Hidden cards (diff === -2 or diff === 2)
+                  transformStr = diff === -2 
+                    ? "translate3d(-80%, 0, 0) scale(0.6)" 
+                    : "translate3d(80%, 0, 0) scale(0.6)";
+                  opacityClass = "opacity-0";
+                  zIndexClass = "z-0";
+                  pointerEventsClass = "pointer-events-none";
+                }
+
+                return (
+                  <div
+                    key={ad.id}
+                    onClick={() => {
+                      if (diff !== 0) {
+                        setAdIndex(idx);
+                      }
+                    }}
+                    className={`absolute w-[75%] md:w-[65%] h-full left-[12.5%] md:left-[17.5%] rounded-3xl overflow-hidden border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)] card-glass transition-all duration-700 ease-in-out select-none ${opacityClass} ${zIndexClass} ${pointerEventsClass}`}
+                    style={{
+                      transform: transformStr,
+                      boxShadow: diff === 0 
+                        ? '0 12px 30px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 215, 0, 0.1)' 
+                        : '0 4px 12px rgba(0, 0, 0, 0.2)'
+                    }}
+                  >
+                    {/* Background Image & Overlay */}
+                    <div className="absolute inset-0 z-0">
+                      <img 
+                        src={ad.image} 
+                        alt={ad.title} 
+                        className="w-full h-full object-cover brightness-50"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent" />
+                    </div>
+
+                    {/* Ad Content */}
+                    <div className="absolute inset-0 z-10 p-6 md:p-8 flex flex-col justify-end text-left">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className={`px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase tracking-wider border ${ad.tagBg}`}>
+                          {ad.tag}
+                        </span>
+                      </div>
+                      <h4 className="text-lg md:text-xl font-extrabold text-white mb-1 tracking-wide">
+                        {ad.title}
+                      </h4>
+                      <p className="text-xs text-slate-300 font-medium max-w-md mb-4 line-clamp-2">
+                        {ad.desc}
+                      </p>
+                      {diff === 0 && (
+                        <Link 
+                          href={ad.href}
+                          className="self-start px-4 py-2 rounded-full text-[10px] font-black tracking-widest bg-[color:var(--color-primary)] text-black hover:scale-105 transition-transform"
+                        >
+                          {ad.actionText.toUpperCase()}
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Dots Indicator */}
+            <div className="flex items-center justify-center gap-2 mt-1">
+              {MOCK_ADS.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setAdIndex(idx)}
+                  className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                    adIndex === idx 
+                      ? 'w-5 bg-[color:var(--color-primary)]' 
+                      : 'w-1.5 bg-[color:var(--color-outline-variant)]/60 hover:bg-[color:var(--color-outline)]'
+                  }`}
+                  aria-label={`Go to ad slide ${idx + 1}`}
                 />
-              </div>
-              <div className="relative flex flex-col items-center justify-center h-full gap-3 opacity-35">
-                <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(255,215,0,0.10)' }}>
-                  <span className="material-symbols-outlined text-[color:var(--color-primary)] text-[26px]">ad_group</span>
-                </div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[color:var(--color-outline)]">
-                  Advertisement
-                </p>
-              </div>
+              ))}
             </div>
           </section>
 

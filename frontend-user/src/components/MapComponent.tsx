@@ -242,8 +242,8 @@ export default function MapComponent({
       zoomControl: false,
       attributionControl: false,
       scrollWheelZoom: false,
-      zoomSnap: 0.1,
-      zoomDelta: 0.1,
+      zoomSnap: 0,
+      zoomDelta: 0,
     });
 
     // Add custom zoom control
@@ -264,39 +264,98 @@ export default function MapComponent({
 
     // Listen to panned movements (moveend) to support real-time sensing of nearby shops
     map.on('moveend', () => {
-      const newCenter = map.getCenter();
-      if (onCenterChange) {
-        onCenterChange(newCenter.lat, newCenter.lng);
+      if (rafId === null) {
+        const newCenter = map.getCenter();
+        if (onCenterChange) {
+          onCenterChange(newCenter.lat, newCenter.lng);
+        }
       }
     });
 
     // Listen to zoom changes to show/hide markers
     map.on('zoomend', () => {
-      setMapZoom(map.getZoom());
+      if (rafId === null) {
+        setMapZoom(map.getZoom());
+      }
     });
 
     // Enable custom zoom only when pinching (sets e.ctrlKey to true in browsers)
     // or holding Ctrl while scrolling. This ensures regular two-finger swipes or scrolls
     // never trigger any random zooms.
     const container = mapContainerRef.current;
+    let targetZoom = map.getZoom();
+    let currentZoom = map.getZoom();
+    let zoomLatLng: L.LatLng | null = null;
+    let rafId: number | null = null;
+    const easeFactor = 0.25;
+
+    const animateZoom = () => {
+      if (!mapRef.current || !zoomLatLng) {
+        rafId = null;
+        return;
+      }
+
+      const diff = targetZoom - currentZoom;
+      if (Math.abs(diff) < 0.001) {
+        currentZoom = targetZoom;
+        map.setZoomAround(zoomLatLng, currentZoom, { animate: false });
+        
+        // Final syncs
+        setMapZoom(currentZoom);
+        const newCenter = map.getCenter();
+        if (onCenterChange) {
+          onCenterChange(newCenter.lat, newCenter.lng);
+        }
+        
+        rafId = null;
+        return;
+      }
+
+      const wasZoomedIn = currentZoom >= 16;
+      currentZoom += diff * easeFactor;
+      const isZoomedInNow = currentZoom >= 16;
+
+      map.setZoomAround(zoomLatLng, currentZoom, { animate: false });
+
+      if (wasZoomedIn !== isZoomedInNow) {
+        setMapZoom(currentZoom);
+      }
+
+      rafId = requestAnimationFrame(animateZoom);
+    };
+
     const handleWheel = (e: WheelEvent) => {
       if (e.ctrlKey) {
         e.preventDefault();
-        // Zoom around the cursor position rather than map center
-        const latlng = map.mouseEventToLatLng(e);
-        const delta = -e.deltaY;
-        // Increased zoom factor from 0.045 to 0.12 for greater pinch sensitivity
-        const zoomFactor = 0.12;
-        const currentZoom = map.getZoom();
-        const targetZoom = currentZoom + delta * zoomFactor;
         
-        // Clamp within map bounds
+        // Sync current zoom if zoom animation is not running
+        if (rafId === null) {
+          currentZoom = map.getZoom();
+          targetZoom = currentZoom;
+        }
+
+        // Get the latest cursor coordinates under current zoom/pan state
+        zoomLatLng = map.mouseEventToLatLng(e);
+        
+        // Normalize delta based on deltaMode
+        let delta = -e.deltaY;
+        if (e.deltaMode === 1) { // Line mode
+          delta *= 16;
+        } else if (e.deltaMode === 2) { // Page mode
+          delta *= 100;
+        }
+        
+        // Fine-tuned zoom sensitivity factor for smooth tracking
+        const zoomFactor = 0.0025;
+        
         const minZoom = map.getMinZoom();
         const maxZoom = map.getMaxZoom();
-        const clampedZoom = Math.max(minZoom, Math.min(maxZoom, targetZoom));
         
-        // Zoom around cursor without transition animation lag
-        map.setZoomAround(latlng, clampedZoom, { animate: false });
+        targetZoom = Math.max(minZoom, Math.min(maxZoom, targetZoom + delta * zoomFactor));
+        
+        if (rafId === null) {
+          rafId = requestAnimationFrame(animateZoom);
+        }
       }
     };
     if (container) {
@@ -318,6 +377,9 @@ export default function MapComponent({
     return () => {
       if (container) {
         container.removeEventListener('wheel', handleWheel);
+      }
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
       }
       if (userMarkerRef.current) {
         userMarkerRef.current.remove();

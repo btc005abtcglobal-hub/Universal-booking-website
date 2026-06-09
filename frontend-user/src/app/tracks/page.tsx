@@ -8,7 +8,8 @@ import { BottomNav } from '../../components/BottomNav';
 import { 
   Plane, TrainFront, Bus, Car, Search, X, 
   MapPin, Clock, User, Phone, CheckCircle2, 
-  RotateCw, Share2, Compass, AlertCircle, Navigation
+  RotateCw, Share2, Compass, AlertCircle, Navigation,
+  ChevronRight, ShieldCheck, Coffee, Hotel
 } from 'lucide-react';
 
 const TRACKS = [
@@ -21,6 +22,53 @@ const ACTIVITY = [
   { name: 'Premium Haircut', status: 'Confirmed', time: 'Today · 10:00 AM' },
   { name: 'Yoga Class', status: 'In progress', time: 'Today · 7:00 AM' },
   { name: 'Table Reservation', status: 'Completed', time: 'Yesterday · 8:00 PM' },
+];
+
+const TRANSIT_RECOMMENDATIONS = [
+  {
+    id: 'rec-cab',
+    title: 'Airport / Station Cab',
+    emoji: '🚖',
+    icon: Car,
+    description: 'Pre-book a cab from your arrival terminal to your final destination with instant verification.',
+    price: 'Starts at ₹399',
+    btnText: 'Book Cab',
+    link: '/travel-transport/cabs',
+    isLink: true
+  },
+  {
+    id: 'rec-hotel',
+    title: 'Transit Room / Hotel',
+    emoji: '🏨',
+    icon: Hotel,
+    description: 'Book hourly rooms or premium hotels near your arrival station/airport for a quick refresh.',
+    price: 'Starts at ₹1,200',
+    btnText: 'Book Stay',
+    link: '/stay-accommodation/hotels',
+    isLink: true
+  },
+  {
+    id: 'rec-lounge',
+    title: 'Airport Lounge Pass',
+    emoji: '🛋️',
+    icon: Coffee,
+    description: 'Get exclusive access to premium terminal lounges with complimentary dining and high-speed Wi-Fi.',
+    price: 'Pass from ₹799',
+    btnText: 'Get Pass',
+    link: '',
+    isLink: false
+  },
+  {
+    id: 'rec-insurance',
+    title: 'Travel Protection',
+    emoji: '🛡️',
+    icon: ShieldCheck,
+    description: 'Secure your journey against cancellations, delays, baggage loss, or medical emergencies.',
+    price: 'Coverage from ₹99',
+    btnText: 'Protect Trip',
+    link: '',
+    isLink: false
+  }
 ];
 
 // Helper mock staff information based on transport type
@@ -97,6 +145,7 @@ function TracksContent() {
   const [isSearchingLocal, setIsSearchingLocal] = useState(false);
 
   // Live tracking states
+  const [activePromoModal, setActivePromoModal] = useState<any | null>(null);
   const [speed, setSpeed] = useState(0);
   const [etaSeconds, setEtaSeconds] = useState(1280); // ~21 mins
   const [altitude, setAltitude] = useState(31800);
@@ -760,6 +809,71 @@ function TracksContent() {
             </div>
           )}
 
+          {/* Transit Essentials & Connected Bookings */}
+          <div className="mt-8 pt-8 border-t border-[color:var(--color-outline-variant)]/20">
+            <div className="mb-6">
+              <span className="text-[9px] uppercase tracking-[0.25em] text-[color:var(--color-primary)] font-extrabold px-2 py-0.5 rounded bg-[color:var(--color-primary)]/10 border border-[color:var(--color-primary)]/20">
+                Transit Essentials
+              </span>
+              <h2 className="text-xl md:text-2xl font-black text-[color:var(--color-on-surface)] mt-3">
+                Connected Services & Add-ons
+              </h2>
+              <p className="text-xs text-[color:var(--color-on-surface-variant)] mt-1.5 max-w-xl leading-relaxed">
+                Maximize comfort and security on your journey. Complete your itinerary with pre-booked transfers, accommodations, lounge passes, or protection plans.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {TRANSIT_RECOMMENDATIONS.map((item) => (
+                <div 
+                  key={item.id} 
+                  className="card-glass bg-[color:var(--color-surface-container)] border border-[color:var(--color-outline-variant)]/30 rounded-[24px] p-5 hover:scale-[1.03] hover:border-[color:var(--color-primary)]/40 hover:shadow-xl hover:shadow-[color:var(--color-primary)]/5 transition-all duration-300 flex flex-col justify-between h-full"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-2xl select-none">{item.emoji}</span>
+                      <div className="h-8 w-8 rounded-xl bg-[color:var(--color-primary)]/10 border border-[color:var(--color-primary)]/20 flex items-center justify-center text-[color:var(--color-primary)]">
+                        <item.icon size={15} />
+                      </div>
+                    </div>
+                    <h3 className="font-extrabold text-sm text-[color:var(--color-on-surface)] leading-tight">
+                      {item.title}
+                    </h3>
+                    <p className="text-[11px] text-[color:var(--color-on-surface-variant)] mt-1.5 leading-relaxed">
+                      {item.description}
+                    </p>
+                  </div>
+
+                  <div>
+                    <div className="border-t border-[color:var(--color-outline-variant)]/10 my-4" />
+                    <div className="flex items-center justify-between mt-auto">
+                      <span className="text-[10px] font-mono text-[color:var(--color-primary)] font-bold">
+                        {item.price}
+                      </span>
+                      {item.isLink ? (
+                        <Link
+                          href={item.link}
+                          className="flex items-center gap-0.5 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white text-[9px] uppercase font-black px-3.5 py-2 rounded-xl transition-all shadow-md active:scale-[0.97]"
+                        >
+                          <span>{item.btnText}</span>
+                          <ChevronRight size={10} />
+                        </Link>
+                      ) : (
+                        <button
+                          onClick={() => setActivePromoModal(item)}
+                          className="flex items-center gap-0.5 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white text-[9px] uppercase font-black px-3.5 py-2 rounded-xl transition-all shadow-md active:scale-[0.97] cursor-pointer"
+                        >
+                          <span>{item.btnText}</span>
+                          <ChevronRight size={10} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Toast Notification for Phone Dialer */}
           {showCallToast && (
             <div className="fixed bottom-6 right-6 z-[100] animate-fade-up">
@@ -770,6 +884,61 @@ function TracksContent() {
                 <div>
                   <h4 className="text-xs font-bold text-[color:var(--color-on-surface)]">Opening phone dialer...</h4>
                   <p className="text-[10px] text-[color:var(--color-on-surface-variant)] mt-0.5">Connecting you to {staff?.name} ({staff?.phone})</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Mock Booking Confirmation Modal for Promos */}
+          {activePromoModal && (
+            <div className="fixed inset-0 z-[600] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-fade-in">
+              <div className="card-glass bg-slate-950 border border-slate-800 rounded-[32px] p-6 max-w-sm w-full shadow-2xl relative overflow-hidden animate-scale-up text-center">
+                
+                {/* Close Button */}
+                <button 
+                  onClick={() => setActivePromoModal(null)}
+                  className="absolute top-4 right-4 text-slate-500 hover:text-white cursor-pointer"
+                >
+                  <X size={18} />
+                </button>
+
+                {/* Header Icon */}
+                <div className="mx-auto h-16 w-16 rounded-full bg-[color:var(--color-primary)]/10 border border-[color:var(--color-primary)]/20 flex items-center justify-center text-3xl mb-4 select-none animate-bounce" style={{ animationDuration: '3s' }}>
+                  {activePromoModal.emoji}
+                </div>
+
+                {/* Content */}
+                <h3 className="text-lg font-black text-white">{activePromoModal.title}</h3>
+                <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+                  {activePromoModal.id === 'rec-lounge' 
+                    ? 'Unlock access to executive lounges at your arrival airport. Includes refreshments, buffet meals, shower facilities, and premium seating.'
+                    : 'Insure your trip with comprehensive coverage. Protect against flight/train delays (>2 hours), luggage loss, and accidental medical expenses.'
+                  }
+                </p>
+
+                {/* Price Badge */}
+                <div className="my-5 inline-block bg-[color:var(--color-primary)]/10 border border-[color:var(--color-primary)]/30 rounded-xl px-4 py-2 text-sm font-black text-[color:var(--color-primary)] font-mono">
+                  {activePromoModal.price}
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex flex-col gap-2">
+                  <button
+                    onClick={() => {
+                      const title = activePromoModal.title;
+                      setActivePromoModal(null);
+                      alert(`🎉 Booking confirmed! Your ${title} has been linked to reference ${activeNumber || 'TRK-9832'}.`);
+                    }}
+                    className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white text-xs font-bold uppercase tracking-wider py-3 rounded-2xl transition-all shadow-lg active:scale-[0.98] cursor-pointer"
+                  >
+                    Confirm Purchase
+                  </button>
+                  <button
+                    onClick={() => setActivePromoModal(null)}
+                    className="w-full bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-400 hover:text-white text-xs font-bold uppercase tracking-wider py-3 rounded-2xl transition-all cursor-pointer"
+                  >
+                    Cancel
+                  </button>
                 </div>
               </div>
             </div>

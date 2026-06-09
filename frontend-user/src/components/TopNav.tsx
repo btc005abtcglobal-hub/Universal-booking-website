@@ -27,7 +27,7 @@ export function TopNav() {
   const [markerPos, setMarkerPos] = useState<{ x: string; y: string } | null>(null);
   const [dismissed, setDismissed] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [userName, setUserName] = useState('Alex');
+  const [userName, setUserName] = useState('sssandy_1');
   const [userEmoji, setUserEmoji] = useState('🧑');
   const [userEmail, setUserEmail] = useState('sssandy_1@bnxmail.com');
   // UI toggle states
@@ -193,7 +193,7 @@ export function TopNav() {
   return (
     <>
       <header className="custom-navbar">
-        <div className="flex justify-between items-center w-full px-6 lg:px-12 py-3 lg:py-4 max-w-7xl mx-auto">
+        <div className="flex justify-between items-center w-full px-6 lg:px-12 py-3 lg:py-4 max-w-full">
           {/* Left Column: Logo & Brand + Location Selector (Desktop) */}
           <div className="flex-1 flex justify-start items-center gap-6">
             <Link
@@ -355,47 +355,54 @@ export function TopNav() {
 
               {/* Wishlist Icon Container */}
               <button 
-                className="custom-nav-icon-container custom-nav-icon-btn w-10 h-10 shadow-md transition-all hover:scale-105 active:scale-95" 
+                className={`custom-nav-icon-container custom-nav-icon-btn h-10 shadow-md transition-all hover:scale-105 active:scale-95 ${
+                  searchOpen ? 'w-0 opacity-0 pointer-events-none border-none p-0 overflow-hidden m-0' : 'w-10'
+                }`} 
                 aria-label="Wishlist"
               >
-                <Heart size={16} strokeWidth={2} />
+                <Heart size={16} strokeWidth={2} className={`${searchOpen ? 'hidden' : 'block'}`} />
               </button>
 
               {/* Cart Icon Container */}
               <button 
-                className="custom-nav-icon-container custom-nav-icon-btn w-10 h-10 shadow-md transition-all hover:scale-105 active:scale-95 relative" 
+                className={`custom-nav-icon-container custom-nav-icon-btn h-10 shadow-md transition-all hover:scale-105 active:scale-95 relative ${
+                  searchOpen ? 'w-0 opacity-0 pointer-events-none border-none p-0 overflow-hidden m-0' : 'w-10'
+                }`} 
                 aria-label="Cart"
               >
-                <ShoppingBag size={16} strokeWidth={2} />
-                <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-[color:var(--color-primary)] rounded-full shadow-[0_0_8px_rgba(255,215,0,0.6)]" />
+                <ShoppingBag size={16} strokeWidth={2} className={`${searchOpen ? 'hidden' : 'block'}`} />
+                <span className={`absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-[color:var(--color-primary)] rounded-full shadow-[0_0_8px_rgba(255,215,0,0.6)] ${searchOpen ? 'hidden' : ''}`} />
               </button>
             </div>
 
             {/* Desktop Profile Dropdown */}
             <div className="hidden lg:flex items-center gap-2 relative" ref={profileRef}>
-              {/* 1. Dropdown arrow button on the left (circle outline and down arrow inside like Google Mail) */}
               <button
                 onClick={() => setProfileOpen(!profileOpen)}
-                className="h-10 w-10 rounded-full flex items-center justify-center custom-nav-btn shadow-md hover:scale-[1.02] active:scale-[0.98]"
+                className="custom-nav-btn pl-1 pr-4 py-1 h-10 rounded-full flex items-center gap-3 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
                 aria-label="Toggle profile menu"
                 title="Profile Settings"
               >
-                <span className="material-symbols-outlined text-[18px] transition-transform duration-200" style={{ transform: profileOpen ? 'rotate(180deg)' : 'none' }}>keyboard_arrow_down</span>
+                {/* Solid white circle with a dark outline person icon on the left */}
+                <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
+                  <span className="material-symbols-outlined text-[20px] text-[#0e3e26] font-semibold select-none">
+                    person
+                  </span>
+                </div>
+
+                {/* Username in the middle */}
+                <span className="text-[color:var(--color-on-surface)] text-[14px] font-bold tracking-wide select-none">
+                  {userName}
+                </span>
+
+                {/* Chevron pointing down/up on the right */}
+                <span 
+                  className="material-symbols-outlined text-[18px] text-[color:var(--color-on-surface)] transition-transform duration-200" 
+                  style={{ transform: profileOpen ? 'rotate(180deg)' : 'none' }}
+                >
+                  keyboard_arrow_down
+                </span>
               </button>
-
-              {/* 2. User name capsule in the middle */}
-              <div className="rounded-full px-4 py-2 bg-[color:var(--color-surface-container-high)]/40 border border-[color:var(--color-outline-variant)]/40 text-[color:var(--color-on-surface)] text-[13px] font-extrabold tracking-wide shadow-sm select-none shrink-0">
-                {userName}
-              </div>
-
-              {/* 3. Profile pic/emoji circle on the right */}
-              <div 
-                onClick={() => setProfileOpen(!profileOpen)}
-                className="h-10 w-10 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-[18px] shadow-md border border-white/20 select-none cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-transform shrink-0"
-                title="Account Settings"
-              >
-                {userEmoji}
-              </div>
               {profileOpen && (
                 <div className="absolute right-0 top-full mt-3 w-64 bg-[color:var(--color-surface-container)] rounded-2xl shadow-2xl border border-[color:var(--color-outline-variant)]/30 z-20 overflow-hidden backdrop-blur-md animate-fade-up">
                   {/* User Profile Header */}

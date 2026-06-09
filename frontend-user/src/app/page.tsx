@@ -435,7 +435,7 @@ export default function HomePage() {
       <main className="page-content px-4 md:px-8 lg:pr-8">
         <div className="mx-auto max-w-7xl">
           {/* Row 1: Main Categories & Dashboard pill */}
-          <div className="flex items-center justify-between flex-wrap gap-4 mb-6 pt-2">
+          <div className="flex items-center justify-between flex-wrap gap-4 mb-4 pt-1">
             <div className="flex items-center gap-2 overflow-x-auto py-1 custom-scrollbar shrink-0 max-w-full lg:max-w-[70%] scroll-smooth">
               <span className="text-[10px] font-extrabold uppercase tracking-widest text-[color:var(--color-outline)] mr-2 shrink-0">Categories:</span>
               {[
@@ -469,10 +469,10 @@ export default function HomePage() {
             id="ad-banner-hero"
             data-ad-slot=""
             aria-label="Advertisement"
-            className="ad-block mb-14"
+            className="ad-block mb-6"
           >
             <div
-              className="w-full h-[260px] md:h-[360px] rounded-3xl overflow-hidden relative border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)] card-glass"
+              className="w-full h-[200px] md:h-[260px] rounded-3xl overflow-hidden relative border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)] card-glass"
               style={{ boxShadow: 'inset 0 0 0 1px rgba(255,215,0,0.06)' }}
             >
               <div className="absolute inset-0 overflow-hidden">
@@ -493,7 +493,7 @@ export default function HomePage() {
           </section>
 
           {/* Row 3: Shortcuts Dock */}
-          <section className="mb-8">
+          <section className="mb-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-1.5">
                 <span className="material-symbols-outlined text-[18px] text-[color:var(--color-primary)] animate-pulse">star</span>

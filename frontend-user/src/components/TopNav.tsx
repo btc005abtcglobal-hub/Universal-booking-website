@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
-import { Search, Heart, ShoppingBag, Sparkles, MapPin, Map, X } from 'lucide-react';
+import { Search, Heart, ShoppingBag, Sparkles, MapPin, Map, X, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useLocationStore, useUIStore } from '../lib/store';
 import { LiveClock } from './LiveClock';
@@ -193,7 +193,7 @@ export function TopNav() {
   return (
     <>
       <header className="custom-navbar">
-        <div className="flex justify-between items-center w-full px-6 lg:px-12 py-3 lg:py-4 max-w-full">
+        <div className="flex justify-between items-center w-full px-6 lg:px-12 py-3 lg:py-4 max-w-7xl mx-auto">
           {/* Left Column: Logo & Brand + Location Selector (Desktop) */}
           <div className="flex-1 flex justify-start items-center gap-6">
             <Link
@@ -355,23 +355,19 @@ export function TopNav() {
 
               {/* Wishlist Icon Container */}
               <button 
-                className={`custom-nav-icon-container custom-nav-icon-btn h-10 shadow-md transition-all hover:scale-105 active:scale-95 ${
-                  searchOpen ? 'w-0 opacity-0 pointer-events-none border-none p-0 overflow-hidden m-0' : 'w-10'
-                }`} 
+                className="custom-nav-icon-container custom-nav-icon-btn w-10 h-10 shadow-md transition-all hover:scale-105 active:scale-95" 
                 aria-label="Wishlist"
               >
-                <Heart size={16} strokeWidth={2} className={`${searchOpen ? 'hidden' : 'block'}`} />
+                <Heart size={16} strokeWidth={2} />
               </button>
 
               {/* Cart Icon Container */}
               <button 
-                className={`custom-nav-icon-container custom-nav-icon-btn h-10 shadow-md transition-all hover:scale-105 active:scale-95 relative ${
-                  searchOpen ? 'w-0 opacity-0 pointer-events-none border-none p-0 overflow-hidden m-0' : 'w-10'
-                }`} 
+                className="custom-nav-icon-container custom-nav-icon-btn w-10 h-10 shadow-md transition-all hover:scale-105 active:scale-95 relative" 
                 aria-label="Cart"
               >
-                <ShoppingBag size={16} strokeWidth={2} className={`${searchOpen ? 'hidden' : 'block'}`} />
-                <span className={`absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-[color:var(--color-primary)] rounded-full shadow-[0_0_8px_rgba(255,215,0,0.6)] ${searchOpen ? 'hidden' : ''}`} />
+                <ShoppingBag size={16} strokeWidth={2} />
+                <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-[color:var(--color-primary)] rounded-full shadow-[0_0_8px_rgba(255,215,0,0.6)]" />
               </button>
             </div>
 
@@ -383,11 +379,9 @@ export function TopNav() {
                 aria-label="Toggle profile menu"
                 title="Profile Settings"
               >
-                {/* Solid white circle with a dark outline person icon on the left */}
+                {/* Solid white circle with a small outline user icon on the left */}
                 <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
-                  <span className="material-symbols-outlined text-[20px] text-[#0e3e26] font-semibold select-none">
-                    person
-                  </span>
+                  <User size={13} strokeWidth={2.5} className="text-[#0e3e26]" />
                 </div>
 
                 {/* Username in the middle */}

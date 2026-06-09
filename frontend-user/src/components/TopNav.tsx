@@ -7,6 +7,7 @@ import { Search, Heart, ShoppingBag, Sparkles, MapPin, Map, X, User } from 'luci
 import { motion } from 'framer-motion';
 import { useLocationStore, useUIStore } from '../lib/store';
 import { LiveClock } from './LiveClock';
+import { ALL_SEARCHABLE_SERVICES } from '../lib/searchData';
 
 const CITY_NODES = [
   { name: 'Chennai', x: 80, y: 35, display: 'Chennai (Metro)', lat: 13.0827, lng: 80.2707 },
@@ -39,10 +40,14 @@ export function TopNav() {
   const profileRef = useRef<HTMLDivElement>(null);
   const profileRefMobile = useRef<HTMLDivElement>(null);
   const locationRef = useRef<HTMLDivElement>(null);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
 
   const { toggleTheme } = useUIStore();
 
-
+  const [searchQuery, setSearchQuery] = useState('');
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
 
   useEffect(() => {
     setMounted(true);
@@ -56,6 +61,9 @@ export function TopNav() {
       if (locationRef.current && !locationRef.current.contains(event.target as Node)) {
         setLocationDropdownOpen(false);
       }
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
@@ -63,11 +71,54 @@ export function TopNav() {
     };
   }, []);
 
+  // Filter suggestions when query changes
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSuggestions([]);
+      setActiveIndex(-1);
+      return;
+    }
 
+    const filtered = ALL_SEARCHABLE_SERVICES.filter((service) =>
+      service.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      service.groupTitle.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setSuggestions(filtered);
+    setActiveIndex(-1);
+  }, [searchQuery]);
 
-  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && e.currentTarget.value.trim()) {
-      window.location.href = `/search?q=${encodeURIComponent(e.currentTarget.value.trim())}`;
+  const handleSelectSuggestion = (service: any) => {
+    router.push(service.href);
+    setShowSuggestions(false);
+    setSearchQuery('');
+    setSearchOpen(false);
+  };
+
+  const handleSearchInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (suggestions.length > 0) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setActiveIndex((prev) => (prev + 1) % suggestions.length);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setActiveIndex((prev) => (prev - 1 + suggestions.length) % suggestions.length);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        const targetIndex = activeIndex >= 0 ? activeIndex : 0;
+        const selected = suggestions[targetIndex];
+        if (selected) {
+          handleSelectSuggestion(selected);
+        }
+      } else if (e.key === 'Escape') {
+        setShowSuggestions(false);
+        e.currentTarget.blur();
+      }
+    } else {
+      if (e.key === 'Enter' && searchQuery.trim()) {
+        router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+        setSearchOpen(false);
+        setShowSuggestions(false);
+      }
     }
   };
 
@@ -320,37 +371,83 @@ export function TopNav() {
             {/* Desktop Actions Capsule (>= lg) */}
             {/* Desktop Actions (Separated Glass Circles) */}
             <div className="hidden lg:flex items-center gap-2.5 mr-10">
-              {/* Search Icon Container */}
-              <div 
-                className={`custom-nav-icon-container shadow-md transition-all duration-300 ${
-                  searchOpen ? 'w-48 px-3.5 py-1.5' : 'w-10 h-10 justify-center'
-                }`}
-              >
-                <button
-                  onClick={() => setSearchOpen(!searchOpen)}
-                  className="custom-nav-icon-btn p-1 shrink-0"
-                  aria-label="Search"
-                >
-                  <Search size={15} strokeWidth={2.5} />
-                </button>
-                <div
-                  className={`overflow-hidden transition-all duration-300 flex items-center ${
-                    searchOpen ? 'w-32 xl:w-40 opacity-100 ml-2' : 'w-0 opacity-0'
+              {/* Search Icon Container Wrapper */}
+              <div className="relative" ref={searchContainerRef}>
+                <div 
+                  className={`custom-nav-icon-container shadow-md transition-all duration-300 ${
+                    searchOpen ? 'w-48 px-3.5 py-1.5' : 'w-10 h-10 justify-center'
                   }`}
                 >
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    className="bg-transparent border-none outline-none text-xs text-[color:var(--color-on-surface)] placeholder-[color:var(--color-on-surface-variant)]/50 w-full"
-                    onKeyDown={handleSearchKeyDown}
-                    onBlur={(e) => {
-                      if (!e.currentTarget.value) {
-                        setSearchOpen(false);
+                  <button
+                    onClick={() => {
+                      setSearchOpen(!searchOpen);
+                      if (!searchOpen) {
+                        setShowSuggestions(true);
                       }
                     }}
-                    autoFocus={searchOpen}
-                  />
+                    className="custom-nav-icon-btn p-1 shrink-0"
+                    aria-label="Search"
+                  >
+                    <Search size={15} strokeWidth={2.5} />
+                  </button>
+                  <div
+                    className={`overflow-hidden transition-all duration-300 flex items-center ${
+                      searchOpen ? 'w-32 xl:w-40 opacity-100 ml-2' : 'w-0 opacity-0'
+                    }`}
+                  >
+                    <input
+                      type="text"
+                      placeholder="Search..."
+                      value={searchQuery}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        setShowSuggestions(true);
+                      }}
+                      onFocus={() => setShowSuggestions(true)}
+                      className="bg-transparent border-none outline-none text-xs text-[color:var(--color-on-surface)] placeholder-[color:var(--color-on-surface-variant)]/50 w-full"
+                      onKeyDown={handleSearchInputKeyDown}
+                      autoFocus={searchOpen}
+                    />
+                  </div>
                 </div>
+
+                {/* Autocomplete Dropdown */}
+                {searchOpen && showSuggestions && suggestions.length > 0 && (
+                  <div className="absolute right-0 top-full mt-3 w-80 rounded-2xl border border-[color:var(--color-outline-variant)]/40 bg-[color:var(--color-surface-container-high)]/95 backdrop-blur-xl shadow-2xl overflow-hidden max-h-72 overflow-y-auto z-[110] divide-y divide-[color:var(--color-outline-variant)]/10 text-left">
+                    {suggestions.map((service, index) => {
+                      const isActive = index === activeIndex;
+                      return (
+                        <div
+                          key={`${service.name}-${index}`}
+                          onMouseDown={(e) => {
+                            // Prevent input blur/close
+                            e.preventDefault();
+                          }}
+                          onClick={() => handleSelectSuggestion(service)}
+                          onMouseEnter={() => setActiveIndex(index)}
+                          className={`flex items-center justify-between px-4 py-3 cursor-pointer transition-colors duration-200 ${
+                            isActive
+                              ? 'bg-[color:var(--color-primary)]/10 text-[color:var(--color-primary)] font-bold'
+                              : 'text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-highest)]'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="text-base">{service.emoji}</span>
+                            <div className="text-left font-sans">
+                              <span className="text-xs block font-bold">{service.name}</span>
+                              <span className="text-[9px] text-[color:var(--color-outline)] block mt-0.5">
+                                in {service.groupTitle}
+                              </span>
+                            </div>
+                          </div>
+                          <span className="material-symbols-outlined text-[10px] opacity-50">
+                            arrow_forward
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               {/* Wishlist Icon Container */}

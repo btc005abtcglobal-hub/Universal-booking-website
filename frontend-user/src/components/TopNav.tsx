@@ -319,7 +319,7 @@ export function TopNav() {
           <div className="flex-1 flex justify-end items-center gap-3">
             {/* Desktop Actions Capsule (>= lg) */}
             {/* Desktop Actions (Separated Glass Circles) */}
-            <div className="hidden lg:flex items-center gap-2.5">
+            <div className="hidden lg:flex items-center gap-2.5 mr-10">
               {/* Search Icon Container */}
               <div 
                 className={`custom-nav-icon-container shadow-md transition-all duration-300 ${

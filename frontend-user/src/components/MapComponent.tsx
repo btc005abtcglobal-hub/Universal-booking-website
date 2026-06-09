@@ -282,10 +282,21 @@ export default function MapComponent({
     const handleWheel = (e: WheelEvent) => {
       if (e.ctrlKey) {
         e.preventDefault();
+        // Zoom around the cursor position rather than map center
+        const latlng = map.mouseEventToLatLng(e);
         const delta = -e.deltaY;
-        const zoomFactor = 0.045;
-        const newZoom = map.getZoom() + delta * zoomFactor;
-        map.setZoom(newZoom);
+        // Increased zoom factor from 0.045 to 0.12 for greater pinch sensitivity
+        const zoomFactor = 0.12;
+        const currentZoom = map.getZoom();
+        const targetZoom = currentZoom + delta * zoomFactor;
+        
+        // Clamp within map bounds
+        const minZoom = map.getMinZoom();
+        const maxZoom = map.getMaxZoom();
+        const clampedZoom = Math.max(minZoom, Math.min(maxZoom, targetZoom));
+        
+        // Zoom around cursor without transition animation lag
+        map.setZoomAround(latlng, clampedZoom, { animate: false });
       }
     };
     if (container) {

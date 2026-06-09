@@ -538,10 +538,10 @@ export default function HomePage() {
             id="ad-banner-hero"
             data-ad-slot=""
             aria-label="Advertisement"
-            className="ad-block mb-6 flex flex-col items-center gap-3 w-full"
+            className="ad-block mb-8 flex flex-col items-center gap-4 w-screen relative left-1/2 -translate-x-1/2 overflow-hidden"
           >
             {/* Carousel Container */}
-            <div className="w-full h-[260px] md:h-[320px] relative overflow-hidden flex items-center justify-center">
+            <div className="w-full h-[280px] sm:h-[340px] md:h-[380px] lg:h-[420px] relative flex items-center justify-center">
               {MOCK_ADS.map((ad, idx) => {
                 const diff = getDiff(idx);
                 
@@ -559,21 +559,21 @@ export default function HomePage() {
                   pointerEventsClass = "pointer-events-auto";
                 } else if (diff === -1) {
                   // Left peeking card
-                  transformStr = "translate3d(-40%, 0, 0) scale(0.8)";
-                  opacityClass = "opacity-50";
+                  transformStr = "translate3d(-91%, 0, 0) scale(0.92)";
+                  opacityClass = "opacity-45 hover:opacity-75";
                   zIndexClass = "z-10";
                   pointerEventsClass = "pointer-events-auto cursor-pointer";
                 } else if (diff === 1) {
                   // Right peeking card
-                  transformStr = "translate3d(40%, 0, 0) scale(0.8)";
-                  opacityClass = "opacity-50";
+                  transformStr = "translate3d(91%, 0, 0) scale(0.92)";
+                  opacityClass = "opacity-45 hover:opacity-75";
                   zIndexClass = "z-10";
                   pointerEventsClass = "pointer-events-auto cursor-pointer";
                 } else {
-                  // Hidden cards (diff === -2 or diff === 2)
-                  transformStr = diff === -2 
-                    ? "translate3d(-80%, 0, 0) scale(0.6)" 
-                    : "translate3d(80%, 0, 0) scale(0.6)";
+                  // Hidden cards (diff <= -2 or diff >= 2)
+                  transformStr = diff < 0 
+                    ? "translate3d(-180%, 0, 0) scale(0.85)" 
+                    : "translate3d(180%, 0, 0) scale(0.85)";
                   opacityClass = "opacity-0";
                   zIndexClass = "z-0";
                   pointerEventsClass = "pointer-events-none";
@@ -587,12 +587,12 @@ export default function HomePage() {
                         setAdIndex(idx);
                       }
                     }}
-                    className={`absolute w-[75%] md:w-[65%] h-full left-[12.5%] md:left-[17.5%] rounded-3xl overflow-hidden border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)] card-glass transition-all duration-700 ease-in-out select-none ${opacityClass} ${zIndexClass} ${pointerEventsClass}`}
+                    className={`absolute w-[86vw] sm:w-[82vw] md:w-[74vw] lg:w-[68vw] h-full left-[7vw] sm:left-[9vw] md:left-[13vw] lg:left-[16vw] rounded-3xl overflow-hidden border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)] card-glass transition-all duration-700 ease-in-out select-none ${opacityClass} ${zIndexClass} ${pointerEventsClass}`}
                     style={{
                       transform: transformStr,
                       boxShadow: diff === 0 
-                        ? '0 12px 30px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 215, 0, 0.1)' 
-                        : '0 4px 12px rgba(0, 0, 0, 0.2)'
+                        ? '0 16px 40px rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(255, 215, 0, 0.15)' 
+                        : '0 4px 16px rgba(0, 0, 0, 0.3)'
                     }}
                   >
                     {/* Background Image & Overlay */}
@@ -603,26 +603,26 @@ export default function HomePage() {
                         className="w-full h-full object-cover brightness-50"
                         loading="lazy"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
                     </div>
 
                     {/* Ad Content */}
-                    <div className="absolute inset-0 z-10 p-6 md:p-8 flex flex-col justify-end text-left">
+                    <div className="absolute inset-0 z-10 p-6 md:p-10 flex flex-col justify-end text-left">
                       <div className="flex items-center gap-2 mb-2">
                         <span className={`px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase tracking-wider border ${ad.tagBg}`}>
                           {ad.tag}
                         </span>
                       </div>
-                      <h4 className="text-lg md:text-xl font-extrabold text-white mb-1 tracking-wide">
+                      <h4 className="text-xl md:text-2xl lg:text-3xl font-black text-white mb-2 tracking-wide leading-tight">
                         {ad.title}
                       </h4>
-                      <p className="text-xs text-slate-300 font-medium max-w-md mb-4 line-clamp-2">
+                      <p className="text-xs md:text-sm text-slate-300 font-medium max-w-xl mb-5 line-clamp-2 leading-relaxed">
                         {ad.desc}
                       </p>
                       {diff === 0 && (
                         <Link 
                           href={ad.href}
-                          className="self-start px-4 py-2 rounded-full text-[10px] font-black tracking-widest bg-[color:var(--color-primary)] text-black hover:scale-105 transition-transform"
+                          className="self-start px-5 py-2.5 rounded-full text-[10px] font-black tracking-widest bg-[color:var(--color-primary)] text-black hover:scale-105 transition-transform shadow-lg active:scale-98"
                         >
                           {ad.actionText.toUpperCase()}
                         </Link>

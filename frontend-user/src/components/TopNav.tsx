@@ -375,13 +375,13 @@ export function TopNav() {
             <div className="hidden lg:flex items-center gap-2 relative" ref={profileRef}>
               <button
                 onClick={() => setProfileOpen(!profileOpen)}
-                className="custom-nav-btn pl-1 pr-4 py-1 h-10 rounded-full flex items-center gap-3 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                className="custom-nav-btn pl-1.5 pr-4 py-1 h-11 rounded-full flex items-center gap-3 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
                 aria-label="Toggle profile menu"
                 title="Profile Settings"
               >
                 {/* Solid white circle with a small outline user icon on the left */}
-                <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
-                  <User size={13} strokeWidth={2.5} className="text-[#0e3e26]" />
+                <div className="h-9 w-9 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
+                  <User size={10} strokeWidth={2.5} className="text-[#0e3e26]" />
                 </div>
 
                 {/* Username in the middle */}

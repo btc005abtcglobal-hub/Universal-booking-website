@@ -472,7 +472,7 @@ export default function HomePage() {
             className="ad-block mb-6"
           >
             <div
-              className="w-full h-[200px] md:h-[260px] rounded-3xl overflow-hidden relative border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)] card-glass"
+              className="w-full h-[260px] md:h-[320px] rounded-3xl overflow-hidden relative border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)] card-glass"
               style={{ boxShadow: 'inset 0 0 0 1px rgba(255,215,0,0.06)' }}
             >
               <div className="absolute inset-0 overflow-hidden">

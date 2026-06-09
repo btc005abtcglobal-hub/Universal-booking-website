@@ -353,6 +353,76 @@ const ALL_SEARCHABLE_SERVICES: SearchableService[] = SERVICE_GROUPS.flatMap((gro
   )
 );
 
+const GROUP_EMOJIS: Record<string, string> = {
+  'Travel': '✈️',
+  'Stay & Accomodation': '🏨',
+  'Entertainment': '🎬',
+  'Sports&Turf': '⚽',
+  'Lifestyle Services': '💇',
+  'Business': '🧑‍💻',
+  'Religious Services': '🛕',
+  'Equipment Rentals': '🚲',
+  'Personal Services': '🐶'
+};
+
+function getServiceSubtitle(name: string): string {
+  const n = name.toLowerCase();
+  if (n.includes('bus')) return 'State & private bus routes';
+  if (n.includes('train')) return 'Express & passenger schedules';
+  if (n.includes('flight')) return 'Domestic & international routes';
+  if (n.includes('ferry') || n.includes('boat')) return 'Scenic waterways & cruises';
+  if (n.includes('shuttle')) return 'Convenient local route shuttles';
+  if (n.includes('helicopter')) return 'Fast luxury charter travel';
+  if (n.includes('cab') || n.includes('taxi')) return 'On-demand cabs & drivers';
+  if (n.includes('bike')) return 'Hourly & daily rentals';
+  if (n.includes('car rental') || n.includes('self-drive')) return 'Premium self-drive fleets';
+  if (n.includes('hotel')) return 'Boutique & premium rooms';
+  if (n.includes('resort')) return 'Beachfront & hill getaways';
+  if (n.includes('villa') || n.includes('homestay')) return 'Private luxury villas';
+  if (n.includes('hostel')) return 'Backpacker & social stays';
+  if (n.includes('camping')) return 'Outdoor luxury glamping';
+  if (n.includes('cinema') || n.includes('movie')) return 'Blockbuster movie tickets';
+  if (n.includes('theatre')) return 'Live drama & music plays';
+  if (n.includes('concert')) return 'Major local & global bands';
+  if (n.includes('events & festival') || n.includes('festival')) return 'Art exhibitions & carnivals';
+  if (n.includes('exhibition')) return 'Museum & gallery shows';
+  if (n.includes('workshop') || n.includes('class')) return 'Skill & creative learning';
+  if (n.includes('gaming')) return 'Console & PC slots';
+  if (n.includes('football') || n.includes('turf')) return 'Fifa-grade synthetic turfs';
+  if (n.includes('cricket')) return 'Nets & pitch bookings';
+  if (n.includes('badminton')) return 'Indoor synthetic courts';
+  if (n.includes('tennis')) return 'Clay & hard court slots';
+  if (n.includes('basketball')) return 'Standard indoor courts';
+  if (n.includes('swimming')) return 'Olympic-sized public pools';
+  if (n.includes('play arena') || n.includes('indoor play')) return 'Climbing & adventure park';
+  if (n.includes('restaurant') || n.includes('dining')) return 'Table reservation & menus';
+  if (n.includes('salon') || n.includes('spa')) return 'Styling, massage & therapies';
+  if (n.includes('gym') || n.includes('yoga')) return 'Fitness trainers & studio';
+  if (n.includes('doctor')) return 'Consult general & specialists';
+  if (n.includes('electrician')) return 'House wiring & repairs';
+  if (n.includes('plumber')) return 'Leak fixes & installations';
+  if (n.includes('cleaning')) return 'Deep home cleaning services';
+  if (n.includes('technician')) return 'AC & appliance maintenance';
+  if (n.includes('studio') && !n.includes('podcast')) return 'Photoshoot & video spaces';
+  if (n.includes('co-working') || n.includes('coworking')) return 'Hot desks & dedicated cabins';
+  if (n.includes('meeting')) return 'Smart screens & whiteboard';
+  if (n.includes('podcast')) return 'Pro microphones & soundboard';
+  if (n.includes('conference')) return 'Seminars & business events';
+  if (n.includes('training')) return 'Classrooms & workshops';
+  if (n.includes('darshan')) return 'Fast-track temple entry';
+  if (n.includes('pooja')) return 'Traditional archana rituals';
+  if (n.includes('pilgrimage')) return 'Guided religious journeys';
+  if (n.includes('cycle')) return 'Eco gear & cycles';
+  if (n.includes('camera')) return 'DSL & mirrorless gear';
+  if (n.includes('sound')) return 'DJ speakers & mics';
+  if (n.includes('equipment')) return 'Catering & seating rental';
+  if (n.includes('pet')) return 'Baths, clips & nail trims';
+  if (n.includes('babysitting')) return 'Trusted child care services';
+  if (n.includes('elder')) return 'Assisted care & companions';
+  if (n.includes('organizer')) return 'Parties, birthdays & weddings';
+  return 'Reserve slots instantly';
+}
+
 export default function CategoriesPage() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
@@ -361,6 +431,13 @@ export default function CategoriesPage() {
   const [activeIndex, setActiveIndex] = useState(-1);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -495,48 +572,96 @@ export default function CategoriesPage() {
           </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {/* Category Tabs Switcher (Sticky Row) */}
+        <div className="sticky top-[80px] md:top-[104px] z-30 bg-[color:var(--color-background)]/80 backdrop-blur-lg border-b border-[color:var(--color-outline-variant)]/20 py-3 mb-8 -mx-4 px-4 md:-mx-8 md:px-8 overflow-x-auto flex gap-2.5 scrollbar-none scroll-smooth">
           {SERVICE_GROUPS.map((group) => {
-            const groupHref = getGroupHref(group.title);
+            const id = group.title.toLowerCase().replace(/\s+/g, '-');
             return (
-              <div
+              <button
                 key={group.title}
-                onClick={() => router.push(groupHref)}
-                className="card-glass rounded-[28px] border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)] p-5 cursor-pointer hover:border-[color:var(--color-primary)]/30 active:scale-[0.99] transition-all duration-300 relative group"
+                onClick={() => scrollToSection(id)}
+                className="px-4 py-2.5 rounded-full text-[11.5px] font-bold bg-[color:var(--color-surface-container)]/40 border border-[color:var(--color-outline-variant)]/20 text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)] hover:border-[color:var(--color-primary)]/30 hover:scale-[1.03] active:scale-95 transition-all cursor-pointer flex items-center gap-2 shrink-0 shadow-sm backdrop-blur-md"
               >
-                <div className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[color:var(--color-primary)]/20 bg-[color:var(--color-primary)]/10 text-[color:var(--color-primary)] group-hover:scale-105 transition-transform">
-                    <span className="material-symbols-outlined">{group.icon}</span>
+                <span className="text-sm">{GROUP_EMOJIS[group.title] || '📍'}</span>
+                <span>{group.title}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Categories Section Feed */}
+        <div className="space-y-12">
+          {SERVICE_GROUPS.map((group) => {
+            const id = group.title.toLowerCase().replace(/\s+/g, '-');
+            return (
+              <section
+                key={group.title}
+                id={id}
+                className="scroll-mt-36 text-left animate-fade-up"
+              >
+                {/* Category Header */}
+                <div className="flex items-center gap-4.5 mb-6 border-b border-[color:var(--color-outline-variant)]/15 pb-4">
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-[color:var(--color-primary)]/20 bg-[color:var(--color-primary)]/10 text-[color:var(--color-primary)] shadow-md">
+                    <span className="material-symbols-outlined text-[26px]">{group.icon}</span>
                   </div>
-                  <div className="min-w-0">
-                    <h2 className="text-[18px] font-bold text-[color:var(--color-on-surface)] group-hover:text-[color:var(--color-primary)] transition-colors">{group.title}</h2>
-                    <p className="mt-1 text-[13px] leading-6 text-[color:var(--color-on-surface-variant)]">{group.description}</p>
+                  <div>
+                    <h2 className="text-[20px] md:text-[22px] font-black text-[color:var(--color-on-surface)] tracking-tight">
+                      {group.title}
+                    </h2>
+                    <p className="mt-1 text-xs md:text-sm text-[color:var(--color-on-surface-variant)]">
+                      {group.description}
+                    </p>
                   </div>
                 </div>
 
-                <div className="mt-5 space-y-4 relative z-10 text-left">
+                {/* Subcategories & Service Cards */}
+                <div className="space-y-8">
                   {group.subcategories.map((subcat) => (
-                    <div key={subcat.name} className="space-y-1.5">
-                      <h3 className="text-[10px] uppercase tracking-wider font-extrabold text-[color:var(--color-primary)] opacity-85">
-                        {subcat.name}
-                      </h3>
-                      <div className="flex flex-wrap gap-1.5">
-                        {subcat.items.map((item) => (
-                          <Link
-                            key={item.name}
-                            href={getHrefForCategoryItem(group.title, item.name)}
-                            onClick={(e) => e.stopPropagation()}
-                            className="rounded-full border border-[color:var(--color-outline-variant)]/40 bg-[color:var(--color-surface-dim)]/50 px-2.5 py-1.5 text-[11.5px] font-semibold text-[color:var(--color-on-surface)] hover:border-[color:var(--color-primary)]/40 hover:bg-[color:var(--color-surface-container-high)] hover:scale-[1.03] active:scale-[0.98] transition-all duration-200 flex items-center gap-1.5"
-                          >
-                            <span>{item.emoji}</span>
-                            <span>{item.name}</span>
-                          </Link>
-                        ))}
+                    <div key={subcat.name} className="space-y-4">
+                      {group.subcategories.length > 1 && (
+                        <h3 className="text-[10px] uppercase tracking-widest font-black text-[color:var(--color-outline)] border-l-2 border-[color:var(--color-primary)]/50 pl-2">
+                          {subcat.name}
+                        </h3>
+                      )}
+                      
+                      {/* Grid of Service Cards */}
+                      <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                        {subcat.items.map((item) => {
+                          const serviceHref = getHrefForCategoryItem(group.title, item.name);
+                          return (
+                            <Link
+                              key={item.name}
+                              href={serviceHref}
+                              className="card-glass relative flex flex-col justify-between p-5 rounded-[24px] border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)]/50 hover:bg-[color:var(--color-surface-container-high)]/80 hover:border-[color:var(--color-primary)]/40 hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 shadow-md group text-left overflow-hidden min-h-[140px]"
+                            >
+                              {/* Ambient gradient background glow on card hover */}
+                              <div className="absolute inset-0 bg-gradient-to-tr from-[color:var(--color-primary)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+                              <div className="flex items-start justify-between gap-3 relative z-10">
+                                <div className="text-3xl p-3 rounded-2xl bg-[color:var(--color-surface-container-highest)]/80 border border-[color:var(--color-outline-variant)]/20 shadow-inner group-hover:scale-110 transition-transform duration-300">
+                                  {item.emoji}
+                                </div>
+                                <div className="h-7 w-7 rounded-full bg-[color:var(--color-surface-container-highest)]/50 flex items-center justify-center text-[color:var(--color-on-surface-variant)] group-hover:text-[color:var(--color-primary)] group-hover:bg-[color:var(--color-primary)]/10 transition-colors duration-300">
+                                  <span className="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+                                </div>
+                              </div>
+
+                              <div className="mt-4 relative z-10">
+                                <h3 className="text-[14px] font-extrabold text-[color:var(--color-on-surface)] group-hover:text-[color:var(--color-primary)] transition-colors leading-snug">
+                                  {item.name}
+                                </h3>
+                                <p className="text-[11px] text-[color:var(--color-on-surface-variant)] mt-1.5 font-medium line-clamp-1">
+                                  {getServiceSubtitle(item.name)}
+                                </p>
+                              </div>
+                            </Link>
+                          );
+                        })}
                       </div>
                     </div>
                   ))}
                 </div>
-              </div>
+              </section>
             );
           })}
         </div>

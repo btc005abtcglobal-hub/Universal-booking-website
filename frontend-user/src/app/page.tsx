@@ -709,10 +709,10 @@ export default function HomePage() {
                 <Link
                   key={item.id}
                   href={item.link}
-                  className="w-[200px] sm:w-[220px] shrink-0 snap-start group"
+                  className="w-[215px] sm:w-[235px] shrink-0 snap-start group"
                 >
                   <div
-                    className={`relative h-[270px] rounded-3xl p-5 overflow-hidden flex flex-col justify-between border ${item.borderColor} bg-gradient-to-b ${item.bgGradient} hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 card-glass shadow-lg`}
+                    className={`relative h-[290px] rounded-3xl p-5 overflow-hidden flex flex-col justify-between border ${item.borderColor} bg-gradient-to-b ${item.bgGradient} hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 card-glass shadow-lg`}
                   >
                     {/* Top category label & rating */}
                     <div className="flex items-center justify-between gap-2 z-10">
@@ -778,10 +778,10 @@ export default function HomePage() {
                     <Link
                       key={item.id}
                       href={item.link}
-                      className="w-[200px] sm:w-[220px] shrink-0 snap-start group"
+                      className="w-[215px] sm:w-[235px] shrink-0 snap-start group"
                     >
                       <div
-                        className="relative h-[270px] rounded-3xl p-5 overflow-hidden flex flex-col justify-between border border-[#F87171]/20 bg-gradient-to-b from-[#F87171]/20 to-black/85 hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 card-glass shadow-lg"
+                        className="relative h-[290px] rounded-3xl p-5 overflow-hidden flex flex-col justify-between border border-[#F87171]/20 bg-gradient-to-b from-[#F87171]/20 to-black/85 hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 card-glass shadow-lg"
                       >
                         {/* Top category label & rating */}
                         <div className="flex items-center justify-between gap-2 z-10">
@@ -849,10 +849,10 @@ export default function HomePage() {
                     <Link
                       key={item.id}
                       href={item.link}
-                      className="w-[200px] sm:w-[220px] shrink-0 snap-start group"
+                      className="w-[215px] sm:w-[235px] shrink-0 snap-start group"
                     >
                       <div
-                        className="relative h-[270px] rounded-3xl p-5 overflow-hidden flex flex-col justify-between border border-[#34D399]/20 bg-gradient-to-b from-[#34D399]/20 to-black/85 hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 card-glass shadow-lg"
+                        className="relative h-[290px] rounded-3xl p-5 overflow-hidden flex flex-col justify-between border border-[#34D399]/20 bg-gradient-to-b from-[#34D399]/20 to-black/85 hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 card-glass shadow-lg"
                       >
                         {/* Top category label & rating */}
                         <div className="flex items-center justify-between gap-2 z-10">

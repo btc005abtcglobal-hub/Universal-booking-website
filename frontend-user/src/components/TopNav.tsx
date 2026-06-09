@@ -193,7 +193,7 @@ export function TopNav() {
   return (
     <>
       <header className="custom-navbar">
-        <div className="flex justify-between items-center w-full px-6 lg:px-12 py-3 lg:py-4 max-w-7xl mx-auto">
+        <div className="flex justify-between items-center w-full px-6 lg:px-12 py-3 lg:py-4 max-w-full">
           {/* Left Column: Logo & Brand + Location Selector (Desktop) */}
           <div className="flex-1 flex justify-start items-center gap-6">
             <Link

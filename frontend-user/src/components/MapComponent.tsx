@@ -264,7 +264,7 @@ export default function MapComponent({
 
     // Listen to panned movements (moveend) to support real-time sensing of nearby shops
     map.on('moveend', () => {
-      if (rafId === null) {
+      if (!isPinching) {
         const newCenter = map.getCenter();
         if (onCenterChange) {
           onCenterChange(newCenter.lat, newCenter.lng);
@@ -274,7 +274,7 @@ export default function MapComponent({
 
     // Listen to zoom changes to show/hide markers
     map.on('zoomend', () => {
-      if (rafId === null) {
+      if (!isPinching) {
         setMapZoom(map.getZoom());
       }
     });
@@ -284,57 +284,39 @@ export default function MapComponent({
     // never trigger any random zooms.
     const container = mapContainerRef.current;
     let targetZoom = map.getZoom();
-    let currentZoom = map.getZoom();
     let zoomLatLng: L.LatLng | null = null;
-    let rafId: number | null = null;
-    const easeFactor = 0.25;
+    let zoomTimeout: NodeJS.Timeout | null = null;
+    let lastZoomTime = 0;
+    let isPinching = false;
 
-    const animateZoom = () => {
-      if (!mapRef.current || !zoomLatLng) {
-        rafId = null;
-        return;
-      }
+    const performZoom = () => {
+      if (!mapRef.current || !zoomLatLng) return;
+      
+      const now = Date.now();
+      const currentZoom = map.getZoom();
+      
+      if (Math.abs(targetZoom - currentZoom) < 0.01) return;
 
-      const diff = targetZoom - currentZoom;
-      if (Math.abs(diff) < 0.001) {
-        currentZoom = targetZoom;
-        map.setZoomAround(zoomLatLng, currentZoom, { animate: false });
-        
-        // Final syncs
-        setMapZoom(currentZoom);
-        const newCenter = map.getCenter();
-        if (onCenterChange) {
-          onCenterChange(newCenter.lat, newCenter.lng);
-        }
-        
-        rafId = null;
-        return;
-      }
-
-      const wasZoomedIn = currentZoom >= 16;
-      currentZoom += diff * easeFactor;
-      const isZoomedInNow = currentZoom >= 16;
-
-      map.setZoomAround(zoomLatLng, currentZoom, { animate: false });
-
-      if (wasZoomedIn !== isZoomedInNow) {
-        setMapZoom(currentZoom);
-      }
-
-      rafId = requestAnimationFrame(animateZoom);
+      // Use Leaflet's smooth CSS-animated zoom (duration 0.15s)
+      map.setZoomAround(zoomLatLng, targetZoom, {
+        animate: true,
+        duration: 0.15
+      } as any);
+      
+      lastZoomTime = now;
     };
 
     const handleWheel = (e: WheelEvent) => {
       if (e.ctrlKey) {
         e.preventDefault();
         
-        // Sync current zoom if zoom animation is not running
-        if (rafId === null) {
-          currentZoom = map.getZoom();
-          targetZoom = currentZoom;
+        isPinching = true;
+
+        if (zoomTimeout) {
+          clearTimeout(zoomTimeout);
+          zoomTimeout = null;
         }
 
-        // Get the latest cursor coordinates under current zoom/pan state
         zoomLatLng = map.mouseEventToLatLng(e);
         
         // Normalize delta based on deltaMode
@@ -345,17 +327,22 @@ export default function MapComponent({
           delta *= 100;
         }
         
-        // Fine-tuned zoom sensitivity factor for smooth tracking
-        const zoomFactor = 0.0025;
-        
+        const zoomFactor = 0.003;
         const minZoom = map.getMinZoom();
         const maxZoom = map.getMaxZoom();
         
         targetZoom = Math.max(minZoom, Math.min(maxZoom, targetZoom + delta * zoomFactor));
         
-        if (rafId === null) {
-          rafId = requestAnimationFrame(animateZoom);
+        const now = Date.now();
+        if (now - lastZoomTime >= 100) {
+          performZoom();
         }
+
+        // Debounce the final state release and zoom settlement
+        zoomTimeout = setTimeout(() => {
+          isPinching = false;
+          performZoom();
+        }, 120);
       }
     };
     if (container) {
@@ -378,8 +365,8 @@ export default function MapComponent({
       if (container) {
         container.removeEventListener('wheel', handleWheel);
       }
-      if (rafId !== null) {
-        cancelAnimationFrame(rafId);
+      if (zoomTimeout) {
+        clearTimeout(zoomTimeout);
       }
       if (userMarkerRef.current) {
         userMarkerRef.current.remove();

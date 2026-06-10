@@ -163,7 +163,7 @@ export default function ServicesPage() {
         </div>
         <button 
           onClick={handleOpenAdd}
-          className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-fuchsia-600 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-indigo-500/10 hover:from-indigo-600 hover:to-fuchsia-700 transition-all cursor-pointer"
+          className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#8b6508] to-[#d4af37] px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-[#8b6508]/15 hover:from-[#664a05] hover:to-[#8b6508] transition-all cursor-pointer"
         >
           <Plus size={14} /> Add Service Listing
         </button>
@@ -179,7 +179,7 @@ export default function ServicesPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search catalog services..." 
-              className="w-full rounded-xl border border-white/10 bg-[#090d16]/30 py-2 pl-10 pr-4 text-xs text-white placeholder-slate-600 outline-none focus:border-indigo-500 transition-colors" 
+              className="w-full rounded-xl border border-white/10 bg-[#090d16]/30 py-2 pl-10 pr-4 text-xs text-white placeholder-slate-600 outline-none focus:border-[#8b6508] transition-colors" 
             />
           </div>
         </div>
@@ -247,7 +247,7 @@ export default function ServicesPage() {
                   <div className="flex items-center justify-end gap-1">
                     <button 
                       onClick={() => handleOpenEdit(s)}
-                      className="rounded-lg p-1.5 hover:bg-white/5 text-slate-400 hover:text-indigo-400 transition-colors"
+                      className="rounded-lg p-1.5 hover:bg-white/5 text-slate-400 hover:text-[#d4af37] transition-colors"
                     >
                       <Edit size={14} />
                     </button>
@@ -396,7 +396,7 @@ export default function ServicesPage() {
                     id="add-active"
                     checked={active}
                     onChange={(e) => setActive(e.target.checked)}
-                    className="rounded border-white/10 bg-[#090d16] h-4 w-4 text-indigo-500"
+                    className="rounded border-white/10 bg-[#090d16] h-4 w-4 text-[#8b6508]"
                   />
                   <label htmlFor="add-active" className="text-xs text-slate-300 font-bold">List as Active Service</label>
                 </div>
@@ -412,7 +412,7 @@ export default function ServicesPage() {
                 </button>
                 <button 
                   type="submit"
-                  className="rounded-xl bg-indigo-500 px-5 py-2 text-xs font-bold text-white hover:bg-indigo-600 cursor-pointer"
+                  className="rounded-xl bg-[#8b6508] px-5 py-2 text-xs font-bold text-white hover:bg-[#664a05] cursor-pointer"
                 >
                   Create Listing
                 </button>
@@ -542,7 +542,7 @@ export default function ServicesPage() {
                     id="edit-active"
                     checked={active}
                     onChange={(e) => setActive(e.target.checked)}
-                    className="rounded border-white/10 bg-[#090d16] h-4 w-4 text-indigo-500"
+                    className="rounded border-white/10 bg-[#090d16] h-4 w-4 text-[#8b6508]"
                   />
                   <label htmlFor="edit-active" className="text-xs text-slate-300 font-bold">List as Active Service</label>
                 </div>
@@ -558,7 +558,7 @@ export default function ServicesPage() {
                 </button>
                 <button 
                   type="submit"
-                  className="rounded-xl bg-indigo-500 px-5 py-2 text-xs font-bold text-white hover:bg-indigo-600 cursor-pointer"
+                  className="rounded-xl bg-[#8b6508] px-5 py-2 text-xs font-bold text-white hover:bg-[#664a05] cursor-pointer"
                 >
                   Save Changes
                 </button>

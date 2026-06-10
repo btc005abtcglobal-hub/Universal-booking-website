@@ -34,8 +34,8 @@ export default function CalendarPage() {
 
   // Colors mapping for status
   const statusColors: Record<string, string> = {
-    CONFIRMED: 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20',
-    CHECKED_IN: 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20',
+    CONFIRMED: 'bg-[#8b6508]/15 text-[#fceea7] border border-[#8b6508]/30',
+    CHECKED_IN: 'bg-[#0a3161]/20 text-[#9cc3f5] border border-[#0a3161]/30',
     COMPLETED: 'bg-green-500/10 text-green-400 border border-green-500/20',
     CANCELLED: 'bg-red-500/10 text-red-400 border border-red-500/20'
   };
@@ -48,7 +48,7 @@ export default function CalendarPage() {
           <p className="text-xs text-slate-400">Weekly scheduling planner. Syncs in real-time with customer check-ins.</p>
         </div>
         <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.01] px-4 py-2 text-xs text-slate-400 font-bold">
-          <Calendar size={14} className="text-indigo-400" /> May 25 – May 31, 2026
+          <Calendar size={14} className="text-[#d4af37]" /> May 25 – May 31, 2026
         </div>
       </div>
 
@@ -127,7 +127,7 @@ export default function CalendarPage() {
 
                   <div className="space-y-3 bg-white/[0.02] border border-white/5 p-4 rounded-xl">
                     <div className="flex items-center gap-2.5">
-                      <div className="h-7 w-7 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs">{selectedSlotBooking.customerName[0]}</div>
+                      <div className="h-7 w-7 rounded-lg bg-[#8b6508]/10 border border-[#8b6508]/20 text-[#fceea7] flex items-center justify-center font-bold text-xs">{selectedSlotBooking.customerName[0]}</div>
                       <div>
                         <div className="font-bold text-xs text-white">{selectedSlotBooking.customerName}</div>
                         <div className="text-[10px] text-slate-500">{selectedSlotBooking.ref}</div>

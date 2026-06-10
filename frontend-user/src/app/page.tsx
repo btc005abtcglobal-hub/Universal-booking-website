@@ -660,13 +660,7 @@ export default function HomePage() {
           </section>
 
           {/* Row 3: Shortcuts Dock */}
-          <section className="mb-6 -mt-3 md:-mt-5 lg:-mt-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[18px] text-[color:var(--color-primary)] animate-pulse">star</span>
-                <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-[color:var(--color-outline)]">My Docks</h3>
-              </div>
-            </div>
+          <section className="mb-5 -mt-4 md:-mt-6 lg:-mt-8">
             
             <div className="flex flex-wrap items-center gap-3">
               {Array.isArray(activeShortcuts) && activeShortcuts.length > 0 ? (

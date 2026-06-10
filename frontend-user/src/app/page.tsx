@@ -1194,8 +1194,9 @@ export default function HomePage() {
 
               {/* Column 2: BokSpot */}
               <div className="text-left space-y-3">
-                <h4 className="text-[11px] uppercase tracking-wider font-extrabold text-[color:var(--color-primary)]">
-                  BokSpot
+                <h4 className="text-[11px] uppercase tracking-wider font-extrabold bg-white/90 dark:bg-white/95 px-2.5 py-1 rounded-full border border-white/10 shadow-sm inline-block">
+                  <span className="logo-text-bok text-[#0a3161]">Bok</span>
+                  <span className="logo-text-spot text-[#ff6325]">Spot</span>
                 </h4>
                 <ul className="space-y-2">
                   {[
@@ -1259,10 +1260,13 @@ export default function HomePage() {
             <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-8 border-t border-[color:var(--color-outline-variant)]/10 z-10 relative">
               <Link
                 href="/"
-                className="flex items-center gap-2 font-['Playfair_Display'] text-[15px] tracking-[0.15em] text-[color:var(--color-primary)] uppercase font-extrabold hover:opacity-80 transition-opacity"
+                className="flex items-center gap-2 bg-white/90 dark:bg-white/95 px-3.5 py-1.5 rounded-full border border-white/20 shadow-md font-['Playfair_Display'] text-[15px] tracking-[0.15em] uppercase font-extrabold hover:opacity-90 transition-all shrink-0"
               >
-                <Sparkles className="w-4 h-4 text-[color:var(--color-primary)]" />
-                <span>BOKSPOT</span>
+                <Sparkles className="w-4 h-4 text-[#ff6325] fill-[#ff6325]" />
+                <span className="font-black">
+                  <span className="logo-text-bok text-[#0a3161]">BOK</span>
+                  <span className="logo-text-spot text-[#ff6325]">SPOT</span>
+                </span>
               </Link>
               <p className="text-[10px] font-bold text-[color:var(--color-outline)] tracking-wider">
                 COPYRIGHT &copy; 2026 BOKSPOT. ALL RIGHTS RESERVED.

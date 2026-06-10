@@ -611,20 +611,56 @@
     transition: all 0.3s ease;
     backdrop-filter: blur(28px);
     -webkit-backdrop-filter: blur(28px);
+    background-color: #f2c53d !important;
+    border-bottom: 1px solid rgba(10, 49, 97, 0.18) !important;
+    box-shadow: 0 4px 20px rgba(10, 49, 97, 0.1) !important;
   }
 
   /* Dark Mode Styling */
   .dark .custom-navbar {
-    background-color: rgba(12, 12, 16, 0.92); /* Opaque deep black for readability */
-    border-bottom: 1px solid rgba(42, 42, 58, 0.6);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    background-color: #f2c53d !important;
+    border-bottom: 1px solid rgba(10, 49, 97, 0.18) !important;
+    box-shadow: 0 4px 20px rgba(10, 49, 97, 0.1) !important;
   }
 
   /* Light Mode Styling - Solid Clean White with Crisp Slate Border */
   .light .custom-navbar {
-    background-color: #FFFFFF; /* 100% solid white to completely block scrolling background text */
-    border-bottom: 1px solid #E2E8F0; /* Slate-200, very clean border */
-    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04); /* Subtle layout shadow */
+    background-color: #f2c53d !important;
+    border-bottom: 1px solid rgba(10, 49, 97, 0.18) !important;
+    box-shadow: 0 4px 18px rgba(10, 49, 97, 0.08) !important;
+  }
+
+  /* Brand Logo Color Classes (To prevent overrides) */
+  .logo-text-bok {
+    color: #0a3161 !important;
+  }
+  .logo-text-spot {
+    color: #ff6325 !important;
+  }
+
+  /* High legibility color overrides inside Yellow Navbar */
+  .custom-navbar,
+  .custom-navbar a,
+  .custom-navbar select,
+  .custom-navbar input,
+  .custom-navbar .custom-nav-link,
+  .custom-navbar .custom-nav-btn,
+  .custom-navbar .custom-nav-btn span,
+  .custom-navbar .custom-nav-btn div,
+  .custom-navbar .custom-nav-icon-container span,
+  .custom-navbar .custom-nav-icon-btn {
+    color: #0a3161 !important;
+  }
+
+  /* Lucide and other icon color fallback */
+  .custom-navbar svg:not(.lucide-sparkles) {
+    color: #0a3161 !important;
+    stroke: #0a3161 !important;
+  }
+
+  /* Placeholder color */
+  .custom-navbar input::placeholder {
+    color: rgba(10, 49, 97, 0.6) !important;
   }
 
   /* Button Styling */
@@ -642,31 +678,17 @@
     -webkit-backdrop-filter: blur(12px);
   }
 
-  .dark .custom-nav-btn {
-    background-color: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: #F0F0F8;
+  .dark .custom-nav-btn, .light .custom-nav-btn, .custom-navbar .custom-nav-btn {
+    background-color: rgba(10, 49, 97, 0.06) !important;
+    border: 1px solid rgba(10, 49, 97, 0.16) !important;
+    color: #0a3161 !important;
   }
-  .dark .custom-nav-btn:hover {
-    background-color: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.25);
+  .dark .custom-nav-btn:hover, .light .custom-nav-btn:hover, .custom-navbar .custom-nav-btn:hover {
+    background-color: rgba(10, 49, 97, 0.12) !important;
+    border-color: rgba(10, 49, 97, 0.28) !important;
     transform: scale(1.02);
   }
-  .dark .custom-nav-btn:active {
-    transform: scale(0.98);
-  }
-
-  .light .custom-nav-btn {
-    background-color: #F1F5F9; /* Slate-100, very clear */
-    border: 1px solid #CBD5E1; /* Slate-300 */
-    color: #0F172A; /* Slate-900, extremely clear */
-  }
-  .light .custom-nav-btn:hover {
-    background-color: #E2E8F0; /* Slate-200 */
-    border-color: #94A3B8; /* Slate-400 */
-    transform: scale(1.02);
-  }
-  .light .custom-nav-btn:active {
+  .dark .custom-nav-btn:active, .light .custom-nav-btn:active, .custom-navbar .custom-nav-btn:active {
     transform: scale(0.98);
   }
 
@@ -683,14 +705,9 @@
     transition: all 0.3s ease;
   }
 
-  .dark .custom-nav-capsule {
-    background-color: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-  }
-
-  .light .custom-nav-capsule {
-    background-color: #F1F5F9; /* Slate-100 */
-    border: 1px solid #E2E8F0; /* Slate-200 */
+  .dark .custom-nav-capsule, .light .custom-nav-capsule, .custom-navbar .custom-nav-capsule {
+    background-color: rgba(10, 49, 97, 0.05) !important;
+    border: 1px solid rgba(10, 49, 97, 0.15) !important;
   }
 
   /* Link Items */
@@ -698,28 +715,24 @@
     transition: color 0.2s ease;
   }
 
-  .dark .custom-nav-link-inactive {
-    color: rgba(255, 255, 255, 0.65);
+  .dark .custom-nav-link-inactive, .light .custom-nav-link-inactive, .custom-navbar .custom-nav-link-inactive {
+    color: rgba(10, 49, 97, 0.72) !important;
   }
-  .dark .custom-nav-link-inactive:hover {
-    color: #FFFFFF;
-  }
-
-  .light .custom-nav-link-inactive {
-    color: #475569; /* Slate-600, high contrast */
-  }
-  .light .custom-nav-link-inactive:hover {
-    color: #0F172A; /* Slate-900 */
+  .dark .custom-nav-link-inactive:hover, .light .custom-nav-link-inactive:hover, .custom-navbar .custom-nav-link-inactive:hover {
+    color: #0a3161 !important;
   }
 
   /* Active Nav Link */
-  .dark .custom-nav-link-active {
-    color: var(--color-primary); /* Neon gold in dark mode */
+  .dark .custom-nav-link-active, .light .custom-nav-link-active, .custom-navbar .custom-nav-link-active {
+    color: #0a3161 !important;
+    font-weight: 900 !important;
   }
-  
-  .light .custom-nav-link-active {
-    color: #0F172A; /* Slate-900, solid and extremely readable in light mode */
-    font-weight: 900;
+
+  /* Active indicator background */
+  .custom-navbar .custom-nav-active-bg {
+    background-color: rgba(10, 49, 97, 0.12) !important;
+    border: 1px solid rgba(10, 49, 97, 0.35) !important;
+    box-shadow: 0 2px 10px rgba(10, 49, 97, 0.08) !important;
   }
 
   /* Icon Button Containers */
@@ -734,14 +747,9 @@
     -webkit-backdrop-filter: blur(12px);
   }
   
-  .dark .custom-nav-icon-container {
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background-color: rgba(255, 255, 255, 0.08);
-  }
-  
-  .light .custom-nav-icon-container {
-    border: 1px solid #CBD5E1;
-    background-color: #F1F5F9;
+  .dark .custom-nav-icon-container, .light .custom-nav-icon-container, .custom-navbar .custom-nav-icon-container {
+    border: 1px solid rgba(10, 49, 97, 0.16) !important;
+    background-color: rgba(10, 49, 97, 0.06) !important;
   }
 
   .custom-nav-icon-btn {
@@ -753,19 +761,24 @@
     cursor: pointer;
   }
   
-  .dark .custom-nav-icon-btn {
-    color: rgba(255, 255, 255, 0.8);
+  .dark .custom-nav-icon-btn, .light .custom-nav-icon-btn, .custom-navbar .custom-nav-icon-btn {
+    color: rgba(10, 49, 97, 0.8) !important;
   }
-  .dark .custom-nav-icon-btn:hover {
-    color: #FFFFFF;
-    background-color: rgba(255, 255, 255, 0.1);
+  .dark .custom-nav-icon-btn:hover, .light .custom-nav-icon-btn:hover, .custom-navbar .custom-nav-icon-btn:hover {
+    color: #0a3161 !important;
+    background-color: rgba(10, 49, 97, 0.1) !important;
   }
-  
-  .light .custom-nav-icon-btn {
-    color: #475569; /* Slate-600 */
+
+  /* Mobile Actions Capsule */
+  .custom-navbar .custom-nav-mobile-capsule {
+    background-color: rgba(10, 49, 97, 0.06) !important;
+    border: 1px solid rgba(10, 49, 97, 0.16) !important;
   }
-  .light .custom-nav-icon-btn:hover {
-    color: #0F172A; /* Slate-900 */
-    background-color: #E2E8F0;
+  .custom-navbar .custom-nav-mobile-capsule button,
+  .custom-navbar .custom-nav-mobile-capsule select {
+    color: #0a3161 !important;
+  }
+  .custom-navbar .custom-nav-mobile-capsule svg {
+    color: #0a3161 !important;
   }
 

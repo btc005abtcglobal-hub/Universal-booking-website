@@ -249,10 +249,13 @@ export function TopNav() {
           <div className="flex-1 flex justify-start items-center gap-6">
             <Link
               href="/"
-              className="flex items-center gap-2 font-['Playfair_Display'] text-[20px] lg:text-[24px] tracking-[0.15em] text-[color:var(--color-primary)] uppercase font-semibold hover:scale-102 active:scale-98 transition-all duration-300 shrink-0"
+              className="flex items-center gap-2 font-['Playfair_Display'] text-[20px] lg:text-[24px] tracking-[0.15em] uppercase font-semibold hover:scale-102 active:scale-98 transition-all duration-300 shrink-0"
             >
-              <Sparkles className="w-5 h-5 text-[color:var(--color-primary)] animate-pulse" />
-              <span>BOKSPOT</span>
+              <Sparkles className="w-5 h-5 text-[#ff6325] fill-[#ff6325] animate-pulse" />
+              <span className="font-black">
+                <span className="logo-text-bok text-[#0a3161]">BOK</span>
+                <span className="logo-text-spot text-[#ff6325]">SPOT</span>
+              </span>
             </Link>
 
             <div className="relative hidden lg:inline-block" ref={locationRef}>
@@ -323,7 +326,7 @@ export function TopNav() {
                 {pathname === '/' && (
                   <motion.div
                     layoutId="activeNavIndicator"
-                    className="absolute inset-0 rounded-full bg-[color:var(--color-primary)]/20 border border-[color:var(--color-primary)]/45 shadow-[0_0_12px_rgba(255,215,0,0.15)] backdrop-blur-md -z-10"
+                    className="absolute inset-0 rounded-full bg-[color:var(--color-primary)]/20 border border-[color:var(--color-primary)]/45 shadow-[0_0_12px_rgba(255,215,0,0.15)] backdrop-blur-md -z-10 custom-nav-active-bg"
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}
@@ -340,7 +343,7 @@ export function TopNav() {
                 {pathname === '/categories' && (
                   <motion.div
                     layoutId="activeNavIndicator"
-                    className="absolute inset-0 rounded-full bg-[color:var(--color-primary)]/20 border border-[color:var(--color-primary)]/45 shadow-[0_0_12px_rgba(255,215,0,0.15)] backdrop-blur-md -z-10"
+                    className="absolute inset-0 rounded-full bg-[color:var(--color-primary)]/20 border border-[color:var(--color-primary)]/45 shadow-[0_0_12px_rgba(255,215,0,0.15)] backdrop-blur-md -z-10 custom-nav-active-bg"
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}
@@ -357,7 +360,7 @@ export function TopNav() {
                 {pathname === '/tracks' && (
                   <motion.div
                     layoutId="activeNavIndicator"
-                    className="absolute inset-0 rounded-full bg-[color:var(--color-primary)]/20 border border-[color:var(--color-primary)]/45 shadow-[0_0_12px_rgba(255,215,0,0.15)] backdrop-blur-md -z-10"
+                    className="absolute inset-0 rounded-full bg-[color:var(--color-primary)]/20 border border-[color:var(--color-primary)]/45 shadow-[0_0_12px_rgba(255,215,0,0.15)] backdrop-blur-md -z-10 custom-nav-active-bg"
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}
@@ -478,7 +481,7 @@ export function TopNav() {
               >
                 {/* Solid white circle with a small outline user icon on the left */}
                 <div className="h-9 w-9 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
-                  <User size={10} strokeWidth={2.5} className="text-[#0e3e26]" />
+                  <User size={10} strokeWidth={2.5} className="text-[#0a3161]" />
                 </div>
 
                 {/* Username in the middle */}
@@ -581,7 +584,7 @@ export function TopNav() {
             </div>
 
             {/* Mobile Actions Capsule (< lg) */}
-            <div className="lg:hidden flex items-center bg-[color:var(--color-surface-container)]/60 border border-[color:var(--color-outline-variant)]/30 rounded-full pl-4 pr-1.5 py-1.5 shadow-md backdrop-blur-md gap-2.5">
+            <div className="lg:hidden flex items-center bg-[color:var(--color-surface-container)]/60 border border-[color:var(--color-outline-variant)]/30 rounded-full pl-4 pr-1.5 py-1.5 shadow-md backdrop-blur-md gap-2.5 custom-nav-mobile-capsule">
               {/* Mobile Location Selector & Map Button */}
               <div className="flex items-center gap-1.5 shrink-0">
                 <button

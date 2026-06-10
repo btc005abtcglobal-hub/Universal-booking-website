@@ -19,6 +19,19 @@ const CITY_NODES = [
   { name: 'Delhi', x: 52, y: 10, display: 'Delhi', lat: 28.7041, lng: 77.1025 },
 ];
 
+const getNearestCityName = (lat: number, lng: number): string => {
+  let nearestCity = CITY_NODES[0];
+  let minDistance = Infinity;
+  CITY_NODES.forEach((node) => {
+    const dist = Math.sqrt((node.lat - lat) ** 2 + (node.lng - lng) ** 2);
+    if (dist < minDistance) {
+      minDistance = dist;
+      nearestCity = node;
+    }
+  });
+  return nearestCity.name;
+};
+
 export function TopNav() {
   const pathname = usePathname();
   const router = useRouter();
@@ -129,8 +142,8 @@ export function TopNav() {
         (position) => {
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
-          const fallbackCoords = `${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E`;
-          setLocation(lat, lng, fallbackCoords);
+          const nearestCityName = getNearestCityName(lat, lng);
+          setLocation(lat, lng, nearestCityName);
 
           // Attempt to reverse geocode exact coordinate to area name via open street map
           fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=en`, {
@@ -154,11 +167,9 @@ export function TopNav() {
                   return;
                 }
               }
-              setLocation(lat, lng, fallbackCoords);
             })
             .catch(err => {
               console.warn('Reverse geocode failed:', err);
-              setLocation(lat, lng, fallbackCoords);
             });
         },
         (error) => {
@@ -172,21 +183,6 @@ export function TopNav() {
       setLocation(13.0827, 80.2707, 'Chennai');
     }
   };
-
-  // Run location detection on page mount if already granted in previous session
-  useEffect(() => {
-    const saved = localStorage.getItem('location-storage');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (parsed.state?.status === 'detected') {
-          detectGPSLocation();
-        }
-      } catch (e) {
-        console.error('Failed to parse location storage', e);
-      }
-    }
-  }, []);
 
   useEffect(() => {
     if (showMapModal) {
@@ -480,8 +476,8 @@ export function TopNav() {
                 title="Profile Settings"
               >
                 {/* Solid white circle with a small outline user icon on the left */}
-                <div className="h-6 w-6 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
-                  <User size={8} strokeWidth={2.5} className="text-[#0a3161]" />
+                <div className="h-6 w-6 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm profile-avatar-circle">
+                  <User size={14} strokeWidth={2.5} className="text-[#0a3161]" />
                 </div>
 
                 {/* Username in the middle */}
@@ -714,11 +710,6 @@ export function TopNav() {
                 <div>
                   Selected: <span className="font-extrabold text-[color:var(--color-primary)] text-sm">{tempSelectedCity || 'None'}</span>
                 </div>
-                {tempSelectedCity && (
-                  <div className="text-[10px] text-[color:var(--color-outline)] font-mono">
-                    GPS Coordinates: {CITY_NODES.find(c => c.name === tempSelectedCity)?.lat.toFixed(4)}° N, {CITY_NODES.find(c => c.name === tempSelectedCity)?.lng.toFixed(4)}° E
-                  </div>
-                )}
               </div>
               <div className="flex gap-2">
                 <button

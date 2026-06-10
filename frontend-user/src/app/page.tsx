@@ -533,7 +533,7 @@ export default function HomePage() {
               </button>
               <Link
                 href="/vendor/register"
-                className="px-4 py-2 rounded-full text-[11px] font-black tracking-widest bg-white/5 border border-white/20 text-white hover:bg-white/10 hover:border-white/40 hover:scale-102 active:scale-98 transition-all flex items-center gap-1.5 cursor-pointer shrink-0 shadow-md backdrop-blur-md"
+                className="px-4 py-2 rounded-full text-[11px] font-black tracking-widest bg-[#0a3161]/5 dark:bg-white/5 border border-[#0a3161]/60 dark:border-white/20 text-[#0a3161] dark:text-white hover:bg-[#0a3161]/15 dark:hover:bg-white/10 hover:border-[#0a3161] dark:hover:border-white/40 hover:scale-102 active:scale-98 transition-all flex items-center gap-1.5 cursor-pointer shrink-0 shadow-md backdrop-blur-md"
               >
                 <span className="material-symbols-outlined text-[15px]">storefront</span>
                 <span>Become a Vendor</span>

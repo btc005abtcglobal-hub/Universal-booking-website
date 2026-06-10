@@ -782,3 +782,76 @@
     color: #fceea7 !important;
   }
 
+  /* Reset dropdown contents inside the navbar to use the standard theme colors (crucial for Light Mode visibility) */
+  .custom-navbar .absolute,
+  .custom-navbar .absolute div {
+    color: var(--color-on-surface) !important;
+  }
+
+  .custom-navbar .absolute a,
+  .custom-navbar .absolute button,
+  .custom-navbar .absolute span {
+    color: var(--color-on-surface) !important;
+  }
+
+  /* Specific color variants inside the dropdown */
+  .custom-navbar .absolute .text-on-surface-variant,
+  .custom-navbar .absolute .text-on-surface-variant * {
+    color: var(--color-on-surface-variant) !important;
+  }
+
+  .custom-navbar .absolute .text-outline,
+  .custom-navbar .absolute .text-outline * {
+    color: var(--color-outline) !important;
+  }
+
+  .custom-navbar .absolute .text-primary,
+  .custom-navbar .absolute .text-primary * {
+    color: var(--color-primary) !important;
+  }
+
+  .custom-navbar .absolute a:hover,
+  .custom-navbar .absolute button:hover {
+    background-color: var(--color-surface-container-highest) !important;
+  }
+
+  .custom-navbar .absolute a:hover *,
+  .custom-navbar .absolute button:hover * {
+    color: var(--color-primary) !important;
+  }
+  
+  /* Preserve custom / brand text colors in dropdown list items */
+  .custom-navbar .absolute .text-\[\#ff4d4f\],
+  .custom-navbar .absolute .text-\[\#ff4d4f\] span {
+    color: #ff4d4f !important;
+  }
+  
+  .custom-navbar .absolute .text-emerald-500,
+  .custom-navbar .absolute .text-emerald-500 span {
+    color: #10b981 !important;
+  }
+
+  /* Light Mode Specific Dropdown Colors - Dark Blue Accent for Premium branding and legibility */
+  .light .custom-navbar .absolute,
+  .light .custom-navbar .absolute div,
+  .light .custom-navbar .absolute a,
+  .light .custom-navbar .absolute button,
+  .light .custom-navbar .absolute span {
+    color: #0a3161 !important; /* Premium dark blue base */
+  }
+
+  .light .custom-navbar .absolute .text-on-surface-variant,
+  .light .custom-navbar .absolute .text-on-surface-variant * {
+    color: #3a3a4c !important; /* Muted dark gray-blue */
+  }
+
+  .light .custom-navbar .absolute .text-outline,
+  .light .custom-navbar .absolute .text-outline * {
+    color: #68687c !important; /* Muted outline gray */
+  }
+
+  .light .custom-navbar .absolute .text-primary,
+  .light .custom-navbar .absolute .text-primary * {
+    color: #8b7000 !important; /* Premium gold accent */
+  }
+

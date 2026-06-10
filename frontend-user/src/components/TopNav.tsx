@@ -249,9 +249,9 @@ export function TopNav() {
           <div className="flex-1 flex justify-start items-center gap-6">
             <Link
               href="/"
-              className="flex items-center gap-2 font-['Playfair_Display'] text-[17px] lg:text-[19px] tracking-[0.15em] uppercase font-semibold hover:scale-102 active:scale-98 transition-all duration-300 shrink-0"
+              className="flex items-center gap-2 bg-white/95 dark:bg-white/95 px-3 py-1 rounded-full border border-white/20 shadow-md font-['Playfair_Display'] text-[15px] lg:text-[16px] tracking-[0.15em] uppercase font-bold hover:scale-102 active:scale-98 transition-all duration-300 shrink-0"
             >
-              <Sparkles className="w-4 h-4 text-[#ff6325] fill-[#ff6325] animate-pulse" />
+              <Sparkles className="w-3.5 h-3.5 text-[#ff6325] fill-[#ff6325] animate-pulse" />
               <span className="font-black">
                 <span className="logo-text-bok text-[#0a3161]">BOK</span>
                 <span className="logo-text-spot text-[#ff6325]">SPOT</span>

@@ -542,14 +542,14 @@ export default function HomePage() {
           </div>
 
           {/* Divider line between services and ad banner */}
-          <div className="w-screen relative left-1/2 -translate-x-1/2 border-b border-[color:var(--color-outline-variant)]/20 mb-4" />
+          <div className="w-screen relative left-1/2 -translate-x-1/2 border-b border-[color:var(--color-outline-variant)]/20 mb-2" />
 
           {/* Row 2: Ad Banner */}
           <section
             id="ad-banner-hero"
             data-ad-slot=""
             aria-label="Advertisement"
-            className="ad-block mb-6 flex flex-col items-center gap-4 w-screen relative left-1/2 -translate-x-1/2 overflow-hidden"
+            className="ad-block mb-1 flex flex-col items-center gap-2 w-screen relative left-1/2 -translate-x-1/2 overflow-hidden"
           >
             {/* Carousel Container */}
             <div className="w-full h-[180px] sm:h-[220px] md:h-[250px] lg:h-[270px] relative flex items-center justify-center">
@@ -643,7 +643,7 @@ export default function HomePage() {
             </div>
 
             {/* Dots Indicator */}
-            <div className="flex items-center justify-center gap-2 mt-1">
+            <div className="flex items-center justify-center gap-2 mt-0">
               {MOCK_ADS.map((_, idx) => (
                 <button
                   key={idx}
@@ -660,7 +660,7 @@ export default function HomePage() {
           </section>
 
           {/* Row 3: Shortcuts Dock */}
-          <section className="mb-6">
+          <section className="mb-6 -mt-3 md:-mt-5 lg:-mt-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-1.5">
                 <span className="material-symbols-outlined text-[18px] text-[color:var(--color-primary)] animate-pulse">star</span>

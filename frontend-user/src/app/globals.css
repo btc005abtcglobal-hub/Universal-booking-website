@@ -8,7 +8,7 @@
 
 @theme {
   /* ── Brand Theme Colors (New Palette) ───────────────────────── */
-  --color-primary:              #f2c53d;   /* gold/yellow       */
+  --color-primary:              #d4af37;   /* gold/yellow       */
   --color-primary-fixed:        #fceea7;   /* pale gold tint    */
   --color-primary-fixed-dim:    #cca022;   /* deep gold         */
   --color-on-primary:           #031020;   /* dark blue on gold */
@@ -241,7 +241,7 @@
   --primary: var(--color-primary);
 
   /* TopNav fixed height on mobile (profile row + search row + padding) */
-  --topnav-height: 64px;
+  --topnav-height: 42px;
   /* BottomNav height on mobile */
   --bottomnav-height: 66px;
   /* SideNav width on desktop */
@@ -253,7 +253,7 @@
 @media (min-width: 1024px) {
   :root {
     /* TopNav fixed height on desktop (includes tabs row) */
-    --topnav-height: 80px;
+    --topnav-height: 48px;
   }
 }
 
@@ -338,18 +338,18 @@
    * On desktop (lg+), also shifts right of the SideNav.
    */
   .page-content {
-    padding-top: 88px;
+    padding-top: 58px;
     padding-bottom: var(--bottomnav-height);
     min-height: 100vh;
   }
   .page-content-with-sidenav {
-    padding-top: 88px;
+    padding-top: 58px;
     padding-bottom: var(--bottomnav-height);
     min-height: 100vh;
   }
   @media (min-width: 1024px) {
     .page-content, .page-content-with-sidenav {
-      padding-top: 104px;
+      padding-top: 64px;
     }
   }
 
@@ -601,7 +601,7 @@
   }
   .glow-gold { animation: goldPulse 2.5s ease-in-out infinite; }
 
-  /* Custom Navbar Styling - Dynamic Theme Adaptive */
+  /* Custom Navbar Styling - Dynamic Theme Adaptive (Premium Dark Shadowed Gold) */
   .custom-navbar {
     position: fixed;
     top: 0;
@@ -611,20 +611,56 @@
     transition: all 0.3s ease;
     backdrop-filter: blur(28px);
     -webkit-backdrop-filter: blur(28px);
+    background: linear-gradient(135deg, #b8860b 0%, #8b6508 50%, #4a3604 100%) !important;
+    border-bottom: 1px solid rgba(184, 134, 11, 0.4) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
   }
 
   /* Dark Mode Styling */
   .dark .custom-navbar {
-    background-color: rgba(12, 12, 16, 0.92); /* Opaque deep black for readability */
-    border-bottom: 1px solid rgba(42, 42, 58, 0.6);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    background: linear-gradient(135deg, #b8860b 0%, #8b6508 50%, #4a3604 100%) !important;
+    border-bottom: 1px solid rgba(184, 134, 11, 0.4) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
   }
 
-  /* Light Mode Styling - Solid Clean White with Crisp Slate Border */
+  /* Light Mode Styling */
   .light .custom-navbar {
-    background-color: #FFFFFF; /* 100% solid white to completely block scrolling background text */
-    border-bottom: 1px solid #E2E8F0; /* Slate-200, very clean border */
-    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04); /* Subtle layout shadow */
+    background: linear-gradient(135deg, #b8860b 0%, #8b6508 50%, #4a3604 100%) !important;
+    border-bottom: 1px solid rgba(184, 134, 11, 0.4) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+  }
+
+  /* Brand Logo Color Classes (To prevent overrides) */
+  .logo-text-bok {
+    color: #0a3161 !important;
+  }
+  .logo-text-spot {
+    color: #ff6325 !important;
+  }
+
+  /* High legibility color overrides inside Dark Gold Navbar */
+  .custom-navbar,
+  .custom-navbar a,
+  .custom-navbar select,
+  .custom-navbar input,
+  .custom-navbar .custom-nav-link,
+  .custom-navbar .custom-nav-btn,
+  .custom-navbar .custom-nav-btn span,
+  .custom-navbar .custom-nav-btn div,
+  .custom-navbar .custom-nav-icon-container span,
+  .custom-navbar .custom-nav-icon-btn {
+    color: #fceea7 !important;
+  }
+
+  /* Lucide and other icon color fallback */
+  .custom-navbar svg:not(.lucide-sparkles) {
+    color: #fceea7 !important;
+    stroke: #fceea7 !important;
+  }
+
+  /* Placeholder color */
+  .custom-navbar input::placeholder {
+    color: rgba(252, 238, 167, 0.5) !important;
   }
 
   /* Button Styling */
@@ -642,31 +678,17 @@
     -webkit-backdrop-filter: blur(12px);
   }
 
-  .dark .custom-nav-btn {
-    background-color: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: #F0F0F8;
+  .dark .custom-nav-btn, .light .custom-nav-btn, .custom-navbar .custom-nav-btn {
+    background-color: rgba(252, 238, 167, 0.06) !important;
+    border: 1px solid rgba(252, 238, 167, 0.18) !important;
+    color: #fceea7 !important;
   }
-  .dark .custom-nav-btn:hover {
-    background-color: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.25);
+  .dark .custom-nav-btn:hover, .light .custom-nav-btn:hover, .custom-navbar .custom-nav-btn:hover {
+    background-color: rgba(252, 238, 167, 0.12) !important;
+    border-color: rgba(252, 238, 167, 0.32) !important;
     transform: scale(1.02);
   }
-  .dark .custom-nav-btn:active {
-    transform: scale(0.98);
-  }
-
-  .light .custom-nav-btn {
-    background-color: #F1F5F9; /* Slate-100, very clear */
-    border: 1px solid #CBD5E1; /* Slate-300 */
-    color: #0F172A; /* Slate-900, extremely clear */
-  }
-  .light .custom-nav-btn:hover {
-    background-color: #E2E8F0; /* Slate-200 */
-    border-color: #94A3B8; /* Slate-400 */
-    transform: scale(1.02);
-  }
-  .light .custom-nav-btn:active {
+  .dark .custom-nav-btn:active, .light .custom-nav-btn:active, .custom-navbar .custom-nav-btn:active {
     transform: scale(0.98);
   }
 
@@ -683,14 +705,9 @@
     transition: all 0.3s ease;
   }
 
-  .dark .custom-nav-capsule {
-    background-color: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-  }
-
-  .light .custom-nav-capsule {
-    background-color: #F1F5F9; /* Slate-100 */
-    border: 1px solid #E2E8F0; /* Slate-200 */
+  .dark .custom-nav-capsule, .light .custom-nav-capsule, .custom-navbar .custom-nav-capsule {
+    background-color: rgba(252, 238, 167, 0.05) !important;
+    border: 1px solid rgba(252, 238, 167, 0.18) !important;
   }
 
   /* Link Items */
@@ -698,28 +715,24 @@
     transition: color 0.2s ease;
   }
 
-  .dark .custom-nav-link-inactive {
-    color: rgba(255, 255, 255, 0.65);
+  .dark .custom-nav-link-inactive, .light .custom-nav-link-inactive, .custom-navbar .custom-nav-link-inactive {
+    color: rgba(252, 238, 167, 0.72) !important;
   }
-  .dark .custom-nav-link-inactive:hover {
-    color: #FFFFFF;
-  }
-
-  .light .custom-nav-link-inactive {
-    color: #475569; /* Slate-600, high contrast */
-  }
-  .light .custom-nav-link-inactive:hover {
-    color: #0F172A; /* Slate-900 */
+  .dark .custom-nav-link-inactive:hover, .light .custom-nav-link-inactive:hover, .custom-navbar .custom-nav-link-inactive:hover {
+    color: #ffffff !important;
   }
 
   /* Active Nav Link */
-  .dark .custom-nav-link-active {
-    color: var(--color-primary); /* Neon gold in dark mode */
+  .dark .custom-nav-link-active, .light .custom-nav-link-active, .custom-navbar .custom-nav-link-active {
+    color: #ffffff !important;
+    font-weight: 900 !important;
   }
-  
-  .light .custom-nav-link-active {
-    color: #0F172A; /* Slate-900, solid and extremely readable in light mode */
-    font-weight: 900;
+
+  /* Active indicator background */
+  .custom-navbar .custom-nav-active-bg {
+    background-color: rgba(252, 238, 167, 0.15) !important;
+    border: 1px solid rgba(252, 238, 167, 0.38) !important;
+    box-shadow: 0 2px 10px rgba(252, 238, 167, 0.08) !important;
   }
 
   /* Icon Button Containers */
@@ -734,14 +747,9 @@
     -webkit-backdrop-filter: blur(12px);
   }
   
-  .dark .custom-nav-icon-container {
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background-color: rgba(255, 255, 255, 0.08);
-  }
-  
-  .light .custom-nav-icon-container {
-    border: 1px solid #CBD5E1;
-    background-color: #F1F5F9;
+  .dark .custom-nav-icon-container, .light .custom-nav-icon-container, .custom-navbar .custom-nav-icon-container {
+    border: 1px solid rgba(252, 238, 167, 0.18) !important;
+    background-color: rgba(252, 238, 167, 0.06) !important;
   }
 
   .custom-nav-icon-btn {
@@ -753,19 +761,97 @@
     cursor: pointer;
   }
   
-  .dark .custom-nav-icon-btn {
-    color: rgba(255, 255, 255, 0.8);
+  .dark .custom-nav-icon-btn, .light .custom-nav-icon-btn, .custom-navbar .custom-nav-icon-btn {
+    color: rgba(252, 238, 167, 0.8) !important;
   }
-  .dark .custom-nav-icon-btn:hover {
-    color: #FFFFFF;
-    background-color: rgba(255, 255, 255, 0.1);
+  .dark .custom-nav-icon-btn:hover, .light .custom-nav-icon-btn:hover, .custom-navbar .custom-nav-icon-btn:hover {
+    color: #ffffff !important;
+    background-color: rgba(252, 238, 167, 0.1) !important;
+  }
+
+  /* Mobile Actions Capsule */
+  .custom-navbar .custom-nav-mobile-capsule {
+    background-color: rgba(252, 238, 167, 0.06) !important;
+    border: 1px solid rgba(252, 238, 167, 0.18) !important;
+  }
+  .custom-navbar .custom-nav-mobile-capsule button,
+  .custom-navbar .custom-nav-mobile-capsule select {
+    color: #fceea7 !important;
+  }
+  .custom-navbar .custom-nav-mobile-capsule svg {
+    color: #fceea7 !important;
+  }
+
+  /* Reset dropdown contents inside the navbar to use the standard theme colors (crucial for Light Mode visibility) */
+  .custom-navbar .absolute,
+  .custom-navbar .absolute div {
+    color: var(--color-on-surface) !important;
+  }
+
+  .custom-navbar .absolute a,
+  .custom-navbar .absolute button,
+  .custom-navbar .absolute span {
+    color: var(--color-on-surface) !important;
+  }
+
+  /* Specific color variants inside the dropdown */
+  .custom-navbar .absolute .text-on-surface-variant,
+  .custom-navbar .absolute .text-on-surface-variant * {
+    color: var(--color-on-surface-variant) !important;
+  }
+
+  .custom-navbar .absolute .text-outline,
+  .custom-navbar .absolute .text-outline * {
+    color: var(--color-outline) !important;
+  }
+
+  .custom-navbar .absolute .text-primary,
+  .custom-navbar .absolute .text-primary * {
+    color: var(--color-primary) !important;
+  }
+
+  .custom-navbar .absolute a:hover,
+  .custom-navbar .absolute button:hover {
+    background-color: var(--color-surface-container-highest) !important;
+  }
+
+  .custom-navbar .absolute a:hover *,
+  .custom-navbar .absolute button:hover * {
+    color: var(--color-primary) !important;
   }
   
-  .light .custom-nav-icon-btn {
-    color: #475569; /* Slate-600 */
+  /* Preserve custom / brand text colors in dropdown list items */
+  .custom-navbar .absolute .text-\[\#ff4d4f\],
+  .custom-navbar .absolute .text-\[\#ff4d4f\] span {
+    color: #ff4d4f !important;
   }
-  .light .custom-nav-icon-btn:hover {
-    color: #0F172A; /* Slate-900 */
-    background-color: #E2E8F0;
+  
+  .custom-navbar .absolute .text-emerald-500,
+  .custom-navbar .absolute .text-emerald-500 span {
+    color: #10b981 !important;
+  }
+
+  /* Light Mode Specific Dropdown Colors - Dark Blue Accent for Premium branding and legibility */
+  .light .custom-navbar .absolute,
+  .light .custom-navbar .absolute div,
+  .light .custom-navbar .absolute a,
+  .light .custom-navbar .absolute button,
+  .light .custom-navbar .absolute span {
+    color: #0a3161 !important; /* Premium dark blue base */
+  }
+
+  .light .custom-navbar .absolute .text-on-surface-variant,
+  .light .custom-navbar .absolute .text-on-surface-variant * {
+    color: #3a3a4c !important; /* Muted dark gray-blue */
+  }
+
+  .light .custom-navbar .absolute .text-outline,
+  .light .custom-navbar .absolute .text-outline * {
+    color: #68687c !important; /* Muted outline gray */
+  }
+
+  .light .custom-navbar .absolute .text-primary,
+  .light .custom-navbar .absolute .text-primary * {
+    color: #8b7000 !important; /* Premium gold accent */
   }
 

@@ -244,35 +244,38 @@ export function TopNav() {
   return (
     <>
       <header className="custom-navbar">
-        <div className="flex justify-between items-center w-full px-6 lg:px-12 py-3 lg:py-4 max-w-full">
+        <div className="flex justify-between items-center w-full px-6 lg:px-12 py-1.5 lg:py-2 max-w-full">
           {/* Left Column: Logo & Brand + Location Selector (Desktop) */}
           <div className="flex-1 flex justify-start items-center gap-6">
             <Link
               href="/"
-              className="flex items-center gap-2 font-['Playfair_Display'] text-[20px] lg:text-[24px] tracking-[0.15em] text-[color:var(--color-primary)] uppercase font-semibold hover:scale-102 active:scale-98 transition-all duration-300 shrink-0"
+              className="flex items-center gap-2 bg-white/95 dark:bg-white/95 px-3 py-1 rounded-full border border-white/20 shadow-md font-['Playfair_Display'] text-[15px] lg:text-[16px] tracking-[0.15em] uppercase font-bold hover:scale-102 active:scale-98 transition-all duration-300 shrink-0"
             >
-              <Sparkles className="w-5 h-5 text-[color:var(--color-primary)] animate-pulse" />
-              <span>BOKSPOT</span>
+              <Sparkles className="w-3.5 h-3.5 text-[#ff6325] fill-[#ff6325] animate-pulse" />
+              <span className="font-black">
+                <span className="logo-text-bok text-[#0a3161]">BOK</span>
+                <span className="logo-text-spot text-[#ff6325]">SPOT</span>
+              </span>
             </Link>
 
             <div className="relative hidden lg:inline-block" ref={locationRef}>
               <button
                 onClick={() => setLocationDropdownOpen(!locationDropdownOpen)}
-                className="custom-nav-btn px-5 py-2.5 shadow-md duration-200"
+                className="custom-nav-btn px-4 h-8 shadow-md duration-200"
               >
                 <MapPin size={14} className={status === 'detecting' ? 'animate-bounce' : ''} />
                 <span>{mounted ? city : 'Chennai'}</span>
                 <span className="material-symbols-outlined text-[16px] transition-transform duration-200" style={{ transform: locationDropdownOpen ? 'rotate(180deg)' : 'none' }}>keyboard_arrow_down</span>
               </button>
               {locationDropdownOpen && (
-                <div className="absolute left-0 top-full mt-3 w-56 bg-[color:var(--color-surface-container)] rounded-2xl shadow-2xl border border-[color:var(--color-outline-variant)]/30 z-50 overflow-hidden backdrop-blur-md animate-fade-up">
-                  <div className="py-2 divide-y divide-[color:var(--color-outline-variant)]/10">
+                <div className="absolute left-0 top-full mt-3 w-56 bg-surface-container rounded-2xl shadow-2xl border border-outline-variant/30 z-50 overflow-hidden backdrop-blur-md animate-fade-up">
+                  <div className="py-2 divide-y divide-outline-variant/10">
                     <button
                       onClick={() => {
                         detectGPSLocation();
                         setLocationDropdownOpen(false);
                       }}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/10 transition-colors text-left text-xs font-bold"
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-primary hover:bg-primary/10 transition-colors text-left text-xs font-bold"
                     >
                       <span className="material-symbols-outlined text-[16px] animate-pulse">my_location</span>
                       🎯 Detect GPS
@@ -285,7 +288,7 @@ export function TopNav() {
                             handleCityChange(c);
                             setLocationDropdownOpen(false);
                           }}
-                          className={`w-full flex items-center justify-between px-4 py-2 text-left text-xs font-semibold hover:bg-[color:var(--color-surface-container-highest)] transition-colors text-[color:var(--color-on-surface)] ${city === c ? 'text-[color:var(--color-primary)] bg-[color:var(--color-primary)]/5' : ''}`}
+                          className={`w-full flex items-center justify-between px-4 py-2 text-left text-xs font-semibold hover:bg-surface-container-highest transition-colors text-on-surface ${city === c ? 'text-primary bg-primary/5' : ''}`}
                         >
                           <span>📍 {c}</span>
                           {city === c && <span className="material-symbols-outlined text-[16px]">check</span>}
@@ -297,7 +300,7 @@ export function TopNav() {
                         setShowMapModal(true);
                         setLocationDropdownOpen(false);
                       }}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-highest)] transition-colors text-left text-xs font-bold"
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-on-surface hover:bg-surface-container-highest transition-colors text-left text-xs font-bold"
                     >
                       <span className="material-symbols-outlined text-[16px]">map</span>
                       🗺️ Interactive Map
@@ -314,7 +317,7 @@ export function TopNav() {
             <nav className="custom-nav-capsule shadow-lg relative">
               <Link
                 href="/"
-                className={`w-20 text-center py-2 text-[14px] font-extrabold tracking-wide hover:scale-[1.02] active:scale-[0.98] relative z-10 custom-nav-link ${
+                className={`w-20 text-center py-1 text-[13px] font-extrabold tracking-wide hover:scale-[1.02] active:scale-[0.98] relative z-10 custom-nav-link ${
                   pathname === '/'
                     ? 'custom-nav-link-active'
                     : 'custom-nav-link-inactive'
@@ -323,7 +326,7 @@ export function TopNav() {
                 {pathname === '/' && (
                   <motion.div
                     layoutId="activeNavIndicator"
-                    className="absolute inset-0 rounded-full bg-[color:var(--color-primary)]/20 border border-[color:var(--color-primary)]/45 shadow-[0_0_12px_rgba(255,215,0,0.15)] backdrop-blur-md -z-10"
+                    className="absolute inset-0 rounded-full bg-[color:var(--color-primary)]/20 border border-[color:var(--color-primary)]/45 shadow-[0_0_12px_rgba(255,215,0,0.15)] backdrop-blur-md -z-10 custom-nav-active-bg"
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}
@@ -331,7 +334,7 @@ export function TopNav() {
               </Link>
               <Link
                 href="/categories"
-                className={`w-28 text-center py-2 text-[14px] font-extrabold tracking-wide hover:scale-[1.02] active:scale-[0.98] relative z-10 custom-nav-link ${
+                className={`w-28 text-center py-1 text-[13px] font-extrabold tracking-wide hover:scale-[1.02] active:scale-[0.98] relative z-10 custom-nav-link ${
                   pathname === '/categories'
                     ? 'custom-nav-link-active'
                     : 'custom-nav-link-inactive'
@@ -340,7 +343,7 @@ export function TopNav() {
                 {pathname === '/categories' && (
                   <motion.div
                     layoutId="activeNavIndicator"
-                    className="absolute inset-0 rounded-full bg-[color:var(--color-primary)]/20 border border-[color:var(--color-primary)]/45 shadow-[0_0_12px_rgba(255,215,0,0.15)] backdrop-blur-md -z-10"
+                    className="absolute inset-0 rounded-full bg-[color:var(--color-primary)]/20 border border-[color:var(--color-primary)]/45 shadow-[0_0_12px_rgba(255,215,0,0.15)] backdrop-blur-md -z-10 custom-nav-active-bg"
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}
@@ -348,7 +351,7 @@ export function TopNav() {
               </Link>
               <Link
                 href="/tracks"
-                className={`w-24 text-center py-2 text-[14px] font-extrabold tracking-wide hover:scale-[1.02] active:scale-[0.98] relative z-10 custom-nav-link ${
+                className={`w-24 text-center py-1 text-[13px] font-extrabold tracking-wide hover:scale-[1.02] active:scale-[0.98] relative z-10 custom-nav-link ${
                   pathname === '/tracks'
                     ? 'custom-nav-link-active'
                     : 'custom-nav-link-inactive'
@@ -357,7 +360,7 @@ export function TopNav() {
                 {pathname === '/tracks' && (
                   <motion.div
                     layoutId="activeNavIndicator"
-                    className="absolute inset-0 rounded-full bg-[color:var(--color-primary)]/20 border border-[color:var(--color-primary)]/45 shadow-[0_0_12px_rgba(255,215,0,0.15)] backdrop-blur-md -z-10"
+                    className="absolute inset-0 rounded-full bg-[color:var(--color-primary)]/20 border border-[color:var(--color-primary)]/45 shadow-[0_0_12px_rgba(255,215,0,0.15)] backdrop-blur-md -z-10 custom-nav-active-bg"
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}
@@ -370,12 +373,12 @@ export function TopNav() {
           <div className="flex-1 flex justify-end items-center gap-3">
             {/* Desktop Actions Capsule (>= lg) */}
             {/* Desktop Actions (Separated Glass Circles) */}
-            <div className="hidden lg:flex items-center gap-2.5 mr-10">
+            <div className="hidden lg:flex items-center gap-2 mr-10">
               {/* Search Icon Container Wrapper */}
               <div className="relative" ref={searchContainerRef}>
                 <div 
                   className={`custom-nav-icon-container shadow-md transition-all duration-300 ${
-                    searchOpen ? 'w-48 px-3.5 py-1.5' : 'w-10 h-10 justify-center'
+                    searchOpen ? 'w-48 px-3 py-1' : 'w-8 h-8 justify-center'
                   }`}
                 >
                   <button
@@ -388,7 +391,7 @@ export function TopNav() {
                     className="custom-nav-icon-btn p-1 shrink-0"
                     aria-label="Search"
                   >
-                    <Search size={15} strokeWidth={2.5} />
+                    <Search size={14} strokeWidth={2.5} />
                   </button>
                   <div
                     className={`overflow-hidden transition-all duration-300 flex items-center ${
@@ -413,7 +416,7 @@ export function TopNav() {
 
                 {/* Autocomplete Dropdown */}
                 {searchOpen && showSuggestions && suggestions.length > 0 && (
-                  <div className="absolute right-0 top-full mt-3 w-80 rounded-2xl border border-[color:var(--color-outline-variant)]/40 bg-[color:var(--color-surface-container-high)]/95 backdrop-blur-xl shadow-2xl overflow-hidden max-h-72 overflow-y-auto z-[110] divide-y divide-[color:var(--color-outline-variant)]/10 text-left">
+                  <div className="absolute right-0 top-full mt-3 w-80 rounded-2xl border border-outline-variant/40 bg-surface-container-high/95 backdrop-blur-xl shadow-2xl overflow-hidden max-h-72 overflow-y-auto z-[110] divide-y divide-outline-variant/10 text-left">
                     {suggestions.map((service, index) => {
                       const isActive = index === activeIndex;
                       return (
@@ -427,15 +430,15 @@ export function TopNav() {
                           onMouseEnter={() => setActiveIndex(index)}
                           className={`flex items-center justify-between px-4 py-3 cursor-pointer transition-colors duration-200 ${
                             isActive
-                              ? 'bg-[color:var(--color-primary)]/10 text-[color:var(--color-primary)] font-bold'
-                              : 'text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-highest)]'
+                              ? 'bg-primary/10 text-primary font-bold'
+                              : 'text-on-surface hover:bg-surface-container-highest'
                           }`}
                         >
                           <div className="flex items-center gap-3">
                             <span className="text-base">{service.emoji}</span>
                             <div className="text-left font-sans">
                               <span className="text-xs block font-bold">{service.name}</span>
-                              <span className="text-[9px] text-[color:var(--color-outline)] block mt-0.5">
+                              <span className="text-[9px] text-outline block mt-0.5">
                                 in {service.groupTitle}
                               </span>
                             </div>
@@ -452,19 +455,19 @@ export function TopNav() {
 
               {/* Wishlist Icon Container */}
               <button 
-                className="custom-nav-icon-container custom-nav-icon-btn w-10 h-10 shadow-md transition-all hover:scale-105 active:scale-95" 
+                className="custom-nav-icon-container custom-nav-icon-btn w-8 h-8 shadow-md transition-all hover:scale-105 active:scale-95" 
                 aria-label="Wishlist"
               >
-                <Heart size={16} strokeWidth={2} />
+                <Heart size={14} strokeWidth={2} />
               </button>
 
               {/* Cart Icon Container */}
               <button 
-                className="custom-nav-icon-container custom-nav-icon-btn w-10 h-10 shadow-md transition-all hover:scale-105 active:scale-95 relative" 
+                className="custom-nav-icon-container custom-nav-icon-btn w-8 h-8 shadow-md transition-all hover:scale-105 active:scale-95 relative" 
                 aria-label="Cart"
               >
-                <ShoppingBag size={16} strokeWidth={2} />
-                <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-[color:var(--color-primary)] rounded-full shadow-[0_0_8px_rgba(255,215,0,0.6)]" />
+                <ShoppingBag size={14} strokeWidth={2} />
+                <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-[color:var(--color-primary)] rounded-full shadow-[0_0_8px_rgba(255,215,0,0.6)]" />
               </button>
             </div>
 
@@ -472,44 +475,44 @@ export function TopNav() {
             <div className="hidden lg:flex items-center gap-2 relative" ref={profileRef}>
               <button
                 onClick={() => setProfileOpen(!profileOpen)}
-                className="custom-nav-btn pl-1.5 pr-4 py-1 h-11 rounded-full flex items-center gap-3 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                className="custom-nav-btn pl-1 pr-3 h-8 rounded-full flex items-center gap-2 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
                 aria-label="Toggle profile menu"
                 title="Profile Settings"
               >
                 {/* Solid white circle with a small outline user icon on the left */}
-                <div className="h-9 w-9 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
-                  <User size={10} strokeWidth={2.5} className="text-[#0e3e26]" />
+                <div className="h-6 w-6 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
+                  <User size={8} strokeWidth={2.5} className="text-[#0a3161]" />
                 </div>
 
                 {/* Username in the middle */}
-                <span className="text-[color:var(--color-on-surface)] text-[14px] font-bold tracking-wide select-none">
+                <span className="text-[color:var(--color-on-surface)] text-[12px] font-bold tracking-wide select-none">
                   {userName}
                 </span>
 
                 {/* Chevron pointing down/up on the right */}
                 <span 
-                  className="material-symbols-outlined text-[18px] text-[color:var(--color-on-surface)] transition-transform duration-200" 
+                  className="material-symbols-outlined text-[15px] text-[color:var(--color-on-surface)] transition-transform duration-200" 
                   style={{ transform: profileOpen ? 'rotate(180deg)' : 'none' }}
                 >
                   keyboard_arrow_down
                 </span>
               </button>
               {profileOpen && (
-                <div className="absolute right-0 top-full mt-3 w-64 bg-[color:var(--color-surface-container)] rounded-2xl shadow-2xl border border-[color:var(--color-outline-variant)]/30 z-20 overflow-hidden backdrop-blur-md animate-fade-up">
+                <div className="absolute right-0 top-full mt-3 w-64 bg-surface-container rounded-2xl shadow-2xl border border-outline-variant/30 z-20 overflow-hidden backdrop-blur-md animate-fade-up">
                   {/* User Profile Header */}
-                  <div className="px-5 py-4 bg-[color:var(--color-surface-container-high)]/40 border-b border-[color:var(--color-outline-variant)]/20 flex items-center justify-between gap-3">
+                  <div className="px-5 py-4 bg-surface-container-high/40 border-b border-outline-variant/20 flex items-center justify-between gap-3">
                     <div className="flex flex-col min-w-0 text-left">
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-[color:var(--color-outline)]">Signed in as</span>
-                      <span className="font-extrabold text-[13px] text-[color:var(--color-on-surface)] mt-1 truncate max-w-[165px]" title={userEmail}>
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-outline">Signed in as</span>
+                      <span className="font-extrabold text-[13px] text-on-surface mt-1 truncate max-w-[165px]" title={userEmail}>
                         {userEmail}
                       </span>
-                      <span className="text-[11px] text-[color:var(--color-on-surface-variant)] flex items-center gap-1.5 mt-1 font-medium">
+                      <span className="text-[11px] text-on-surface-variant flex items-center gap-1.5 mt-1 font-medium">
                         <span>🇮🇳</span> India
                       </span>
                     </div>
                     {/* Switch Account Button */}
                     <button 
-                      className="p-2 rounded-xl bg-[color:var(--color-surface-container-high)] hover:bg-[color:var(--color-surface-container-highest)] text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-primary)] transition-all cursor-pointer flex items-center justify-center shrink-0 border border-[color:var(--color-outline-variant)]/20 shadow-sm hover:scale-105 active:scale-95"
+                      className="p-2 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-primary transition-all cursor-pointer flex items-center justify-center shrink-0 border border-outline-variant/20 shadow-sm hover:scale-105 active:scale-95"
                       title="Switch Account"
                     >
                       <span className="material-symbols-outlined text-[18px]">switch_account</span>
@@ -519,44 +522,44 @@ export function TopNav() {
                   {/* Dropdown Options */}
                   <ul className="py-2">
                     <li>
-                      <Link href="/profile#settings" className="flex items-center justify-between px-5 py-3 text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-highest)] transition-colors text-sm group">
+                      <Link href="/profile#settings" className="flex items-center justify-between px-5 py-3 text-on-surface hover:bg-surface-container-highest transition-colors text-sm group">
                         <div className="flex items-center gap-3">
-                          <span className="material-symbols-outlined text-[18px] text-[color:var(--color-on-surface-variant)] group-hover:text-[color:var(--color-primary)] transition-colors">person</span>
+                          <span className="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-primary transition-colors">person</span>
                           <span className="font-semibold text-[13px]">Account Profile</span>
                         </div>
                       </Link>
                     </li>
                     <li>
-                      <Link href="/profile#language" className="flex items-center justify-between px-5 py-3 text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-highest)] transition-colors text-sm group">
+                      <Link href="/profile#language" className="flex items-center justify-between px-5 py-3 text-on-surface hover:bg-surface-container-highest transition-colors text-sm group">
                         <div className="flex items-center gap-3">
-                          <span className="material-symbols-outlined text-[18px] text-[color:var(--color-on-surface-variant)] group-hover:text-[color:var(--color-primary)] transition-colors">language</span>
+                          <span className="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-primary transition-colors">language</span>
                           <span className="font-semibold text-[13px]">Language</span>
                         </div>
-                        <span className="text-xs text-[color:var(--color-outline)] font-medium">English</span>
+                        <span className="text-xs text-outline font-medium">English</span>
                       </Link>
                     </li>
                     <li>
-                      <Link href="/profile#currency" className="flex items-center justify-between px-5 py-3 text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-highest)] transition-colors text-sm group">
+                      <Link href="/profile#currency" className="flex items-center justify-between px-5 py-3 text-on-surface hover:bg-surface-container-highest transition-colors text-sm group">
                         <div className="flex items-center gap-3">
-                          <span className="material-symbols-outlined text-[18px] text-[color:var(--color-on-surface-variant)] group-hover:text-[color:var(--color-primary)] transition-colors">payments</span>
+                          <span className="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-primary transition-colors">payments</span>
                           <span className="font-semibold text-[13px]">Currency</span>
                         </div>
-                        <span className="text-xs text-[color:var(--color-outline)] font-medium">INR (₹)</span>
+                        <span className="text-xs text-outline font-medium">INR (₹)</span>
                       </Link>
                     </li>
                     <li>
-                      <Link href="/profile#country" className="flex items-center justify-between px-5 py-3 text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-highest)] transition-colors text-sm group">
+                      <Link href="/profile#country" className="flex items-center justify-between px-5 py-3 text-on-surface hover:bg-surface-container-highest transition-colors text-sm group">
                         <div className="flex items-center gap-3">
-                          <span className="material-symbols-outlined text-[18px] text-[color:var(--color-on-surface-variant)] group-hover:text-[color:var(--color-primary)] transition-colors">flag</span>
+                          <span className="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-primary transition-colors">flag</span>
                           <span className="font-semibold text-[13px]">Country</span>
                         </div>
-                        <span className="text-xs text-[color:var(--color-outline)] font-medium">India</span>
+                        <span className="text-xs text-outline font-medium">India</span>
                       </Link>
                     </li>
                     <li>
-                      <Link href="/profile#trust" className="flex items-center justify-between px-5 py-3 text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-highest)] transition-colors text-sm group">
+                      <Link href="/profile#trust" className="flex items-center justify-between px-5 py-3 text-on-surface hover:bg-surface-container-highest transition-colors text-sm group">
                         <div className="flex items-center gap-3">
-                          <span className="material-symbols-outlined text-[18px] text-[color:var(--color-on-surface-variant)] group-hover:text-[color:var(--color-primary)] transition-colors">verified_user</span>
+                          <span className="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-primary transition-colors">verified_user</span>
                           <span className="font-semibold text-[13px]">Beta Trust</span>
                         </div>
                         <span className="text-xs text-emerald-500 font-extrabold tracking-wide">85%</span>
@@ -565,7 +568,7 @@ export function TopNav() {
                   </ul>
                   
                   {/* Bottom Divider & Sign Out */}
-                  <div className="border-t border-[color:var(--color-outline-variant)]/20 px-2.5 py-2.5 bg-[color:var(--color-surface-container-low)]/20">
+                  <div className="border-t border-outline-variant/20 px-2.5 py-2.5 bg-surface-container-low/20">
                     <button
                       onClick={() => {
                         setProfileOpen(false);
@@ -581,7 +584,7 @@ export function TopNav() {
             </div>
 
             {/* Mobile Actions Capsule (< lg) */}
-            <div className="lg:hidden flex items-center bg-[color:var(--color-surface-container)]/60 border border-[color:var(--color-outline-variant)]/30 rounded-full pl-4 pr-1.5 py-1.5 shadow-md backdrop-blur-md gap-2.5">
+            <div className="lg:hidden flex items-center bg-[color:var(--color-surface-container)]/60 border border-[color:var(--color-outline-variant)]/30 rounded-full pl-4 pr-1.5 py-1 shadow-md backdrop-blur-md gap-2.5 custom-nav-mobile-capsule">
               {/* Mobile Location Selector & Map Button */}
               <div className="flex items-center gap-1.5 shrink-0">
                 <button

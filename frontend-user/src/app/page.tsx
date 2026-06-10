@@ -504,7 +504,7 @@ export default function HomePage() {
       <main className="page-content px-4 md:px-8 lg:pr-8">
         <div className="mx-auto max-w-7xl">
           {/* Row 1: Main Categories & Dashboard pill */}
-          <div className="flex items-center justify-between flex-wrap gap-4 mb-4 pt-1">
+          <div className="flex items-center justify-between flex-wrap gap-4 mb-2 pt-1">
             <div className="flex items-center gap-5 overflow-x-auto py-1 custom-scrollbar shrink-0 max-w-full lg:max-w-[70%] scroll-smooth">
               {[
                 { label: 'Travel', emoji: '✈️', href: '/travel-transport' },
@@ -533,7 +533,7 @@ export default function HomePage() {
               </button>
               <Link
                 href="/vendor/register"
-                className="px-4 py-2 rounded-full text-[11px] font-black tracking-widest bg-white/5 border border-white/20 text-white hover:bg-white/10 hover:border-white/40 hover:scale-102 active:scale-98 transition-all flex items-center gap-1.5 cursor-pointer shrink-0 shadow-md backdrop-blur-md"
+                className="px-4 py-2 rounded-full text-[11px] font-black tracking-widest bg-[#0a3161]/5 dark:bg-white/5 border border-[#0a3161]/60 dark:border-white/20 text-[#0a3161] dark:text-white hover:bg-[#0a3161]/15 dark:hover:bg-white/10 hover:border-[#0a3161] dark:hover:border-white/40 hover:scale-102 active:scale-98 transition-all flex items-center gap-1.5 cursor-pointer shrink-0 shadow-md backdrop-blur-md"
               >
                 <span className="material-symbols-outlined text-[15px]">storefront</span>
                 <span>Become a Vendor</span>
@@ -542,14 +542,14 @@ export default function HomePage() {
           </div>
 
           {/* Divider line between services and ad banner */}
-          <div className="w-full border-b border-[color:var(--color-outline-variant)]/20 mb-5" />
+          <div className="w-screen relative left-1/2 -translate-x-1/2 border-b border-[color:var(--color-outline-variant)]/20 mb-2" />
 
           {/* Row 2: Ad Banner */}
           <section
             id="ad-banner-hero"
             data-ad-slot=""
             aria-label="Advertisement"
-            className="ad-block mb-6 flex flex-col items-center gap-4 w-screen relative left-1/2 -translate-x-1/2 overflow-hidden"
+            className="ad-block mb-1 flex flex-col items-center gap-2 w-screen relative left-1/2 -translate-x-1/2 overflow-hidden"
           >
             {/* Carousel Container */}
             <div className="w-full h-[180px] sm:h-[220px] md:h-[250px] lg:h-[270px] relative flex items-center justify-center">
@@ -601,9 +601,7 @@ export default function HomePage() {
                     className={`absolute w-[92vw] sm:w-[90vw] md:w-[88vw] lg:w-[86vw] h-full left-[4vw] sm:left-[5vw] md:left-[6vw] lg:left-[7vw] rounded-3xl overflow-hidden border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)] card-glass transition-all duration-700 ease-in-out select-none ${opacityClass} ${zIndexClass} ${pointerEventsClass}`}
                     style={{
                       transform: transformStr,
-                      boxShadow: diff === 0 
-                        ? '0 16px 40px rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(255, 215, 0, 0.15)' 
-                        : '0 4px 16px rgba(0, 0, 0, 0.3)'
+                      boxShadow: 'none'
                     }}
                   >
                     {/* Background Image & Overlay */}
@@ -645,7 +643,7 @@ export default function HomePage() {
             </div>
 
             {/* Dots Indicator */}
-            <div className="flex items-center justify-center gap-2 mt-1">
+            <div className="flex items-center justify-center gap-2 mt-0">
               {MOCK_ADS.map((_, idx) => (
                 <button
                   key={idx}
@@ -662,7 +660,7 @@ export default function HomePage() {
           </section>
 
           {/* Row 3: Shortcuts Dock */}
-          <section className="mb-6">
+          <section className="mb-6 -mt-3 md:-mt-5 lg:-mt-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-1.5">
                 <span className="material-symbols-outlined text-[18px] text-[color:var(--color-primary)] animate-pulse">star</span>
@@ -1194,8 +1192,9 @@ export default function HomePage() {
 
               {/* Column 2: BokSpot */}
               <div className="text-left space-y-3">
-                <h4 className="text-[11px] uppercase tracking-wider font-extrabold text-[color:var(--color-primary)]">
-                  BokSpot
+                <h4 className="text-[11px] uppercase tracking-wider font-extrabold bg-white/90 dark:bg-white/95 px-2.5 py-1 rounded-full border border-white/10 shadow-sm inline-block">
+                  <span className="logo-text-bok text-[#0a3161]">Bok</span>
+                  <span className="logo-text-spot text-[#ff6325]">Spot</span>
                 </h4>
                 <ul className="space-y-2">
                   {[
@@ -1259,10 +1258,13 @@ export default function HomePage() {
             <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-8 border-t border-[color:var(--color-outline-variant)]/10 z-10 relative">
               <Link
                 href="/"
-                className="flex items-center gap-2 font-['Playfair_Display'] text-[15px] tracking-[0.15em] text-[color:var(--color-primary)] uppercase font-extrabold hover:opacity-80 transition-opacity"
+                className="flex items-center gap-2 bg-white/90 dark:bg-white/95 px-3.5 py-1.5 rounded-full border border-white/20 shadow-md font-['Playfair_Display'] text-[15px] tracking-[0.15em] uppercase font-extrabold hover:opacity-90 transition-all shrink-0"
               >
-                <Sparkles className="w-4 h-4 text-[color:var(--color-primary)]" />
-                <span>BOKSPOT</span>
+                <Sparkles className="w-4 h-4 text-[#ff6325] fill-[#ff6325]" />
+                <span className="font-black">
+                  <span className="logo-text-bok text-[#0a3161]">BOK</span>
+                  <span className="logo-text-spot text-[#ff6325]">SPOT</span>
+                </span>
               </Link>
               <p className="text-[10px] font-bold text-[color:var(--color-outline)] tracking-wider">
                 COPYRIGHT &copy; 2026 BOKSPOT. ALL RIGHTS RESERVED.

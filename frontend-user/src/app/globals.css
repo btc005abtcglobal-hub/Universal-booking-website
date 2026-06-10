@@ -8,7 +8,7 @@
 
 @theme {
   /* ── Brand Theme Colors (New Palette) ───────────────────────── */
-  --color-primary:              #f2c53d;   /* gold/yellow       */
+  --color-primary:              #d4af37;   /* gold/yellow       */
   --color-primary-fixed:        #fceea7;   /* pale gold tint    */
   --color-primary-fixed-dim:    #cca022;   /* deep gold         */
   --color-on-primary:           #031020;   /* dark blue on gold */
@@ -241,7 +241,7 @@
   --primary: var(--color-primary);
 
   /* TopNav fixed height on mobile (profile row + search row + padding) */
-  --topnav-height: 64px;
+  --topnav-height: 42px;
   /* BottomNav height on mobile */
   --bottomnav-height: 66px;
   /* SideNav width on desktop */
@@ -253,7 +253,7 @@
 @media (min-width: 1024px) {
   :root {
     /* TopNav fixed height on desktop (includes tabs row) */
-    --topnav-height: 80px;
+    --topnav-height: 48px;
   }
 }
 
@@ -338,18 +338,18 @@
    * On desktop (lg+), also shifts right of the SideNav.
    */
   .page-content {
-    padding-top: 88px;
+    padding-top: 58px;
     padding-bottom: var(--bottomnav-height);
     min-height: 100vh;
   }
   .page-content-with-sidenav {
-    padding-top: 88px;
+    padding-top: 58px;
     padding-bottom: var(--bottomnav-height);
     min-height: 100vh;
   }
   @media (min-width: 1024px) {
     .page-content, .page-content-with-sidenav {
-      padding-top: 104px;
+      padding-top: 64px;
     }
   }
 
@@ -611,21 +611,21 @@
     transition: all 0.3s ease;
     backdrop-filter: blur(28px);
     -webkit-backdrop-filter: blur(28px);
-    background-color: #f2c53d !important;
+    background-color: #d4af37 !important;
     border-bottom: 1px solid rgba(10, 49, 97, 0.18) !important;
     box-shadow: 0 4px 20px rgba(10, 49, 97, 0.1) !important;
   }
 
   /* Dark Mode Styling */
   .dark .custom-navbar {
-    background-color: #f2c53d !important;
+    background-color: #d4af37 !important;
     border-bottom: 1px solid rgba(10, 49, 97, 0.18) !important;
     box-shadow: 0 4px 20px rgba(10, 49, 97, 0.1) !important;
   }
 
   /* Light Mode Styling - Solid Clean White with Crisp Slate Border */
   .light .custom-navbar {
-    background-color: #f2c53d !important;
+    background-color: #d4af37 !important;
     border-bottom: 1px solid rgba(10, 49, 97, 0.18) !important;
     box-shadow: 0 4px 18px rgba(10, 49, 97, 0.08) !important;
   }

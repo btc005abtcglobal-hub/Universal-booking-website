@@ -504,7 +504,7 @@ export default function HomePage() {
       <main className="page-content px-4 md:px-8 lg:pr-8">
         <div className="mx-auto max-w-7xl">
           {/* Row 1: Main Categories & Dashboard pill */}
-          <div className="flex items-center justify-between flex-wrap gap-4 mb-4 pt-1">
+          <div className="flex items-center justify-between flex-wrap gap-4 mb-2 pt-1">
             <div className="flex items-center gap-5 overflow-x-auto py-1 custom-scrollbar shrink-0 max-w-full lg:max-w-[70%] scroll-smooth">
               {[
                 { label: 'Travel', emoji: '✈️', href: '/travel-transport' },
@@ -542,7 +542,7 @@ export default function HomePage() {
           </div>
 
           {/* Divider line between services and ad banner */}
-          <div className="w-full border-b border-[color:var(--color-outline-variant)]/20 mb-5" />
+          <div className="w-screen relative left-1/2 -translate-x-1/2 border-b border-[color:var(--color-outline-variant)]/20 mb-4" />
 
           {/* Row 2: Ad Banner */}
           <section
@@ -601,9 +601,7 @@ export default function HomePage() {
                     className={`absolute w-[92vw] sm:w-[90vw] md:w-[88vw] lg:w-[86vw] h-full left-[4vw] sm:left-[5vw] md:left-[6vw] lg:left-[7vw] rounded-3xl overflow-hidden border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)] card-glass transition-all duration-700 ease-in-out select-none ${opacityClass} ${zIndexClass} ${pointerEventsClass}`}
                     style={{
                       transform: transformStr,
-                      boxShadow: diff === 0 
-                        ? '0 16px 40px rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(255, 215, 0, 0.15)' 
-                        : '0 4px 16px rgba(0, 0, 0, 0.3)'
+                      boxShadow: 'none'
                     }}
                   >
                     {/* Background Image & Overlay */}

@@ -611,21 +611,21 @@
     transition: all 0.3s ease;
     backdrop-filter: blur(28px);
     -webkit-backdrop-filter: blur(28px);
-    background: linear-gradient(135deg, #b8860b 0%, #8b6508 50%, #4a3604 100%) !important;
+    background: #8b6508 !important;
     border-bottom: 1px solid rgba(184, 134, 11, 0.4) !important;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
   }
 
   /* Dark Mode Styling */
   .dark .custom-navbar {
-    background: linear-gradient(135deg, #b8860b 0%, #8b6508 50%, #4a3604 100%) !important;
+    background: #8b6508 !important;
     border-bottom: 1px solid rgba(184, 134, 11, 0.4) !important;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
   }
 
   /* Light Mode Styling */
   .light .custom-navbar {
-    background: linear-gradient(135deg, #b8860b 0%, #8b6508 50%, #4a3604 100%) !important;
+    background: #8b6508 !important;
     border-bottom: 1px solid rgba(184, 134, 11, 0.4) !important;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
   }
@@ -853,5 +853,14 @@
   .light .custom-navbar .absolute .text-primary,
   .light .custom-navbar .absolute .text-primary * {
     color: #8b7000 !important; /* Premium gold accent */
+  }
+
+  /* Ensure the profile avatar circle text/icon color is forced to a premium dark shade */
+  .custom-navbar .profile-avatar-circle,
+  .custom-navbar .profile-avatar-circle *,
+  .custom-navbar .custom-nav-btn div.profile-avatar-circle,
+  .custom-navbar .custom-nav-btn div.profile-avatar-circle * {
+    color: #0a3161 !important;
+    stroke: #0a3161 !important;
   }
 

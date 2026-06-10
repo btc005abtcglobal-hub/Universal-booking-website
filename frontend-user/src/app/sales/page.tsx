@@ -8,7 +8,7 @@ import { LiveClock } from '../../components/LiveClock';
 import { 
   ArrowLeft, ArrowRight, Activity, TrendingUp, Lock, User, Eye, EyeOff, AlertCircle, 
   ShieldCheck, CheckCircle2, Building2, Calendar, ShoppingBag, PlusCircle, Trash2, 
-  MapPin, Clock, Search, Briefcase, Sliders, Check, Copy, Navigation, Loader
+  MapPin, Clock, Search, Briefcase, Sliders, Check, Copy, Navigation, Loader, Inbox, XCircle
 } from 'lucide-react';
 
 // Dynamic import of MapComponent with SSR disabled
@@ -264,11 +264,12 @@ export default function SalesAdminPage() {
     services, addService, deleteService, 
     merchants, addMerchant,
     commissionRate, setCommissionRate, updateService,
-    assignVendorId
+    assignVendorId,
+    vendorRequests, updateVendorRequestStatus
   } = useBookingFlowStore();
   
   const [mounted, setMounted] = useState(false);
-  const [activeTab, setActiveTab] = useState<'onboarding' | 'commission' | 'vendorId'>('onboarding');
+  const [activeTab, setActiveTab] = useState<'onboarding' | 'requests' | 'commission' | 'vendorId'>('onboarding');
   const [standardCommInput, setStandardCommInput] = useState('');
   const [serviceSearchQuery, setServiceSearchQuery] = useState('');
   
@@ -279,6 +280,41 @@ export default function SalesAdminPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [loginSuccess, setLoginSuccess] = useState<string | null>(null);
+
+  // Handle Approve Request
+  const handleApproveRequest = (req: any) => {
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const currentSerial = useBookingFlowStore.getState().nextVendorSerial || 5;
+    const serialStr = String(currentSerial).padStart(4, '0');
+    const generatedId = `${yyyy}${mm}${serialStr}`;
+
+    const newMerchant = {
+      id: `merchant-${Date.now()}`,
+      name: req.name,
+      category: req.category,
+      status: 'ACTIVE' as const,
+      email: req.email,
+      phone: req.phone,
+      city: req.city,
+      address: req.address,
+      description: req.description,
+      rating: 5.0,
+      latitude: 13.0827,
+      longitude: 80.2707
+    };
+
+    addMerchant(newMerchant);
+    updateVendorRequestStatus(req.id, 'APPROVED');
+    showToast(`Application for "${req.name}" approved! Onboarded with ID: ${generatedId}`);
+  };
+
+  // Handle Reject Request
+  const handleRejectRequest = (reqId: string, reqName: string) => {
+    updateVendorRequestStatus(reqId, 'REJECTED');
+    showToast(`Application for "${reqName}" rejected.`);
+  };
 
   // Vendor Onboarding Form State
   const [vendorName, setVendorName] = useState('');
@@ -633,7 +669,7 @@ export default function SalesAdminPage() {
           </div>
           
           {/* Navigation Tabs */}
-          <div className="flex bg-white/[0.02] border border-white/5 p-1 rounded-xl shrink-0 select-none">
+          <div className="flex bg-white/[0.02] border border-white/5 p-1 rounded-xl shrink-0 select-none flex-wrap gap-1 sm:gap-0">
             <button
               onClick={() => setActiveTab('onboarding')}
               className={`rounded-lg py-2 px-4 text-xs font-bold uppercase tracking-wide transition-all cursor-pointer flex items-center gap-1.5 ${
@@ -644,6 +680,22 @@ export default function SalesAdminPage() {
             >
               <Building2 size={13} />
               Onboarding
+            </button>
+            <button
+              onClick={() => setActiveTab('requests')}
+              className={`rounded-lg py-2 px-4 text-xs font-bold uppercase tracking-wide transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeTab === 'requests'
+                  ? 'bg-indigo-600 text-white shadow-md'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Inbox size={13} />
+              Requests
+              {mounted && vendorRequests.filter(r => r.status === 'PENDING').length > 0 && (
+                <span className="ml-1 bg-rose-500 text-white text-[9px] px-1.5 py-0.5 rounded-full font-black animate-pulse">
+                  {vendorRequests.filter(r => r.status === 'PENDING').length}
+                </span>
+              )}
             </button>
             <button
               onClick={() => setActiveTab('commission')}
@@ -1022,6 +1074,103 @@ export default function SalesAdminPage() {
           </div>
         </div>
           </>
+        )}
+
+        {activeTab === 'requests' && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center border-b border-white/5 pb-4">
+              <div>
+                <h3 className="font-bold text-base text-white uppercase tracking-wider">Pending Vendor Applications</h3>
+                <p className="text-xs text-[color:var(--color-on-surface-variant)] mt-0.5">
+                  Verify vendor business credentials and approve them to automatically onboard them as Bokspot partners.
+                </p>
+              </div>
+            </div>
+
+            {vendorRequests.length === 0 ? (
+              <div className="card-glass rounded-2xl p-16 text-center border border-white/5 bg-[color:var(--color-surface-container)] flex flex-col items-center justify-center">
+                <Inbox size={48} className="text-slate-600 mb-3" />
+                <h4 className="text-sm font-bold text-white">No applications found</h4>
+                <p className="text-xs text-[color:var(--color-on-surface-variant)] mt-1">There are currently no prospective vendor registrations on file.</p>
+              </div>
+            ) : (
+              <div className="grid gap-6 md:grid-cols-2">
+                {vendorRequests.map((req) => (
+                  <div 
+                    key={req.id} 
+                    className="card-glass rounded-2xl p-5 bg-[color:var(--color-surface-container)] border border-white/5 flex flex-col justify-between space-y-5 relative overflow-hidden transition-all hover:scale-[1.01] duration-300"
+                  >
+                    {/* Top ambient highlight */}
+                    <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ background: 'radial-gradient(circle at top right, var(--color-primary), transparent 60%)' }} />
+                    
+                    <div className="space-y-3.5 relative z-10 text-left">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="font-extrabold text-sm text-white">{req.name}</h4>
+                          <span className="inline-block mt-1 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider">
+                            {req.category}
+                          </span>
+                        </div>
+                        <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-widest border ${
+                          req.status === 'PENDING'
+                            ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                            : req.status === 'APPROVED'
+                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                            : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+                        }`}>
+                          {req.status}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3.5 text-[11px] pt-1.5 border-t border-white/5">
+                        <div className="space-y-0.5">
+                          <span className="text-[9px] uppercase font-bold text-[color:var(--color-outline)]">Operating City</span>
+                          <p className="text-white font-semibold">{req.city}</p>
+                        </div>
+                        <div className="space-y-0.5">
+                          <span className="text-[9px] uppercase font-bold text-[color:var(--color-outline)]">Application Date</span>
+                          <p className="text-slate-300 font-semibold">{new Date(req.submittedAt).toLocaleDateString()}</p>
+                        </div>
+                        <div className="space-y-0.5">
+                          <span className="text-[9px] uppercase font-bold text-[color:var(--color-outline)]">Email Address</span>
+                          <p className="text-slate-300 font-semibold truncate" title={req.email}>{req.email}</p>
+                        </div>
+                        <div className="space-y-0.5">
+                          <span className="text-[9px] uppercase font-bold text-[color:var(--color-outline)]">Phone Number</span>
+                          <p className="text-slate-300 font-semibold">{req.phone}</p>
+                        </div>
+                        <div className="col-span-2 space-y-0.5">
+                          <span className="text-[9px] uppercase font-bold text-[color:var(--color-outline)]">Street Address</span>
+                          <p className="text-slate-300 font-medium">{req.address}</p>
+                        </div>
+                        <div className="col-span-2 space-y-0.5">
+                          <span className="text-[9px] uppercase font-bold text-[color:var(--color-outline)]">Business Bio / Description</span>
+                          <p className="text-slate-400 leading-relaxed font-medium italic">"{req.description}"</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {req.status === 'PENDING' && (
+                      <div className="flex gap-2.5 pt-3 border-t border-white/5 relative z-10">
+                        <button
+                          onClick={() => handleRejectRequest(req.id, req.name)}
+                          className="flex-1 rounded-xl border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 text-red-400 py-2 text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+                        >
+                          <XCircle size={13} /> Reject Request
+                        </button>
+                        <button
+                          onClick={() => handleApproveRequest(req)}
+                          className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white py-2 text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1 cursor-pointer shadow-md shadow-emerald-900/15"
+                        >
+                          <CheckCircle2 size={13} /> Verify & Onboard
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         )}
 
         {activeTab === 'commission' && (

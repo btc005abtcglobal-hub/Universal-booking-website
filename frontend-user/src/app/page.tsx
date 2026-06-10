@@ -505,8 +505,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl">
           {/* Row 1: Main Categories & Dashboard pill */}
           <div className="flex items-center justify-between flex-wrap gap-4 mb-4 pt-1">
-            <div className="flex items-center gap-2 overflow-x-auto py-1 custom-scrollbar shrink-0 max-w-full lg:max-w-[70%] scroll-smooth">
-              <span className="text-[10px] font-extrabold uppercase tracking-widest text-[color:var(--color-outline)] mr-2 shrink-0">Categories:</span>
+            <div className="flex items-center gap-5 overflow-x-auto py-1 custom-scrollbar shrink-0 max-w-full lg:max-w-[70%] scroll-smooth">
               {[
                 { label: 'Travel', emoji: '✈️', href: '/travel-transport' },
                 { label: 'Stay & Accomodation', emoji: '🏨', href: '/stay-accommodation' },
@@ -517,31 +516,43 @@ export default function HomePage() {
                 <Link
                   key={cat.label}
                   href={cat.href}
-                  className="px-3.5 py-1.5 rounded-full text-[11px] font-bold bg-[color:var(--color-surface-container)]/40 border border-[color:var(--color-outline-variant)]/20 text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-on-surface)] hover:bg-[color:var(--color-surface-container-high)]/60 hover:scale-[1.03] transition-all flex items-center gap-1.5 shrink-0 backdrop-blur-md shadow-sm"
+                  className="text-[12px] font-bold text-[color:var(--color-on-surface-variant)] hover:text-[color:var(--color-primary)] transition-all flex items-center gap-1.5 shrink-0 hover:scale-[1.02] active:scale-[0.98] py-1 px-0.5"
                 >
                   <span>{cat.emoji}</span>
                   <span>{cat.label}</span>
                 </Link>
               ))}
             </div>
-            <button
-              onClick={() => setDashboardOpen(true)}
-              className="px-4 py-2 rounded-full text-[11px] font-black tracking-widest bg-[color:var(--color-primary)]/10 border border-[color:var(--color-primary)]/40 text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/20 hover:scale-102 active:scale-98 transition-all flex items-center gap-1.5 cursor-pointer shrink-0 shadow-md backdrop-blur-md"
-            >
-              <span className="material-symbols-outlined text-[15px]">dashboard</span>
-              <span>DASHBOARD</span>
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setDashboardOpen(true)}
+                className="px-4 py-2 rounded-full text-[11px] font-black tracking-widest bg-[color:var(--color-primary)]/10 border border-[color:var(--color-primary)]/40 text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/20 hover:scale-102 active:scale-98 transition-all flex items-center gap-1.5 cursor-pointer shrink-0 shadow-md backdrop-blur-md"
+              >
+                <span className="material-symbols-outlined text-[15px]">dashboard</span>
+                <span>DASHBOARD</span>
+              </button>
+              <Link
+                href="/vendor/register"
+                className="px-4 py-2 rounded-full text-[11px] font-black tracking-widest bg-white/5 border border-white/20 text-white hover:bg-white/10 hover:border-white/40 hover:scale-102 active:scale-98 transition-all flex items-center gap-1.5 cursor-pointer shrink-0 shadow-md backdrop-blur-md"
+              >
+                <span className="material-symbols-outlined text-[15px]">storefront</span>
+                <span>Become a Vendor</span>
+              </Link>
+            </div>
           </div>
+
+          {/* Divider line between services and ad banner */}
+          <div className="w-full border-b border-[color:var(--color-outline-variant)]/20 mb-5" />
 
           {/* Row 2: Ad Banner */}
           <section
             id="ad-banner-hero"
             data-ad-slot=""
             aria-label="Advertisement"
-            className="ad-block mb-8 flex flex-col items-center gap-4 w-screen relative left-1/2 -translate-x-1/2 overflow-hidden"
+            className="ad-block mb-6 flex flex-col items-center gap-4 w-screen relative left-1/2 -translate-x-1/2 overflow-hidden"
           >
             {/* Carousel Container */}
-            <div className="w-full h-[280px] sm:h-[340px] md:h-[380px] lg:h-[420px] relative flex items-center justify-center">
+            <div className="w-full h-[180px] sm:h-[220px] md:h-[250px] lg:h-[270px] relative flex items-center justify-center">
               {MOCK_ADS.map((ad, idx) => {
                 const diff = getDiff(idx);
                 
@@ -559,13 +570,13 @@ export default function HomePage() {
                   pointerEventsClass = "pointer-events-auto";
                 } else if (diff === -1) {
                   // Left peeking card
-                  transformStr = "translate3d(-91%, 0, 0) scale(0.92)";
+                  transformStr = "translate3d(-94%, 0, 0) scale(0.92)";
                   opacityClass = "opacity-45 hover:opacity-75";
                   zIndexClass = "z-10";
                   pointerEventsClass = "pointer-events-auto cursor-pointer";
                 } else if (diff === 1) {
                   // Right peeking card
-                  transformStr = "translate3d(91%, 0, 0) scale(0.92)";
+                  transformStr = "translate3d(94%, 0, 0) scale(0.92)";
                   opacityClass = "opacity-45 hover:opacity-75";
                   zIndexClass = "z-10";
                   pointerEventsClass = "pointer-events-auto cursor-pointer";
@@ -587,7 +598,7 @@ export default function HomePage() {
                         setAdIndex(idx);
                       }
                     }}
-                    className={`absolute w-[86vw] sm:w-[82vw] md:w-[74vw] lg:w-[68vw] h-full left-[7vw] sm:left-[9vw] md:left-[13vw] lg:left-[16vw] rounded-3xl overflow-hidden border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)] card-glass transition-all duration-700 ease-in-out select-none ${opacityClass} ${zIndexClass} ${pointerEventsClass}`}
+                    className={`absolute w-[92vw] sm:w-[90vw] md:w-[88vw] lg:w-[86vw] h-full left-[4vw] sm:left-[5vw] md:left-[6vw] lg:left-[7vw] rounded-3xl overflow-hidden border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)] card-glass transition-all duration-700 ease-in-out select-none ${opacityClass} ${zIndexClass} ${pointerEventsClass}`}
                     style={{
                       transform: transformStr,
                       boxShadow: diff === 0 
@@ -607,22 +618,22 @@ export default function HomePage() {
                     </div>
 
                     {/* Ad Content */}
-                    <div className="absolute inset-0 z-10 p-6 md:p-10 flex flex-col justify-end text-left">
-                      <div className="flex items-center gap-2 mb-2">
+                    <div className="absolute inset-0 z-10 p-5 md:p-7 flex flex-col justify-end text-left">
+                      <div className="flex items-center gap-2 mb-1.5">
                         <span className={`px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase tracking-wider border ${ad.tagBg}`}>
                           {ad.tag}
                         </span>
                       </div>
-                      <h4 className="text-xl md:text-2xl lg:text-3xl font-black text-white mb-2 tracking-wide leading-tight">
+                      <h4 className="text-base md:text-lg lg:text-xl font-black text-white mb-1.5 tracking-wide leading-tight">
                         {ad.title}
                       </h4>
-                      <p className="text-xs md:text-sm text-slate-300 font-medium max-w-xl mb-5 line-clamp-2 leading-relaxed">
+                      <p className="text-[11px] md:text-xs text-slate-300 font-medium max-w-xl mb-3.5 line-clamp-1 sm:line-clamp-2 leading-relaxed">
                         {ad.desc}
                       </p>
                       {diff === 0 && (
                         <Link 
                           href={ad.href}
-                          className="self-start px-5 py-2.5 rounded-full text-[10px] font-black tracking-widest bg-[color:var(--color-primary)] text-black hover:scale-105 transition-transform shadow-lg active:scale-98"
+                          className="self-start px-4.5 py-2 rounded-full text-[9px] font-black tracking-widest bg-[color:var(--color-primary)] text-black hover:scale-105 transition-transform shadow-lg active:scale-98"
                         >
                           {ad.actionText.toUpperCase()}
                         </Link>
@@ -849,14 +860,14 @@ export default function HomePage() {
                     <Link
                       key={item.id}
                       href={item.link}
-                      className="w-[215px] sm:w-[235px] shrink-0 snap-start group"
+                      className="w-[280px] sm:w-[320px] shrink-0 snap-start group"
                     >
                       <div
-                        className="relative h-[290px] rounded-3xl p-5 overflow-hidden flex flex-col justify-between border border-[#34D399]/20 bg-gradient-to-b from-[#34D399]/20 to-black/85 hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 card-glass shadow-lg"
+                        className="relative h-[210px] rounded-3xl p-5 overflow-hidden flex flex-col justify-between border border-[#34D399]/20 bg-gradient-to-b from-[#34D399]/20 to-black/85 hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 card-glass shadow-lg"
                       >
                         {/* Top category label & rating */}
                         <div className="flex items-center justify-between gap-2 z-10">
-                          <span className="text-[9px] uppercase font-black tracking-widest text-[#FFD700] bg-black/65 px-2 py-0.5 rounded-md border border-[#FFD700]/30 backdrop-blur-md truncate max-w-[110px]" title={item.subtitle}>
+                          <span className="text-[9px] uppercase font-black tracking-widest text-[#FFD700] bg-black/65 px-2 py-0.5 rounded-md border border-[#FFD700]/30 backdrop-blur-md truncate max-w-[150px]" title={item.subtitle}>
                             {item.subtitle}
                           </span>
                           <div className="flex items-center gap-0.5 text-[9px] font-black text-yellow-500 bg-black/45 px-2 py-0.5 rounded-md border border-white/5 backdrop-blur-md shrink-0">
@@ -866,8 +877,8 @@ export default function HomePage() {
                         </div>
 
                         {/* Big center emoji */}
-                        <div className="flex items-center justify-center my-4 z-10 transition-transform duration-300 group-hover:scale-110">
-                          <span className="text-6xl drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)] select-none">
+                        <div className="flex items-center justify-center my-1.5 z-10 transition-transform duration-300 group-hover:scale-110">
+                          <span className="text-5xl drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)] select-none">
                             {item.emoji}
                           </span>
                         </div>

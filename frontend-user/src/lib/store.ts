@@ -68,6 +68,19 @@ export interface PersistedMerchant {
   longitude?: number;
 }
 
+export interface VendorRequest {
+  id: string;
+  name: string;
+  category: string;
+  email: string;
+  phone: string;
+  city: string;
+  address: string;
+  description: string;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  submittedAt: string;
+}
+
 interface BookingFlowState {
   selectedService: any | null;
   selectedSlot: any | null;
@@ -77,6 +90,7 @@ interface BookingFlowState {
   bookings: PersistedBooking[];
   services: MockService[];
   merchants: PersistedMerchant[];
+  vendorRequests: VendorRequest[];
   commissionRate: number;
   nextVendorSerial: number;
   setCommissionRate: (rate: number) => void;
@@ -94,6 +108,8 @@ interface BookingFlowState {
   addMerchant: (merchant: PersistedMerchant) => void;
   toggleMerchantStatus: (merchantId: string) => void;
   assignVendorId: (merchantId: string, vendorId: string) => void;
+  addVendorRequest: (request: VendorRequest) => void;
+  updateVendorRequestStatus: (id: string, status: 'PENDING' | 'APPROVED' | 'REJECTED') => void;
   resetFlow: () => void;
 }
 
@@ -116,6 +132,32 @@ export const useBookingFlowStore = create<BookingFlowState>()(
         { id: '2', name: 'ZenFit', category: 'Gym / Yoga Slot Booking', status: 'ACTIVE', rating: 4.9, email: 'zenfit@fitness.com', phone: '+91 98765 54321', city: 'Chennai', address: '15 T Nagar High Road', description: 'ZenFit is a wellness and fitness club offering personal training and group yoga sessions.', vendorId: '2026050002', latitude: 13.078, longitude: 80.268 },
         { id: '3', name: 'Style Studio', category: 'Salon / Spa Appointment', status: 'ACTIVE', rating: 4.8, email: 'style@studio.com', phone: '+91 98765 12345', city: 'Chennai', address: '15 T Nagar High Road', description: 'Style Studio is a premium beauty salon for haircuts, styling, and bridal makeups.', vendorId: '2026050003', latitude: 13.085, longitude: 80.275 },
         { id: '4', name: 'The Grand temple Dine', category: 'Restaurant Table Reservation', status: 'ACTIVE', rating: 4.7, email: 'dine@grandtemple.com', phone: '+91 98450 12345', city: 'Madurai', address: 'Madurai High Road', description: 'The Grand Temple Dine is an elegant family fine-dining restaurant.', vendorId: '2026050004', latitude: 9.925, longitude: 78.118 }
+      ],
+      vendorRequests: [
+        {
+          id: 'req-1',
+          name: 'Green Wellness Spa',
+          category: 'Salon / Spa Appointment',
+          email: 'contact@greenwellness.com',
+          phone: '+91 98765 67890',
+          city: 'Chennai',
+          address: '77 OMR Road, Karapakkam',
+          description: 'A pure organic and herbal spa experience focusing on traditional therapies.',
+          status: 'PENDING',
+          submittedAt: '2026-06-09T10:00:00.000Z'
+        },
+        {
+          id: 'req-2',
+          name: 'Royal Stay Villas',
+          category: 'Homestay / Villa',
+          email: 'bookings@royalvillas.in',
+          phone: '+91 99444 88888',
+          city: 'Coimbatore',
+          address: '44 Hill View Enclave',
+          description: 'Luxury heritage homestay experience in the foothills of Western Ghats.',
+          status: 'PENDING',
+          submittedAt: '2026-06-09T11:30:00.000Z'
+        }
       ],
       commissionRate: 10,
       nextVendorSerial: 5,
@@ -160,6 +202,14 @@ export const useBookingFlowStore = create<BookingFlowState>()(
       })),
       assignVendorId: (merchantId, vendorId) => set((state) => ({
         merchants: state.merchants.map((m) => m.id === merchantId ? { ...m, vendorId } : m)
+      })),
+      addVendorRequest: (request) => set((state) => ({
+        vendorRequests: [request, ...state.vendorRequests]
+      })),
+      updateVendorRequestStatus: (id, status) => set((state) => ({
+        vendorRequests: state.vendorRequests.map((req) =>
+          req.id === id ? { ...req, status } : req
+        )
       })),
       resetFlow: () => set({
         selectedService: null,

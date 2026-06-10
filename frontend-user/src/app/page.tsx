@@ -699,7 +699,7 @@ export default function HomePage() {
           </section>
 
           {/* Row 4: Recommended Section */}
-          <section className="mb-10">
+          <section className="mb-4">
             <div className="flex items-center justify-between mb-5">
               <div>
                 <h2 className="text-[18px] font-extrabold text-[color:var(--color-on-surface)] tracking-tight">Recommended For You</h2>

@@ -108,6 +108,7 @@ export interface MerchantUser {
 
 interface VendorStoreState {
   currentMerchant: MerchantUser | null;
+  loginRole: 'vendor' | 'supervisor' | null;
   bookings: PersistedBooking[];
   services: CatalogService[];
   
@@ -577,36 +578,70 @@ function getMockServicesForAdminMerchant(merchant: MerchantUser): CatalogService
   ];
 }
 
+export interface SubAccount {
+  subId: string;
+  merchantId: string;
+  passwordHash: string;
+}
+
+export const SUB_ACCOUNTS: SubAccount[] = [
+  { subId: 'D101', merchantId: 'mer-1', passwordHash: 'pass101' },
+  { subId: 'F202', merchantId: 'mer-2', passwordHash: 'pass202' },
+  { subId: 'S303', merchantId: 'mer-3', passwordHash: 'pass303' },
+  { subId: 'R404', merchantId: 'mer-4', passwordHash: 'pass404' },
+  { subId: 'G505', merchantId: 'mer-5', passwordHash: 'pass505' },
+  { subId: 'U606', merchantId: 'mer-6', passwordHash: 'pass606' }
+];
+
+export const VENDOR_ACCOUNTS = [
+  { username: 'admin', passwordHash: 'admin123' },
+  { username: 'vendor123', passwordHash: 'vendorpass123' }
+];
+
 export const useVendorStore = create<VendorStoreState>()(
   persist(
     (set, get) => ({
       currentMerchant: null,
+      loginRole: null,
       bookings: INITIAL_BOOKINGS,
       services: INITIAL_SERVICES,
       
       loginMerchant: (username, passwordHash) => {
-        if (passwordHash !== '123') return false;
-        const checkUsername = username.toLowerCase() === 'admin' ? 'doctor' : username.toLowerCase();
-        
-        let found = PRESET_MERCHANTS.find(
-          (m) => m.username === checkUsername
+        const cleanUser = username.trim();
+        const lowerUser = cleanUser.toLowerCase();
+
+        // 1. Check Sub ID (Supervisor)
+        const subAcc = SUB_ACCOUNTS.find(
+          (s) => s.subId.toUpperCase() === cleanUser.toUpperCase() && s.passwordHash === passwordHash
         );
-        
-        if (!found) {
-          const categoryName = formatSlug(checkUsername);
-          found = {
-            id: `mer-${checkUsername}`,
-            username: checkUsername,
-            merchantName: `${categoryName} Care Hub`,
-            category: categoryName,
-            logoLetter: categoryName.charAt(0),
-            aboutText: `Welcome to ${categoryName} Care Hub. We provide professional bookings and top-tier services.`,
-            vendorId: `2026060001`
-          };
+        if (subAcc) {
+          const found = PRESET_MERCHANTS.find((m) => m.id === subAcc.merchantId);
+          if (found) {
+            set({ currentMerchant: found, loginRole: 'supervisor' });
+            // Seed services for this merchant if not present
+            const hasServices = get().services.some(s => s.merchant === found.merchantName);
+            if (!hasServices) {
+              const newServices = getMockServicesForAdminMerchant(found);
+              set({ services: [...get().services, ...newServices] });
+            }
+            return true;
+          }
         }
-        
-        if (found) {
-          set({ currentMerchant: found });
+
+        // 2. Check Main Vendor Account
+        const isVendor = VENDOR_ACCOUNTS.some(
+          (v) => v.username.toLowerCase() === lowerUser && v.passwordHash === passwordHash
+        );
+        // Fallback for old preset login for testing if passcode is '123'
+        const isLegacyPreset = passwordHash === '123' && PRESET_MERCHANTS.some(m => m.username === lowerUser || lowerUser === 'admin');
+
+        if (isVendor || isLegacyPreset) {
+          const checkUsername = lowerUser === 'admin' || lowerUser === 'vendor123' ? 'doctor' : lowerUser;
+          let found = PRESET_MERCHANTS.find((m) => m.username === checkUsername);
+          if (!found) {
+            found = PRESET_MERCHANTS[0];
+          }
+          set({ currentMerchant: found, loginRole: 'vendor' });
           
           // Seed services for this merchant if not present
           const hasServices = get().services.some(s => s.merchant === found.merchantName);
@@ -616,11 +651,12 @@ export const useVendorStore = create<VendorStoreState>()(
           }
           return true;
         }
+
         return false;
       },
       
       logoutMerchant: () => {
-        set({ currentMerchant: null });
+        set({ currentMerchant: null, loginRole: null });
       },
       
       switchStore: (merchantId) => {

@@ -34,7 +34,7 @@ interface NotificationItem {
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { currentMerchant, logoutMerchant, switchStore } = useVendorStore();
+  const { currentMerchant, logoutMerchant, switchStore, loginRole } = useVendorStore();
   const [isMounted, setIsMounted] = useState(false);
   const [hasHydrated, setHasHydrated] = useState(false);
   
@@ -178,24 +178,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   };
   
   const allStores = currentMerchant 
-    ? [
-        ...PRESET_MERCHANTS.filter(m => m.username === currentMerchant.username),
-        ...Array.from(new Set(useVendorStore.getState().bookings
-          .filter(b => b.category === currentMerchant.category)
-          .map(b => b.merchantName)))
-          .map((name) => {
-            const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-            return {
-              id: `mer-${slug}`,
-              username: currentMerchant.username,
-              merchantName: name,
-              category: currentMerchant.category,
-              logoLetter: name.charAt(0),
-              aboutText: `Welcome to ${name}. We provide professional bookings and top-tier services.`
-            };
-          })
-          .filter(m => !PRESET_MERCHANTS.some(pm => pm.merchantName === m.merchantName))
-      ]
+    ? loginRole === 'supervisor'
+      ? [currentMerchant]
+      : [
+          ...PRESET_MERCHANTS,
+          ...Array.from(new Set(useVendorStore.getState().bookings
+            .map(b => b.merchantName)))
+            .map((name) => {
+              const matchedPreset = PRESET_MERCHANTS.find(pm => pm.merchantName === name);
+              if (matchedPreset) return matchedPreset;
+              const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+              // Find the category for this booking
+              const bookingCat = useVendorStore.getState().bookings.find(b => b.merchantName === name)?.category || currentMerchant.category;
+              return {
+                id: `mer-${slug}`,
+                username: currentMerchant.username,
+                merchantName: name,
+                category: bookingCat,
+                logoLetter: name.charAt(0),
+                aboutText: `Welcome to ${name}. We provide professional bookings and top-tier services.`
+              };
+            })
+            .filter(m => !PRESET_MERCHANTS.some(pm => pm.merchantName === m.merchantName))
+        ]
     : [];
 
   const CategoryIcon = getCategoryIcon(currentMerchant.category);
@@ -238,7 +243,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </span>
           </div>
           <span className="px-1.5 py-0.5 rounded-md text-[7.5px] font-black uppercase tracking-wider bg-[#8b6508]/15 border border-[#8b6508]/30 text-[#fceea7] shrink-0 select-none">
-            PARTNER
+            {loginRole === 'supervisor' ? 'SUPERVISOR' : 'PARTNER'}
           </span>
         </div>
         

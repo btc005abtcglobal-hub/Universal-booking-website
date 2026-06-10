@@ -64,15 +64,15 @@ export default function AdminGatePage() {
     }
   };
 
-  const handleQuickLogin = (role: string) => {
+  const handleQuickLogin = (user: string, pass: string) => {
     setError(null);
     setSuccess(null);
-    setUsername(role);
-    setPassword('123');
+    setUsername(user);
+    setPassword(pass);
 
-    const successLogin = loginMerchant(role, '123');
+    const successLogin = loginMerchant(user, pass);
     if (successLogin) {
-      setSuccess(`Authenticated as ${role}! Redirecting...`);
+      setSuccess(`Authenticated as ${user}! Redirecting...`);
       setTimeout(() => {
         window.location.href = '/dashboard';
       }, 800);
@@ -138,7 +138,7 @@ export default function AdminGatePage() {
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="e.g. doctor, fitness, salon, dining"
+                  placeholder="e.g. admin or D101"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="w-full rounded-xl border border-white/10 bg-white/[0.02] focus:bg-white/[0.04] pl-10 pr-4 py-2.5 text-xs text-white placeholder-slate-600 outline-none focus:border-[#8b6508] focus:ring-1 focus:ring-[#8b6508] transition-all"
@@ -196,23 +196,51 @@ export default function AdminGatePage() {
           {/* Divider */}
           <div className="relative my-6 text-center">
             <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/5"></div></div>
-            <span className="relative bg-[#030c17] px-3 text-[10px] text-slate-500 font-bold uppercase tracking-wider">Demo Quick Access</span>
+            <span className="relative bg-[#030c17] px-3 text-[10px] text-slate-500 font-bold uppercase tracking-wider">Console Accounts Directory</span>
           </div>
- 
-          {/* Demo Login Pills */}
-          <div className="space-y-2.5">
-            <p className="text-[10px] text-slate-500 font-semibold text-center">Select a demo profile to login instantly (passcode: 123):</p>
-            <div className="grid grid-cols-2 gap-2">
-              {DEMO_PROFILES.map((p) => (
-                <button
-                  key={p.role}
-                  onClick={() => handleQuickLogin(p.role)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-xl border border-white/5 bg-white/[0.01] text-[10.5px] font-bold text-slate-400 transition-all ${p.color} cursor-pointer`}
-                >
-                  <p.icon size={13} className="shrink-0" />
-                  <span>{p.label}</span>
-                </button>
-              ))}
+
+          {/* Console Accounts Guide */}
+          <div className="space-y-3">
+            <div>
+              <p className="text-[10px] text-slate-500 font-semibold mb-1.5">Main Vendor Access (Full Switcher Access):</p>
+              <button
+                type="button"
+                onClick={() => handleQuickLogin('admin', 'admin123')}
+                className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl border border-[#8b6508]/30 bg-[#8b6508]/5 hover:bg-[#8b6508]/15 text-[#fceea7] text-[11px] font-bold transition-all cursor-pointer shadow-sm shadow-[#8b6508]/5"
+              >
+                <span className="flex items-center gap-2">
+                  <ShieldCheck size={14} className="text-[#fceea7]" />
+                  <span>Main Admin Console</span>
+                </span>
+                <span className="font-mono text-[9px] opacity-75">admin / admin123</span>
+              </button>
+            </div>
+
+            <div className="space-y-1.5">
+              <p className="text-[10px] text-slate-500 font-semibold">Supervisor Sub-accounts (Locked to Single Store):</p>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { label: 'Apollo Dental (D101)', subId: 'D101', pass: 'pass101', icon: Stethoscope, color: 'hover:border-sky-500/30 hover:text-sky-400' },
+                  { label: 'ZenFit Clinic (F202)', subId: 'F202', pass: 'pass202', icon: Dumbbell, color: 'hover:border-emerald-500/30 hover:text-emerald-400' },
+                  { label: 'Style Studio (S303)', subId: 'S303', pass: 'pass303', icon: Scissors, color: 'hover:border-rose-500/30 hover:text-rose-400' },
+                  { label: 'Grand Temple (R404)', subId: 'R404', pass: 'pass404', icon: Utensils, color: 'hover:border-purple-500/30 hover:text-purple-400' },
+                  { label: 'Glitz Parlour (G505)', subId: 'G505', pass: 'pass505', icon: Scissors, color: 'hover:border-rose-500/30 hover:text-[#fceea7]' },
+                  { label: 'Urban Haircut (U606)', subId: 'U606', pass: 'pass606', icon: Scissors, color: 'hover:border-rose-500/30 hover:text-[#fceea7]' }
+                ].map((p) => (
+                  <button
+                    key={p.subId}
+                    type="button"
+                    onClick={() => handleQuickLogin(p.subId, p.pass)}
+                    className={`flex flex-col items-start p-2.5 rounded-xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.02] text-left transition-all ${p.color} cursor-pointer group`}
+                  >
+                    <span className="flex items-center gap-1.5 text-[10px] font-extrabold text-slate-300 group-hover:text-inherit transition-colors">
+                      <p.icon size={11} className="shrink-0" />
+                      <span>{p.label.split(' ')[0]}</span>
+                    </span>
+                    <span className="font-mono text-[8.5px] text-slate-500 mt-1 block group-hover:text-slate-400 transition-colors">{p.subId} / {p.pass}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>

@@ -10,8 +10,8 @@ import {
 import { useState } from 'react';
 
 const colors: Record<string, string> = {
-  CONFIRMED: 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20',
-  CHECKED_IN: 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20',
+  CONFIRMED: 'bg-[#8b6508]/15 text-[#fceea7] border border-[#8b6508]/30',
+  CHECKED_IN: 'bg-[#0a3161]/20 text-[#9cc3f5] border border-[#0a3161]/30',
   PENDING: 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20',
   COMPLETED: 'bg-green-500/10 text-green-400 border border-green-500/20',
   CANCELLED: 'bg-red-500/10 text-red-400 border border-red-500/20'
@@ -285,14 +285,14 @@ export default function BookingsPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by customer name, ref code, or service..." 
-              className="w-full rounded-xl border border-white/10 bg-[#090d16]/30 py-2.5 pl-10 pr-4 text-xs text-white placeholder-slate-600 outline-none focus:border-indigo-500 transition-colors" 
+              className="w-full rounded-xl border border-white/10 bg-[#090d16]/30 py-2.5 pl-10 pr-4 text-xs text-white placeholder-slate-600 outline-none focus:border-[#8b6508] transition-colors" 
             />
           </div>
           
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="rounded-xl border border-white/10 bg-[#090d16] px-4 py-2.5 text-xs font-bold text-slate-400 outline-none focus:border-indigo-500"
+            className="rounded-xl border border-white/10 bg-[#090d16] px-4 py-2.5 text-xs font-bold text-slate-400 outline-none focus:border-[#8b6508]"
           >
             <option value="ALL">Status: All Bookings</option>
             <option value="CONFIRMED">Status: Confirmed</option>
@@ -320,13 +320,13 @@ export default function BookingsPage() {
               {filteredBookings.map((b) => (
                 <tr 
                   key={b.id} 
-                  className={`hover:bg-white/[0.01] transition-colors cursor-pointer ${selectedBookingId === b.id ? 'bg-indigo-500/5' : ''}`}
+                  className={`hover:bg-white/[0.01] transition-colors cursor-pointer ${selectedBookingId === b.id ? 'bg-[#8b6508]/5' : ''}`}
                   onClick={() => handleOpenDrawer(b)}
                 >
                   <td className="px-5 py-4 font-mono font-bold text-white">{b.ref}</td>
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-2">
-                      <div className="h-6 w-6 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-[10px]">{b.customerName[0]}</div>
+                      <div className="h-6 w-6 rounded-full bg-[#8b6508]/10 border border-[#8b6508]/20 text-[#fceea7] flex items-center justify-center font-bold text-[10px]">{b.customerName[0]}</div>
                       <div>
                         <div className="font-bold text-white">{b.customerName}</div>
                         <div className="text-[10px] text-slate-500">{b.customerPhone}</div>
@@ -336,7 +336,7 @@ export default function BookingsPage() {
                   <td className="px-5 py-4">{b.serviceName}</td>
                   <td className="px-5 py-4 text-slate-400">
                     <div>{b.date}</div>
-                    <div className="text-[10px] text-indigo-400 font-bold mt-0.5">{b.time}</div>
+                    <div className="text-[10px] text-[#d4af37] font-bold mt-0.5">{b.time}</div>
                   </td>
                   <td className="px-5 py-4 text-right font-bold text-white">₹{b.amount}</td>
                   <td className="px-5 py-4 text-center">
@@ -404,7 +404,7 @@ export default function BookingsPage() {
               </button>
               <div>
                 <h3 className="font-extrabold text-sm text-white">Client File Log</h3>
-                <span className="text-[10px] font-mono text-indigo-400">{selectedBooking.ref}</span>
+                <span className="text-[10px] font-mono text-[#d4af37]">{selectedBooking.ref}</span>
               </div>
             </div>
             <span className={`rounded-full px-2 py-0.5 text-[9px] font-black ${colors[selectedBooking.status]}`}>
@@ -418,12 +418,12 @@ export default function BookingsPage() {
             {/* Customer Basic Contact Card */}
             <div className="p-4 rounded-xl border border-white/5 bg-white/[0.01] space-y-3">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-sm">
+                <div className="h-10 w-10 rounded-xl bg-[#8b6508]/10 border border-[#8b6508]/20 text-[#fceea7] flex items-center justify-center font-bold text-sm">
                   {selectedBooking.customerName[0]}
                 </div>
                 <div>
                   <h4 className="font-extrabold text-xs text-white leading-tight">{selectedBooking.customerName}</h4>
-                  <span className="text-[10px] text-indigo-400 font-semibold">{selectedBooking.serviceName}</span>
+                  <span className="text-[10px] text-[#fceea7] font-semibold">{selectedBooking.serviceName}</span>
                 </div>
               </div>
 
@@ -452,7 +452,7 @@ export default function BookingsPage() {
                 {/* Vitals Summary Card */}
                 <div className="space-y-2">
                   <label className="text-[10px] uppercase font-black tracking-wider text-slate-500 block flex items-center gap-1.5">
-                    <Activity size={12} className="text-sky-400" /> Patient Vitals Checked
+                    <Activity size={12} className="text-[#d4af37]" /> Patient Vitals Checked
                   </label>
                   {selectedBooking.vitals ? (
                     <div className="grid grid-cols-4 gap-2 text-center p-3.5 rounded-xl border border-white/5 bg-[#090d16]/30">
@@ -490,7 +490,7 @@ export default function BookingsPage() {
                 <div className="space-y-3">
                   <label className="text-[10px] uppercase font-black tracking-wider text-slate-500 block flex items-center justify-between">
                     <span>Clinical Reports & X-Rays ({selectedBooking.medicalReports?.length || 0})</span>
-                    <span className="text-[9px] text-indigo-400 capitalize font-bold">Simulator active</span>
+                    <span className="text-[9px] text-[#d4af37] capitalize font-bold">Simulator active</span>
                   </label>
 
                   <div className="space-y-2">
@@ -515,7 +515,7 @@ export default function BookingsPage() {
                   </div>
 
                   {/* Upload Simulator Container */}
-                  <div className="relative border-2 border-dashed border-white/5 hover:border-indigo-500/30 rounded-xl p-4 transition-colors">
+                  <div className="relative border-2 border-dashed border-white/5 hover:border-[#8b6508]/30 rounded-xl p-4 transition-colors">
                     <input 
                       type="file" 
                       id="report-file-input" 
@@ -525,15 +525,15 @@ export default function BookingsPage() {
                     />
                     {uploadingReport ? (
                       <div className="space-y-2 text-center">
-                        <div className="text-[10px] text-indigo-400 font-bold animate-pulse">Uploading {reportFileName}...</div>
+                        <div className="text-[10px] text-[#d4af37] font-bold animate-pulse">Uploading {reportFileName}...</div>
                         <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
-                          <div className="bg-indigo-500 h-full transition-all duration-150" style={{ width: `${uploadProgress}%` }} />
+                          <div className="bg-[#8b6508] h-full transition-all duration-150" style={{ width: `${uploadProgress}%` }} />
                         </div>
                       </div>
                     ) : (
                       <div className="text-center text-[10px] text-slate-500 flex flex-col items-center justify-center gap-1.5">
                         <Upload size={16} className="text-slate-400" />
-                        <span>Drag & drop or <strong className="text-indigo-400">browse file</strong> to upload x-ray scans or reports</span>
+                        <span>Drag & drop or <strong className="text-[#d4af37]">browse file</strong> to upload x-ray scans or reports</span>
                       </div>
                     )}
                   </div>
@@ -542,7 +542,7 @@ export default function BookingsPage() {
                 {/* Digital Prescription Writer */}
                 <div className="space-y-4 border-t border-white/5 pt-5">
                   <label className="text-[10px] uppercase font-black tracking-wider text-slate-500 block flex items-center gap-1.5">
-                    <FileText size={12} className="text-indigo-400" /> Digital Prescription Writer
+                    <FileText size={12} className="text-[#d4af37]" /> Digital Prescription Writer
                   </label>
 
                   <div className="space-y-3 bg-[#090d16]/30 border border-white/5 p-4 rounded-xl">
@@ -553,14 +553,14 @@ export default function BookingsPage() {
                         placeholder="e.g. Acute apical periodontitis (Tooth 36)"
                         value={diagInput}
                         onChange={(e) => setDiagInput(e.target.value)}
-                        className="w-full rounded-lg border border-white/10 bg-[#090d16] px-3 py-2 text-xs text-white placeholder-slate-700 outline-none focus:border-indigo-500 transition-colors"
+                        className="w-full rounded-lg border border-white/10 bg-[#090d16] px-3 py-2 text-xs text-white placeholder-slate-700 outline-none focus:border-[#8b6508] transition-colors"
                       />
                     </div>
 
                     <div className="space-y-2">
                       <span className="text-[10px] font-bold text-slate-500 flex justify-between">
                         <span>Medications list:</span>
-                        <button onClick={addMedicationRow} className="text-[9px] text-indigo-400 font-bold flex items-center gap-0.5 hover:underline">
+                        <button onClick={addMedicationRow} className="text-[9px] text-[#d4af37] font-bold flex items-center gap-0.5 hover:underline">
                           <Plus size={10} /> Add medicine
                         </button>
                       </span>
@@ -608,7 +608,7 @@ export default function BookingsPage() {
 
                     <button 
                       onClick={handleSavePrescription}
-                      className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 py-2.5 text-xs font-bold text-white transition-all shadow-md shadow-indigo-500/10 cursor-pointer"
+                      className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-[#8b6508] to-[#d4af37] hover:from-[#664a05] hover:to-[#8b6508] py-2.5 text-xs font-bold text-white transition-all shadow-md shadow-[#8b6508]/10 cursor-pointer"
                     >
                       <Save size={13} /> Save Prescription & Send
                     </button>
@@ -644,7 +644,7 @@ export default function BookingsPage() {
                         placeholder="e.g. Keto Plan, Caloric Deficit"
                         value={dietTypeInput}
                         onChange={(e) => setDietTypeInput(e.target.value)}
-                        className="w-full rounded-lg border border-white/10 bg-[#090d16] px-3 py-2 text-xs text-white outline-none focus:border-indigo-500"
+                        className="w-full rounded-lg border border-white/10 bg-[#090d16] px-3 py-2 text-xs text-white outline-none focus:border-[#8b6508]"
                       />
                     </div>
 
@@ -690,8 +690,8 @@ export default function BookingsPage() {
                 {/* Workout Planner */}
                 <div className="space-y-4 border-t border-white/5 pt-5">
                   <label className="text-[10px] uppercase font-black tracking-wider text-slate-500 block flex items-center justify-between">
-                    <span className="flex items-center gap-1.5"><Dumbbell size={12} className="text-indigo-400" /> Daily Workout Assignment</span>
-                    <button onClick={addWorkoutRow} className="text-[9px] text-indigo-400 font-bold flex items-center gap-0.5 hover:underline">
+                    <span className="flex items-center gap-1.5"><Dumbbell size={12} className="text-[#d4af37]" /> Daily Workout Assignment</span>
+                    <button onClick={addWorkoutRow} className="text-[9px] text-[#d4af37] font-bold flex items-center gap-0.5 hover:underline">
                       <Plus size={10} /> Add exercise
                     </button>
                   </label>
@@ -739,7 +739,7 @@ export default function BookingsPage() {
 
                     <button 
                       onClick={handleSaveWorkout}
-                      className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-600 py-2.5 text-xs font-bold text-white transition-all shadow-md cursor-pointer"
+                      className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-[#8b6508] to-[#d4af37] py-2.5 text-xs font-bold text-white transition-all shadow-md cursor-pointer"
                     >
                       <Save size={13} /> Update Daily Workout Card
                     </button>
@@ -756,7 +756,7 @@ export default function BookingsPage() {
                 {/* Styling preferences and parameters */}
                 <div className="space-y-4">
                   <label className="text-[10px] uppercase font-black tracking-wider text-slate-500 block flex items-center gap-1.5">
-                    <Scissors size={12} className="text-rose-400" /> Styling Preference Details
+                    <Scissors size={12} className="text-[#d4af37]" /> Styling Preference Details
                   </label>
 
                   <div className="space-y-3 bg-[#090d16]/30 border border-white/5 p-4 rounded-xl">
@@ -807,7 +807,7 @@ export default function BookingsPage() {
 
                     <button 
                       onClick={handleSaveSalonDetails}
-                      className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-rose-500 to-rose-600 py-2.5 text-xs font-bold text-white transition-all shadow-md cursor-pointer"
+                      className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-[#8b6508] hover:bg-[#664a05] py-2.5 text-xs font-bold text-white transition-all shadow-md cursor-pointer"
                     >
                       <Save size={13} /> Update Stylist Card
                     </button>
@@ -850,7 +850,7 @@ export default function BookingsPage() {
                 {/* Table assignment and dietary restrictions */}
                 <div className="space-y-4">
                   <label className="text-[10px] uppercase font-black tracking-wider text-slate-500 block flex items-center gap-1.5">
-                    <Utensils size={12} className="text-fuchsia-400" /> Table & Seating Management
+                    <Utensils size={12} className="text-[#d4af37]" /> Table & Seating Management
                   </label>
 
                   <div className="space-y-3 bg-[#090d16]/30 border border-white/5 p-4 rounded-xl">
@@ -881,7 +881,7 @@ export default function BookingsPage() {
                     <div className="space-y-2 pt-2 border-t border-white/5">
                       <span className="text-[10px] font-bold text-slate-500 flex justify-between">
                         <span>Kitchen Dietary Alert Tags:</span>
-                        <button onClick={addDietaryTag} className="text-[9px] text-fuchsia-400 font-bold hover:underline flex items-center gap-0.5">
+                        <button onClick={addDietaryTag} className="text-[9px] text-[#d4af37] font-bold hover:underline flex items-center gap-0.5">
                           <Plus size={10} /> Add Alert
                         </button>
                       </span>
@@ -919,7 +919,7 @@ export default function BookingsPage() {
 
                     <button 
                       onClick={handleSaveDiningDetails}
-                      className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-fuchsia-500 to-fuchsia-600 py-2.5 text-xs font-bold text-white transition-all shadow-md cursor-pointer"
+                      className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-[#8b6508] hover:bg-[#664a05] py-2.5 text-xs font-bold text-white transition-all shadow-md cursor-pointer"
                     >
                       <Save size={13} /> Save Dining Allocations
                     </button>

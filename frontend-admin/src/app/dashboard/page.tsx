@@ -60,31 +60,31 @@ export default function DashboardPage() {
     switch (getVerticalFromCategory(currentMerchant.category)) {
       case 'Dental':
         return [
-          { label: 'Platform Revenue', value: `₹${totalEarnings.toLocaleString()}`, change: 'Consultations', icon: IndianRupee, color: 'from-sky-500 to-indigo-600' },
-          { label: 'Patient Bookings', value: String(merchantBookings.length), change: 'Total Registered', icon: Users, color: 'from-blue-500 to-cyan-600' },
-          { label: 'Checked-in Today', value: String(checkedInBookings.length), change: 'In Waiting Room', icon: Activity, color: 'from-emerald-500 to-teal-600' },
-          { label: 'Pending Consults', value: String(activeBookings.length), change: 'Scheduled Slots', icon: Clock, color: 'from-amber-500 to-orange-600' }
+          { label: 'Platform Revenue', value: `₹${totalEarnings.toLocaleString()}`, change: 'Consultations', icon: IndianRupee, color: 'from-[#8b6508] to-[#d4af37]' },
+          { label: 'Patient Bookings', value: String(merchantBookings.length), change: 'Total Registered', icon: Users, color: 'from-[#0a3161] to-[#1a4b8c]' },
+          { label: 'Checked-in Today', value: String(checkedInBookings.length), change: 'In Waiting Room', icon: Activity, color: 'from-[#664a05] to-[#8b6508]' },
+          { label: 'Pending Consults', value: String(activeBookings.length), change: 'Scheduled Slots', icon: Clock, color: 'from-[#0a3161] to-[#8b6508]' }
         ];
       case 'Fitness':
         return [
-          { label: 'Monthly Earnings', value: `₹${totalEarnings.toLocaleString()}`, change: 'Coaching fees', icon: IndianRupee, color: 'from-emerald-500 to-teal-600' },
-          { label: 'Gym Members', value: String(merchantBookings.length), change: 'Active Schedules', icon: Users, color: 'from-teal-500 to-sky-600' },
-          { label: 'Diet Plans Assigned', value: String(merchantBookings.filter(b => b.dietPlan).length), change: 'Macros Configured', icon: Flame, color: 'from-orange-500 to-red-600' },
-          { label: 'Completed Workouts', value: String(completedBookings.length), change: 'Sessions Finished', icon: CheckCircle2, color: 'from-indigo-500 to-purple-600' }
+          { label: 'Monthly Earnings', value: `₹${totalEarnings.toLocaleString()}`, change: 'Coaching fees', icon: IndianRupee, color: 'from-[#8b6508] to-[#d4af37]' },
+          { label: 'Gym Members', value: String(merchantBookings.length), change: 'Active Schedules', icon: Users, color: 'from-[#0a3161] to-[#1a4b8c]' },
+          { label: 'Diet Plans Assigned', value: String(merchantBookings.filter(b => b.dietPlan).length), change: 'Macros Configured', icon: Flame, color: 'from-[#664a05] to-[#8b6508]' },
+          { label: 'Completed Workouts', value: String(completedBookings.length), change: 'Sessions Finished', icon: CheckCircle2, color: 'from-[#0a3161] to-[#8b6508]' }
         ];
       case 'Salon':
         return [
-          { label: 'Total Sales', value: `₹${totalEarnings.toLocaleString()}`, change: 'Styling services', icon: IndianRupee, color: 'from-rose-500 to-pink-600' },
-          { label: 'VIP Clients', value: String(merchantBookings.length), change: 'Salon Bookings', icon: Users, color: 'from-amber-500 to-rose-600' },
-          { label: 'Stylist Slots Filled', value: '85%', change: 'Vikram & Maria', icon: Sparkles, color: 'from-purple-500 to-indigo-600' },
-          { label: 'Completed Cuts', value: String(completedBookings.length), change: 'Work finished', icon: CheckCircle2, color: 'from-emerald-500 to-green-600' }
+          { label: 'Total Sales', value: `₹${totalEarnings.toLocaleString()}`, change: 'Styling services', icon: IndianRupee, color: 'from-[#8b6508] to-[#d4af37]' },
+          { label: 'VIP Clients', value: String(merchantBookings.length), change: 'Salon Bookings', icon: Users, color: 'from-[#0a3161] to-[#1a4b8c]' },
+          { label: 'Stylist Slots Filled', value: '85%', change: 'Vikram & Maria', icon: Sparkles, color: 'from-[#664a05] to-[#8b6508]' },
+          { label: 'Completed Cuts', value: String(completedBookings.length), change: 'Work finished', icon: CheckCircle2, color: 'from-[#0a3161] to-[#8b6508]' }
         ];
       case 'Dining':
         return [
-          { label: 'F&B Gross Sales', value: `₹${totalEarnings.toLocaleString()}`, change: 'Pre-ordered tables', icon: IndianRupee, color: 'from-purple-500 to-fuchsia-600' },
-          { label: 'Covers Served', value: String(merchantBookings.reduce((acc, curr) => acc + (curr.seatCount || 2), 0)), change: 'Total Diners', icon: Users, color: 'from-fuchsia-500 to-rose-600' },
-          { label: 'Active Reservations', value: String(activeBookings.length), change: 'Tonight\'s lists', icon: Calendar, color: 'from-amber-500 to-orange-600' },
-          { label: 'Table Occupancy', value: '58%', change: 'Tables 1, 5, 7, 10', icon: Utensils, color: 'from-sky-500 to-indigo-600' }
+          { label: 'F&B Gross Sales', value: `₹${totalEarnings.toLocaleString()}`, change: 'Pre-ordered tables', icon: IndianRupee, color: 'from-[#8b6508] to-[#d4af37]' },
+          { label: 'Covers Served', value: String(merchantBookings.reduce((acc, curr) => acc + (curr.seatCount || 2), 0)), change: 'Total Diners', icon: Users, color: 'from-[#0a3161] to-[#1a4b8c]' },
+          { label: 'Active Reservations', value: String(activeBookings.length), change: 'Tonight\'s lists', icon: Calendar, color: 'from-[#664a05] to-[#8b6508]' },
+          { label: 'Table Occupancy', value: '58%', change: 'Tables 1, 5, 7, 10', icon: Utensils, color: 'from-[#0a3161] to-[#8b6508]' }
         ];
       default:
         return [];
@@ -100,7 +100,7 @@ export default function DashboardPage() {
       <div className="flex justify-between items-start flex-wrap gap-4 border-b border-white/5 pb-6">
         <div>
           <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight flex items-center gap-2">
-            Console Dashboard <span className="text-[10px] bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2 py-0.5 rounded-full font-bold uppercase">{currentMerchant.category}</span>
+            Console Dashboard <span className="text-[10px] bg-[#8b6508]/10 text-[#fceea7] border border-[#8b6508]/20 px-2 py-0.5 rounded-full font-bold uppercase">{currentMerchant.category}</span>
           </h1>
           <p className="text-xs text-slate-400 mt-1 max-w-2xl">{currentMerchant.aboutText}</p>
         </div>
@@ -113,7 +113,7 @@ export default function DashboardPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {kpis.map((kpi) => (
           <div key={kpi.label} className="rounded-2xl border border-white/5 bg-white/[0.01] p-5 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-gradient-to-br from-indigo-500/5 to-fuchsia-500/5 blur-xl pointer-events-none group-hover:scale-125 transition-transform" />
+            <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-gradient-to-br from-[#8b6508]/5 to-[#0a3161]/5 blur-xl pointer-events-none group-hover:scale-125 transition-transform" />
             <div className="flex items-center justify-between mb-4">
               <div className={`flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br ${kpi.color} text-white shadow-lg`}>
                 <kpi.icon size={16} />
@@ -134,7 +134,7 @@ export default function DashboardPage() {
           {/* Waiting Room Patient Vitals Monitor */}
           <div className="lg:col-span-3 rounded-2xl border border-white/5 bg-white/[0.01] p-6 space-y-4">
             <h2 className="font-extrabold text-sm text-white uppercase tracking-wider flex items-center gap-2">
-              <Stethoscope size={16} className="text-sky-400 animate-pulse" /> Waiting Room Vitals Monitor
+              <Stethoscope size={16} className="text-[#d4af37] animate-pulse" /> Waiting Room Vitals Monitor
             </h2>
             <p className="text-[11px] text-slate-400">Vitals checked in by clinic staff upon patient arrival. Confirm records before clinic consult.</p>
             
@@ -145,7 +145,7 @@ export default function DashboardPage() {
                     <div className="space-y-1">
                       <div className="font-bold text-white text-xs">{b.customerName}</div>
                       <div className="text-[10px] text-slate-400 flex items-center gap-1.5">
-                        <span>Ref: {b.ref}</span> · <span className="text-sky-400">{b.serviceName}</span>
+                        <span>Ref: {b.ref}</span> · <span className="text-[#fceea7]">{b.serviceName}</span>
                       </div>
                     </div>
                     {b.vitals && (
@@ -216,7 +216,7 @@ export default function DashboardPage() {
                     <div className="flex justify-between items-center">
                       <div>
                         <span className="font-bold text-xs text-white">{b.customerName}</span>
-                        <span className="text-[9px] font-bold text-indigo-400 uppercase ml-2 bg-indigo-500/10 px-2 py-0.5 rounded-full">{diet.dietType}</span>
+                        <span className="text-[9px] font-bold text-[#fceea7] uppercase ml-2 bg-[#8b6508]/15 border border-[#8b6508]/20 px-2 py-0.5 rounded-full">{diet.dietType}</span>
                       </div>
                       <span className="text-[11px] font-bold text-white">{total} kCal</span>
                     </div>
@@ -277,7 +277,7 @@ export default function DashboardPage() {
           {/* VIP Client preference files */}
           <div className="lg:col-span-3 rounded-2xl border border-white/5 bg-white/[0.01] p-6 space-y-4">
             <h2 className="font-extrabold text-sm text-white uppercase tracking-wider flex items-center gap-2">
-              <Scissors size={16} className="text-rose-400" /> Styling Preference Records
+              <Scissors size={16} className="text-[#d4af37]" /> Styling Preference Records
             </h2>
             <p className="text-[11px] text-slate-400">Styling parameters tracked by senior stylists. Review before beginning treatments.</p>
             
@@ -286,7 +286,7 @@ export default function DashboardPage() {
                 <div key={b.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-4 space-y-2">
                   <div className="flex justify-between items-center">
                     <span className="font-bold text-xs text-white">{b.customerName}</span>
-                    <span className="text-[9px] uppercase font-bold text-rose-400 bg-rose-500/10 px-2.5 py-0.5 rounded-full">{b.serviceName}</span>
+                    <span className="text-[9px] uppercase font-bold text-[#fceea7] bg-[#8b6508]/15 border border-[#8b6508]/20 px-2.5 py-0.5 rounded-full">{b.serviceName}</span>
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-[10px]">
                     <div><span className="text-slate-500">Hair Type:</span> <strong className="text-white">{b.hairType || 'N/A'}</strong></div>
@@ -305,7 +305,7 @@ export default function DashboardPage() {
           {/* Transformation Gallery */}
           <div className="lg:col-span-2 rounded-2xl border border-white/5 bg-white/[0.01] p-6 space-y-4">
             <h2 className="font-extrabold text-sm text-white uppercase tracking-wider flex items-center gap-2">
-              <Sparkles size={16} className="text-purple-400" /> Before/After Gallery
+              <Sparkles size={16} className="text-[#d4af37]" /> Before/After Gallery
             </h2>
             <div className="grid grid-cols-2 gap-3">
               {merchantBookings.filter(b => b.beforeAfterGallery && b.beforeAfterGallery.length > 0).map((b) => (
@@ -332,16 +332,16 @@ export default function DashboardPage() {
           {/* Restaurant Live Table Status Map */}
           <div className="lg:col-span-3 rounded-2xl border border-white/5 bg-white/[0.01] p-6 space-y-4">
             <h2 className="font-extrabold text-sm text-white uppercase tracking-wider flex items-center gap-2">
-              <Utensils size={16} className="text-fuchsia-400 animate-pulse" /> Live Table Status Map
+              <Utensils size={16} className="text-[#d4af37] animate-pulse" /> Live Table Status Map
             </h2>
             <p className="text-[11px] text-slate-400">Click a reserved or occupied table to view reservations, seating capacities, and allergen warnings.</p>
             
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 pt-2">
               {TABLES.map((table) => {
                 const color = table.status === 'OCCUPIED' 
-                  ? 'border-fuchsia-500/30 bg-fuchsia-500/5 text-fuchsia-400' 
+                  ? 'border-[#0a3161]/40 bg-[#0a3161]/15 text-[#9cc3f5]' 
                   : table.status === 'RESERVED' 
-                  ? 'border-amber-500/30 bg-amber-500/5 text-amber-400' 
+                  ? 'border-[#8b6508]/40 bg-[#8b6508]/15 text-[#fceea7]' 
                   : 'border-white/5 bg-white/[0.02] hover:bg-white/[0.04] text-slate-400';
                 return (
                   <button
@@ -369,7 +369,7 @@ export default function DashboardPage() {
                       <>
                         <div className="flex justify-between items-center">
                           <strong className="text-white">{selectedTable}</strong>
-                          <span className={`px-2 py-0.5 rounded text-[9px] uppercase font-black ${details.status === 'OCCUPIED' ? 'bg-fuchsia-500/10 text-fuchsia-400' : 'bg-amber-500/10 text-amber-400'}`}>
+                          <span className={`px-2 py-0.5 rounded text-[9px] uppercase font-black ${details.status === 'OCCUPIED' ? 'bg-[#0a3161]/20 text-[#9cc3f5] border border-[#0a3161]/30' : 'bg-[#8b6508]/20 text-[#fceea7] border border-[#8b6508]/30'}`}>
                             {details.status}
                           </span>
                         </div>
@@ -387,7 +387,7 @@ export default function DashboardPage() {
                             )}
                             {booking.preOrderedCourses && booking.preOrderedCourses.length > 0 && (
                               <div className="text-[10px] text-slate-400">
-                                Pre-order: <span className="text-indigo-400 font-medium">{booking.preOrderedCourses.join(' · ')}</span>
+                                Pre-order: <span className="text-[#d4af37] font-medium">{booking.preOrderedCourses.join(' · ')}</span>
                               </div>
                             )}
                           </div>
@@ -434,7 +434,7 @@ export default function DashboardPage() {
       <div className="rounded-2xl border border-white/5 bg-white/[0.01] p-6 space-y-4">
         <div className="flex justify-between items-center">
           <h2 className="font-extrabold text-sm text-white uppercase tracking-wider flex items-center gap-2">
-            <Calendar size={16} className="text-indigo-400" /> Recent Reservation Logs
+            <Calendar size={16} className="text-[#d4af37]" /> Recent Reservation Logs
           </h2>
           <span className="text-xs text-slate-400 font-bold">Showing {merchantBookings.length} total entries</span>
         </div>
@@ -456,20 +456,20 @@ export default function DashboardPage() {
                 <tr key={b.id} className="hover:bg-white/[0.01] transition-colors">
                   <td className="p-3.5 pl-5 font-mono font-bold text-white">{b.ref}</td>
                   <td className="p-3.5 font-bold text-white flex items-center gap-2">
-                    <div className="h-6 w-6 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-[10px]">{b.customerName[0]}</div>
+                    <div className="h-6 w-6 rounded-full bg-[#8b6508]/10 border border-[#8b6508]/20 text-[#fceea7] flex items-center justify-center font-bold text-[10px]">{b.customerName[0]}</div>
                     {b.customerName}
                   </td>
                   <td className="p-3.5">{b.serviceName}</td>
-                  <td className="p-3.5 text-slate-400">{b.date} · <span className="text-indigo-400 font-medium">{b.time}</span></td>
+                  <td className="p-3.5 text-slate-400">{b.date} · <span className="text-[#d4af37] font-medium">{b.time}</span></td>
                   <td className="p-3.5 text-right font-bold text-white">₹{b.amount}</td>
                   <td className="p-3.5 text-center">
                     <span className={`inline-block rounded-full px-2.5 py-0.5 text-[9px] font-bold ${
                       b.status === 'CONFIRMED'
-                        ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
+                        ? 'bg-[#8b6508]/15 text-[#fceea7] border border-[#8b6508]/30'
                         : b.status === 'CHECKED_IN'
-                        ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20'
+                        ? 'bg-[#0a3161]/20 text-[#9cc3f5] border border-[#0a3161]/30'
                         : b.status === 'COMPLETED'
-                        ? 'bg-green-500/10 text-green-400 border border-green-500/20'
+                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
                         : 'bg-red-500/10 text-red-400 border border-red-500/20'
                     }`}>
                       {b.status}

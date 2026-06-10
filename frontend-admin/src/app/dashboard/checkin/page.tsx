@@ -93,7 +93,7 @@ export default function CheckinPage() {
         {/* Verification Portal */}
         <div className="rounded-2xl border border-white/5 bg-white/[0.01] p-6 space-y-6">
           <h2 className="font-extrabold text-sm text-white uppercase tracking-wider flex items-center gap-2">
-            <QrCode className="h-5 w-5 text-indigo-400 animate-pulse" /> Verify Customer Token
+            <QrCode className="h-5 w-5 text-[#d4af37] animate-pulse" /> Verify Customer Token
           </h2>
 
           <div className="aspect-video rounded-2xl bg-white/[0.01] border-2 border-dashed border-white/5 flex items-center justify-center p-6 text-center">
@@ -114,12 +114,12 @@ export default function CheckinPage() {
                   value={tokenInput}
                   onChange={(e) => setTokenInput(e.target.value)}
                   placeholder="e.g. BK-DT8841" 
-                  className="w-full rounded-xl border border-white/10 bg-[#090d16]/30 py-2.5 pl-10 pr-4 text-xs text-white outline-none focus:border-indigo-500 transition-colors" 
+                  className="w-full rounded-xl border border-white/10 bg-[#090d16]/30 py-2.5 pl-10 pr-4 text-xs text-white outline-none focus:border-[#8b6508] transition-colors" 
                 />
               </div>
               <button 
                 type="submit"
-                className="rounded-xl bg-indigo-500 hover:bg-indigo-600 px-5 text-xs font-bold text-white transition-colors cursor-pointer"
+                className="rounded-xl bg-[#8b6508] hover:bg-[#664a05] px-5 text-xs font-bold text-white transition-colors cursor-pointer"
               >
                 Verify Code
               </button>
@@ -146,7 +146,7 @@ export default function CheckinPage() {
                     <div className="p-3 rounded-lg bg-black/20 border border-white/5 space-y-1.5 text-[11px] text-slate-300">
                       <div>Ref: <strong className="font-mono text-white">{verificationResult.bookingRef}</strong></div>
                       <div className="flex items-center gap-1.5"><User size={12} /> Client: <strong className="text-white">{verificationResult.customerName}</strong></div>
-                      <div>Service: <strong className="text-indigo-400">{verificationResult.serviceName}</strong></div>
+                      <div>Service: <strong className="text-[#fceea7]">{verificationResult.serviceName}</strong></div>
                       <div className="flex items-center gap-1.5"><Clock size={12} /> Slot: {verificationResult.time}</div>
                     </div>
                   )}

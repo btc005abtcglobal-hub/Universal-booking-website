@@ -32,7 +32,7 @@ export function LiveClock() {
   }
 
   return (
-    <span className="font-mono text-xs font-black text-indigo-400 tracking-widest uppercase">
+    <span className="font-mono text-xs font-black text-[#fceea7] tracking-widest uppercase">
       {time}
     </span>
   );

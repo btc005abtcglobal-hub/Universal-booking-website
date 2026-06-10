@@ -55,7 +55,7 @@ export default function SettingsPage() {
         <form onSubmit={handleSave} className="lg:col-span-2 space-y-6">
           <div className="rounded-2xl border border-white/5 bg-white/[0.01] p-6 space-y-4">
             <h2 className="font-extrabold text-sm text-white uppercase tracking-wider flex items-center gap-1.5">
-              <Building2 size={16} className="text-indigo-400" /> Business Information
+              <Building2 size={16} className="text-[#d4af37]" /> Business Information
             </h2>
             
             <div className="space-y-4">
@@ -143,7 +143,7 @@ export default function SettingsPage() {
 
               <button 
                 type="submit"
-                className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-indigo-500 hover:bg-indigo-600 py-3 text-xs font-bold text-white transition-all shadow-md shadow-indigo-500/10 cursor-pointer"
+                className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-[#8b6508] hover:bg-[#664a05] py-3 text-xs font-bold text-white transition-all shadow-md shadow-[#8b6508]/10 cursor-pointer"
               >
                 <Save size={14} /> Save Profile Settings
               </button>
@@ -154,7 +154,7 @@ export default function SettingsPage() {
         <div className="space-y-6">
           {/* Logo Card */}
           <div className="rounded-2xl border border-white/5 bg-white/[0.01] p-6 text-center space-y-4">
-            <div className="mx-auto h-20 w-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-600 flex items-center justify-center text-white text-3xl font-black shadow-lg shadow-indigo-500/15">
+            <div className="mx-auto h-20 w-20 rounded-2xl bg-gradient-to-br from-[#8b6508] to-[#0a3161] flex items-center justify-center text-[#fceea7] text-3xl font-black shadow-lg shadow-[#8b6508]/15">
               {currentMerchant.logoLetter}
             </div>
             <h3 className="font-extrabold text-xs text-slate-300">Console Branding</h3>

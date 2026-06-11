@@ -109,8 +109,13 @@ export interface MerchantUser {
 interface VendorStoreState {
   currentMerchant: MerchantUser | null;
   loginRole: 'vendor' | 'supervisor' | null;
+  supervisorId: string | null;
+  theme: 'system' | 'light' | 'dark';
   bookings: PersistedBooking[];
   services: CatalogService[];
+  
+  // Theme actions
+  setTheme: (theme: 'system' | 'light' | 'dark') => void;
   
   // Auth actions
   loginMerchant: (username: string, passwordHash: string) => boolean;
@@ -603,8 +608,12 @@ export const useVendorStore = create<VendorStoreState>()(
     (set, get) => ({
       currentMerchant: null,
       loginRole: null,
+      supervisorId: null,
+      theme: 'system',
       bookings: INITIAL_BOOKINGS,
       services: INITIAL_SERVICES,
+      
+      setTheme: (theme) => set({ theme }),
       
       loginMerchant: (username, passwordHash) => {
         const cleanUser = username.trim();
@@ -617,7 +626,7 @@ export const useVendorStore = create<VendorStoreState>()(
         if (subAcc) {
           const found = PRESET_MERCHANTS.find((m) => m.id === subAcc.merchantId);
           if (found) {
-            set({ currentMerchant: found, loginRole: 'supervisor' });
+            set({ currentMerchant: found, loginRole: 'supervisor', supervisorId: subAcc.subId });
             // Seed services for this merchant if not present
             const hasServices = get().services.some(s => s.merchant === found.merchantName);
             if (!hasServices) {
@@ -641,7 +650,7 @@ export const useVendorStore = create<VendorStoreState>()(
           if (!found) {
             found = PRESET_MERCHANTS[0];
           }
-          set({ currentMerchant: found, loginRole: 'vendor' });
+          set({ currentMerchant: found, loginRole: 'vendor', supervisorId: null });
           
           // Seed services for this merchant if not present
           const hasServices = get().services.some(s => s.merchant === found.merchantName);
@@ -656,7 +665,7 @@ export const useVendorStore = create<VendorStoreState>()(
       },
       
       logoutMerchant: () => {
-        set({ currentMerchant: null, loginRole: null });
+        set({ currentMerchant: null, loginRole: null, supervisorId: null });
       },
       
       switchStore: (merchantId) => {

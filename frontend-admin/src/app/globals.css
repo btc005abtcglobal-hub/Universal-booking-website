@@ -1,17 +1,175 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
-:root {
-  --primary: #8b6508; --primary-dark: #664a05; --accent: #0a3161;
-  --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
-  --bg-primary: #030c17; --bg-secondary: #061528; --bg-tertiary: #0a223f;
-  --text-primary: #f1f5f9; --text-secondary: #94a3b8; --text-muted: #64748b;
-  --border: rgba(139, 101, 8, 0.12); --sidebar-bg: #061528; --sidebar-text: #94a3b8;
+@theme {
+  --color-primary-brand: #8b6508;
+  --color-primary-dark: #664a05;
+  --color-accent-brand: #0a3161;
+  
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-bg-tertiary: var(--bg-tertiary);
+  
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  
+  --color-border-brand: var(--border);
 }
-.dark { --bg-primary: #030c17; --bg-secondary: #061528; --bg-tertiary: #0a223f; --text-primary: #f1f5f9; --text-secondary: #94a3b8; --text-muted: #64748b; --border: rgba(139, 101, 8, 0.12); }
+
+:root {
+  --primary: #8b6508;
+  --primary-dark: #664a05;
+  --accent: #0a3161;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --border: rgba(139, 101, 8, 0.12);
+  
+  /* Defaults to Dark theme variable values */
+  --bg-primary: #030c17;
+  --bg-secondary: #061528;
+  --bg-tertiary: #0a223f;
+  
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  --sidebar-bg: #061528;
+  --sidebar-text: #94a3b8;
+}
+
+.light {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f1f5f9;
+  
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  
+  --border: rgba(139, 101, 8, 0.2);
+  --sidebar-bg: #f8fafc;
+  --sidebar-text: #475569;
+}
+
+.dark {
+  --bg-primary: #030c17;
+  --bg-secondary: #061528;
+  --bg-tertiary: #0a223f;
+  
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  --border: rgba(139, 101, 8, 0.12);
+  --sidebar-bg: #061528;
+  --sidebar-text: #94a3b8;
+}
+
 * { font-family: 'Inter', sans-serif; }
-body { background: var(--bg-primary); color: var(--text-primary); }
-.gradient-text { background: linear-gradient(135deg, #8b6508, #d4af37); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.card-hover { transition: transform 0.2s, box-shadow 0.2s; }
-.card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgb(0 0 0 / 0.1); }
-::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 3px; }
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #8b6508, #d4af37);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.card-hover {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgb(0 0 0 / 0.1);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 3px;
+}
+
+/* ================================================================
+ * LIGHT MODE OVERRIDES FOR HARDCODED TAILWIND CLASSES
+ * ================================================================ */
+.light {
+  /* Backgrounds */
+  .bg-\[\#030c17\] { background-color: var(--bg-primary) !important; }
+  .bg-\[\#061528\] { background-color: var(--bg-secondary) !important; }
+  .bg-\[\#0d1120\] { background-color: var(--bg-tertiary) !important; }
+  .bg-white\/\[0\.01\] { background-color: rgba(0, 0, 0, 0.02) !important; }
+  .bg-white\/\[0\.02\] { background-color: rgba(0, 0, 0, 0.04) !important; }
+  .bg-white\/5 { background-color: rgba(0, 0, 0, 0.05) !important; }
+  .bg-white\/\[0\.04\] { background-color: rgba(0, 0, 0, 0.06) !important; }
+  
+  /* Hover states */
+  .hover\:bg-white\/5:hover { background-color: rgba(0, 0, 0, 0.06) !important; }
+  .hover\:bg-white\/\[0\.01\]:hover { background-color: rgba(0, 0, 0, 0.02) !important; }
+  .hover\:bg-white\/\[0\.02\]:hover { background-color: rgba(0, 0, 0, 0.04) !important; }
+  .hover\:bg-white\/\[0\.05\]:hover { background-color: rgba(0, 0, 0, 0.08) !important; }
+  .hover\:bg-white\/10:hover { background-color: rgba(0, 0, 0, 0.1) !important; }
+  .hover\:bg-slate-800:hover { background-color: #f1f5f9 !important; }
+  
+  /* Borders */
+  .border-white\/5 { border-color: var(--border) !important; }
+  .border-white\/10 { border-color: rgba(139, 101, 8, 0.25) !important; }
+  .border-white\/15 { border-color: rgba(139, 101, 8, 0.3) !important; }
+  .border-b-white\/5 { border-bottom-color: var(--border) !important; }
+  .border-r-white\/5 { border-right-color: var(--border) !important; }
+  .divide-white\/5 > :not([hidden]) ~ :not([hidden]) { border-color: var(--border) !important; }
+  .divide-y { border-color: var(--border) !important; }
+  .border-t { border-color: var(--border) !important; }
+  .border-b { border-color: var(--border) !important; }
+  
+  /* Text colors */
+  .text-white { color: var(--text-primary) !important; }
+  .text-slate-100 { color: var(--text-primary) !important; }
+  .text-slate-200 { color: var(--text-primary) !important; }
+  .text-slate-300 { color: var(--text-primary) !important; }
+  .text-slate-400 { color: var(--text-secondary) !important; }
+  .text-slate-500 { color: var(--text-muted) !important; }
+  
+  /* Yellow/gold text converted to bronze gold for readability */
+  .text-\[\#fceea7\] { color: #8b6508 !important; }
+  .bg-\[\#8b6508\]\/10 { background-color: rgba(139, 101, 8, 0.12) !important; }
+  
+  /* Inputs placeholder text */
+  .placeholder-slate-600::placeholder { color: #94a3b8 !important; }
+  
+  /* Exceptions: Buttons & badges containing white text should stay white */
+  button.text-white,
+  button .text-white,
+  button svg,
+  .bg-gradient-to-r,
+  .bg-gradient-to-r *,
+  .bg-indigo-600,
+  .bg-indigo-600 *,
+  .bg-indigo-500\/10 *,
+  .bg-rose-500,
+  .bg-emerald-500\/10 *,
+  .bg-emerald-500,
+  .text-emerald-400,
+  .text-indigo-400,
+  .text-amber-400,
+  .text-red-400 {
+    color: inherit;
+  }
+  
+  /* Keep quick login credentials readable in light mode */
+  .font-mono.text-slate-500 {
+    color: #475569 !important;
+  }
+}

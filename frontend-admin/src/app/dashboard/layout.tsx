@@ -6,7 +6,7 @@ import {
   LayoutDashboard, Calendar, BookOpen, Settings, QrCode, 
   Package, Menu, X, Bell, LogOut, Stethoscope, Dumbbell, 
   Scissors, Utensils, ShieldAlert, Check, Trash2, Info,
-  ChevronDown, Building, Sparkles
+  ChevronDown, Building, Sparkles, Sun, Moon, Laptop
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useVendorStore, PRESET_MERCHANTS } from '../../lib/store';
@@ -34,7 +34,7 @@ interface NotificationItem {
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { currentMerchant, logoutMerchant, switchStore, loginRole } = useVendorStore();
+  const { currentMerchant, logoutMerchant, switchStore, loginRole, theme, setTheme, supervisorId } = useVendorStore();
   const [isMounted, setIsMounted] = useState(false);
   const [hasHydrated, setHasHydrated] = useState(false);
   
@@ -230,11 +230,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
+  const getBnxMailId = () => {
+    if (!currentMerchant) return '';
+    const vendorUniqueId = currentMerchant.vendorId || '2026050000';
+    if (loginRole === 'supervisor') {
+      const supName = supervisorId || 'SUPERVISOR';
+      return `${supName}/${vendorUniqueId}@bnxmail.com`;
+    }
+    return `${vendorUniqueId}@bnxmail.com`;
+  };
+
   return (
-    <div className="flex h-screen overflow-hidden bg-[#030c17]">
+    <div className="flex h-screen overflow-hidden bg-bg-primary text-text-primary">
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 transform bg-[#061528] border-r border-[#8b6508]/15 transition-transform duration-300 lg:static lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="flex h-16 items-center gap-2.5 border-b border-white/5 px-4.5">
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 transform bg-bg-secondary border-r border-border-brand transition-transform duration-300 lg:static lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="flex h-16 items-center gap-2.5 border-b border-border-brand px-4.5">
           <div className="flex items-center gap-1.5 bg-white/95 px-2.5 py-1 rounded-full border border-white/20 shadow-md shrink-0">
             <Sparkles className="w-3.5 h-3.5 text-[#ff6325] fill-[#ff6325] animate-pulse" />
             <span className="font-['Playfair_Display'] text-[12px] tracking-[0.1em] uppercase font-bold text-slate-800">
@@ -268,13 +278,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </nav>
  
         {/* Sidebar Footer Info */}
-        <div className="absolute bottom-4 left-4 right-4 p-4 rounded-xl bg-white/[0.01] border border-white/5 space-y-1.5">
+        <div className="absolute bottom-4 left-4 right-4 p-4 rounded-xl bg-bg-tertiary/20 border border-border-brand space-y-1.5">
           <div className="flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Console Secured</span>
+            <span className="text-[9px] text-text-secondary font-bold uppercase tracking-wider">Console Secured</span>
           </div>
-          <p className="text-[9px] text-slate-500">Vendor ID: <span className="font-mono text-[#fceea7]">{currentMerchant.vendorId || 'N/A'}</span></p>
-          <p className="text-[9px] text-slate-500">Merchant key: <span className="font-mono text-[#fceea7]">{currentMerchant.username}</span></p>
+          <p className="text-[9px] text-text-secondary">Vendor ID: <span className="font-mono text-[#fceea7]">{currentMerchant.vendorId || 'N/A'}</span></p>
+          <p className="text-[9px] text-text-secondary">Merchant key: <span className="font-mono text-[#fceea7]">{currentMerchant.username}</span></p>
+          <p className="text-[9px] text-text-secondary truncate" title={getBnxMailId()}>BNX Mail: <span className="font-mono text-[#fceea7]">{getBnxMailId()}</span></p>
         </div>
       </aside>
 
@@ -283,7 +294,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Main Container */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-white/5 bg-[#061528]/40 backdrop-blur-md px-6 lg:px-8">
+        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-border-brand bg-bg-secondary/40 backdrop-blur-md px-6 lg:px-8">
           <div className="flex items-center gap-3">
             <button onClick={() => setSidebarOpen(true)} className="lg:hidden rounded-lg p-2 hover:bg-white/5 text-slate-300"><Menu className="h-5 w-5" /></button>
             
@@ -302,7 +313,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </button>
  
                 {showStoreSwitcher && (
-                  <div className="absolute left-0 mt-3 w-56 rounded-xl border border-white/10 bg-[#0d1120] p-2 shadow-2xl z-50 space-y-1 animate-fade-in">
+                  <div className="absolute left-0 mt-3 w-56 rounded-xl border border-border-brand bg-bg-tertiary p-2 shadow-2xl z-50 space-y-1 animate-fade-in">
                     <div className="px-2.5 py-1.5 border-b border-white/5 mb-1">
                       <span className="text-[9px] uppercase tracking-wider text-slate-500 font-extrabold block">Switch Business Store</span>
                       <span className="text-[10px] text-[#fceea7] font-semibold truncate block">Vendor ID: {currentMerchant.vendorId || 'N/A'}</span>
@@ -352,11 +363,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <LiveClock />
             </div>
 
+            {/* Theme Toggle Button */}
+            <button 
+              onClick={() => {
+                const nextTheme = theme === 'light' ? 'dark' : theme === 'dark' ? 'system' : 'light';
+                setTheme(nextTheme);
+              }}
+              className="rounded-xl p-2 h-9 w-9 border border-border-brand bg-bg-secondary hover:bg-bg-tertiary text-text-secondary hover:text-text-primary transition-colors cursor-pointer flex items-center justify-center shrink-0"
+              title={`Theme: ${theme}. Click to change.`}
+            >
+              {theme === 'light' ? <Sun className="h-4 w-4" /> : theme === 'dark' ? <Moon className="h-4 w-4" /> : <Laptop className="h-4 w-4" />}
+            </button>
+
             {/* Stateful Notifications Popover */}
             <div className="relative" ref={popoverRef}>
               <button 
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="relative rounded-xl p-2.5 border border-white/5 bg-white/[0.01] hover:bg-white/5 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                className="relative rounded-xl p-2.5 border border-border-brand bg-bg-secondary hover:bg-bg-tertiary text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
               >
                 <Bell className="h-4 w-4" />
                 {unreadCount > 0 && (
@@ -365,7 +388,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </button>
  
               {showNotifications && (
-                <div className="absolute right-0 mt-3 w-80 rounded-xl border border-white/10 bg-[#0d1120] p-4 shadow-2xl z-50 space-y-3 animate-fade-in">
+                <div className="absolute right-0 mt-3 w-80 rounded-xl border border-border-brand bg-bg-tertiary p-4 shadow-2xl z-50 space-y-3 animate-fade-in">
                   <div className="flex items-center justify-between border-b border-white/5 pb-2">
                     <div className="flex items-center gap-1.5">
                       <span className="text-xs font-bold text-white">Notifications</span>
@@ -449,7 +472,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </header>
  
-        <main className="flex-1 overflow-y-auto bg-[#030c17] p-6 lg:p-8 custom-scrollbar">
+        <main className="flex-1 overflow-y-auto bg-bg-primary p-6 lg:p-8 custom-scrollbar">
           {children}
         </main>
       </div>

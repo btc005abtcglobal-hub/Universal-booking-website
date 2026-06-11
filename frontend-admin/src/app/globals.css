@@ -75,7 +75,7 @@ body {
 }
 
 .vendor-navbar {
-  background: linear-gradient(to right, rgba(23, 37, 84, 0.75), rgba(3, 12, 23, 0.95), rgba(0, 0, 0, 0.98)) !important;
+  background: #0a1526 !important;
   border-bottom: 1px solid rgba(139, 101, 8, 0.2) !important;
 }
 

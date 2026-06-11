@@ -3,7 +3,7 @@
  * (from the 58 service categories taxonomy) to one of the 4 supported 
  * console vertical layouts (Dental, Fitness, Salon, Dining) or default.
  */
-export function getVerticalFromCategory(category: string): 'Dental' | 'Fitness' | 'Salon' | 'Dining' | 'Wellness' | 'Default' {
+export function getVerticalFromCategory(category: string): 'Dental' | 'Fitness' | 'Salon' | 'Dining' | 'Wellness' | 'Cinema' | 'Default' {
   if (!category) return 'Default';
   const c = category.toLowerCase();
   
@@ -18,6 +18,9 @@ export function getVerticalFromCategory(category: string): 'Dental' | 'Fitness' 
   }
   if (c.includes('dine') || c.includes('dining') || c.includes('restaurant') || c.includes('table')) {
     return 'Dining';
+  }
+  if (c.includes('movie') || c.includes('cinema') || c.includes('theatre') || c.includes('film') || c.includes('show')) {
+    return 'Cinema';
   }
   if (c.includes('wellness')) {
     return 'Wellness';

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
-import { Search, Heart, ShoppingBag, Sparkles, MapPin, Map, X, User } from 'lucide-react';
+import { Search, Heart, ShoppingBag, Sparkles, MapPin, Map, X, User, Sun, Moon, Laptop } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useLocationStore, useUIStore } from '../lib/store';
 import { LiveClock } from './LiveClock';
@@ -55,7 +55,7 @@ export function TopNav() {
   const locationRef = useRef<HTMLDivElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
-  const { toggleTheme } = useUIStore();
+  const { theme, setTheme } = useUIStore();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState<any[]>([]);
@@ -560,6 +560,30 @@ export function TopNav() {
                         </div>
                         <span className="text-xs text-emerald-500 font-extrabold tracking-wide">85%</span>
                       </Link>
+                    </li>
+                    <li className="px-5 py-3.5 bg-surface-container-high/30 border-t border-outline-variant/10">
+                      <div className="flex flex-col gap-2">
+                        <span className="text-[10px] uppercase font-bold tracking-wider text-outline text-left">Display Theme</span>
+                        <div className="grid grid-cols-3 gap-1 bg-surface-container p-1 rounded-xl border border-outline-variant/20">
+                          {(['light', 'dark', 'system'] as const).map((t) => {
+                            const isThemeActive = theme === t;
+                            return (
+                              <button
+                                key={t}
+                                onClick={() => setTheme(t)}
+                                className={`py-1.5 rounded-lg text-[10px] font-bold transition-all uppercase tracking-wider capitalize cursor-pointer flex items-center justify-center gap-1 ${
+                                  isThemeActive
+                                    ? 'bg-primary text-on-primary shadow-sm'
+                                    : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high'
+                                }`}
+                              >
+                                {t === 'light' ? <Sun className="h-3 w-3" /> : t === 'dark' ? <Moon className="h-3 w-3" /> : <Laptop className="h-3 w-3" />}
+                                <span>{t}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
                     </li>
                   </ul>
                   

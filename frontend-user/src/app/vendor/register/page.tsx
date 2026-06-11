@@ -42,6 +42,12 @@ export default function VendorRegisterPage() {
   const [city, setCity] = useState(CITIES[0]);
   const [address, setAddress] = useState('');
   const [description, setDescription] = useState('');
+
+  const [assignSupervisor, setAssignSupervisor] = useState(false);
+  const [supervisorName, setSupervisorName] = useState('');
+  const [supervisorPhone, setSupervisorPhone] = useState('');
+  const [supervisorEmail, setSupervisorEmail] = useState('');
+  const [supervisorAddress, setSupervisorAddress] = useState('');
   
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -55,6 +61,13 @@ export default function VendorRegisterPage() {
       return;
     }
 
+    if (assignSupervisor) {
+      if (!supervisorName.trim() || !supervisorPhone.trim() || !supervisorEmail.trim() || !supervisorAddress.trim()) {
+        setErrorMsg('Please fill in all supervisor fields.');
+        return;
+      }
+    }
+
     const newRequest = {
       id: `req-${Date.now()}`,
       name: name.trim(),
@@ -65,7 +78,14 @@ export default function VendorRegisterPage() {
       address: address.trim(),
       description: description.trim(),
       status: 'PENDING' as const,
-      submittedAt: new Date().toISOString()
+      submittedAt: new Date().toISOString(),
+      assignSupervisor,
+      ...(assignSupervisor ? {
+        supervisorName: supervisorName.trim(),
+        supervisorPhone: supervisorPhone.trim(),
+        supervisorEmail: supervisorEmail.trim(),
+        supervisorAddress: supervisorAddress.trim(),
+      } : {})
     };
 
     addVendorRequest(newRequest);
@@ -194,6 +214,78 @@ export default function VendorRegisterPage() {
                   />
                 </div>
 
+                {/* Supervisor Field Toggle */}
+                <div className="border-t border-white/10 pt-4 mt-2">
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={assignSupervisor}
+                      onChange={(e) => setAssignSupervisor(e.target.checked)}
+                      className="rounded border-white/20 bg-white/[0.02] text-[color:var(--color-primary)] focus:ring-0 focus:ring-offset-0 cursor-pointer h-4 w-4"
+                    />
+                    <span className="text-xs font-bold text-white uppercase tracking-wider">Assign Supervisor to this Business</span>
+                  </label>
+                  <p className="text-[10px] text-[color:var(--color-on-surface-variant)] mt-1">
+                    Toggle this if you want to assign a dedicated supervisor to manage services and bookings.
+                  </p>
+                </div>
+
+                {assignSupervisor && (
+                  <div className="grid gap-5 sm:grid-cols-2 p-5 rounded-2xl bg-white/[0.01] border border-white/5 mt-4">
+                    <div className="sm:col-span-2">
+                      <h3 className="text-[10px] font-black uppercase tracking-widest text-[color:var(--color-primary)] mb-2">Supervisor Contact Details</h3>
+                    </div>
+                    
+                    <div className="space-y-1.5">
+                      <label className="block text-[10px] font-bold text-[color:var(--color-on-surface-variant)] uppercase tracking-widest">Supervisor Name *</label>
+                      <input
+                        type="text"
+                        required={assignSupervisor}
+                        placeholder="e.g. Arun Kumar"
+                        value={supervisorName}
+                        onChange={(e) => setSupervisorName(e.target.value)}
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.02] focus:bg-white/[0.05] px-4 py-3 text-xs text-white placeholder-slate-600 outline-none focus:border-[color:var(--color-primary)] transition-all"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="block text-[10px] font-bold text-[color:var(--color-on-surface-variant)] uppercase tracking-widest">Supervisor Phone *</label>
+                      <input
+                        type="text"
+                        required={assignSupervisor}
+                        placeholder="e.g. +91 98765 12345"
+                        value={supervisorPhone}
+                        onChange={(e) => setSupervisorPhone(e.target.value)}
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.02] focus:bg-white/[0.05] px-4 py-3 text-xs text-white placeholder-slate-600 outline-none focus:border-[color:var(--color-primary)] transition-all"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="block text-[10px] font-bold text-[color:var(--color-on-surface-variant)] uppercase tracking-widest">Supervisor Personal Email *</label>
+                      <input
+                        type="email"
+                        required={assignSupervisor}
+                        placeholder="e.g. arun.kumar@gmail.com"
+                        value={supervisorEmail}
+                        onChange={(e) => setSupervisorEmail(e.target.value)}
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.02] focus:bg-white/[0.05] px-4 py-3 text-xs text-white placeholder-slate-600 outline-none focus:border-[color:var(--color-primary)] transition-all"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="block text-[10px] font-bold text-[color:var(--color-on-surface-variant)] uppercase tracking-widest">Supervisor Address *</label>
+                      <input
+                        type="text"
+                        required={assignSupervisor}
+                        placeholder="e.g. Flat 3B, Sunshine Apartments, Chennai"
+                        value={supervisorAddress}
+                        onChange={(e) => setSupervisorAddress(e.target.value)}
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.02] focus:bg-white/[0.05] px-4 py-3 text-xs text-white placeholder-slate-600 outline-none focus:border-[color:var(--color-primary)] transition-all"
+                      />
+                    </div>
+                  </div>
+                )}
+
                 <button
                   type="submit"
                   className="w-full bg-[color:var(--color-primary)] text-[color:var(--color-on-primary)] hover:bg-[color:var(--color-primary-fixed-dim)] py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-lg shadow-[color:var(--color-primary)]/10 mt-6 flex items-center justify-center gap-2 cursor-pointer"
@@ -236,20 +328,30 @@ export default function VendorRegisterPage() {
                   <span className="text-[color:var(--color-on-surface-variant)]">Email:</span>
                   <span className="text-white font-bold">{email}</span>
                 </div>
+
+                {assignSupervisor && (
+                  <>
+                    <div className="flex justify-between border-t border-white/5 pt-2 text-[9px] uppercase font-bold text-[color:var(--color-primary)] tracking-wider">
+                      <span>Supervisor Assigned</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-[color:var(--color-on-surface-variant)]">Supervisor Name:</span>
+                      <span className="text-white font-bold">{supervisorName}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-[color:var(--color-on-surface-variant)]">Supervisor Email:</span>
+                      <span className="text-white font-bold">{supervisorEmail}</span>
+                    </div>
+                  </>
+                )}
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <div className="flex justify-center mt-6">
                 <button
                   onClick={() => router.push('/')}
-                  className="px-6 py-3 text-xs font-bold rounded-xl border border-white/10 text-white hover:bg-white/5 transition-all cursor-pointer"
+                  className="px-8 py-3 text-xs font-bold rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 transition-all cursor-pointer shadow-lg"
                 >
                   Return to Home
-                </button>
-                <button
-                  onClick={() => router.push('/sales')}
-                  className="px-6 py-3 text-xs font-bold rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 transition-all cursor-pointer flex items-center gap-1.5 justify-center shadow-lg"
-                >
-                  <Sparkles size={13} /> Visit Sales Portal
                 </button>
               </div>
             </div>

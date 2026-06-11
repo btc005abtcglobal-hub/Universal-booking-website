@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useBookingFlowStore } from '../../lib/store';
-import { LiveClock } from '../../components/LiveClock';
 import { 
   ArrowLeft, ArrowRight, Activity, TrendingUp, Lock, User, Eye, EyeOff, AlertCircle, 
   ShieldCheck, CheckCircle2, Building2, Calendar, ShoppingBag, PlusCircle, Trash2, 
@@ -290,6 +289,10 @@ export default function SalesAdminPage() {
     const serialStr = String(currentSerial).padStart(4, '0');
     const generatedId = `${yyyy}${mm}${serialStr}`;
 
+    const defaultBnxMail = req.assignSupervisor && req.supervisorName && req.email
+      ? `${req.supervisorName.trim().toLowerCase().replace(/\s+/g, '')}/${req.email.trim()}`
+      : undefined;
+
     const newMerchant = {
       id: `merchant-${Date.now()}`,
       name: req.name,
@@ -302,7 +305,13 @@ export default function SalesAdminPage() {
       description: req.description,
       rating: 5.0,
       latitude: 13.0827,
-      longitude: 80.2707
+      longitude: 80.2707,
+      assignSupervisor: req.assignSupervisor || false,
+      supervisorName: req.supervisorName || '',
+      supervisorPhone: req.supervisorPhone || '',
+      supervisorEmail: req.supervisorEmail || '',
+      supervisorAddress: req.supervisorAddress || '',
+      supervisorBnxMail: defaultBnxMail
     };
 
     addMerchant(newMerchant);
@@ -316,6 +325,34 @@ export default function SalesAdminPage() {
     showToast(`Application for "${reqName}" rejected.`);
   };
 
+  // Auto Fill details from request to manual onboarding form
+  const handleAutoUpdateDetails = (req: any) => {
+    setVendorName(req.name);
+    setVendorCategory(req.category);
+    setVendorEmail(req.email);
+    setVendorPhone(req.phone);
+    setVendorCity(req.city);
+    setVendorAddress(req.address);
+    setVendorDesc(req.description);
+    
+    if (req.assignSupervisor) {
+      setVendorAssignSupervisor(true);
+      setVendorSupervisorName(req.supervisorName || '');
+      setVendorSupervisorPhone(req.supervisorPhone || '');
+      setVendorSupervisorEmail(req.supervisorEmail || '');
+      setVendorSupervisorAddress(req.supervisorAddress || '');
+    } else {
+      setVendorAssignSupervisor(false);
+      setVendorSupervisorName('');
+      setVendorSupervisorPhone('');
+      setVendorSupervisorEmail('');
+      setVendorSupervisorAddress('');
+    }
+    
+    setActiveTab('onboarding');
+    showToast(`Details for "${req.name}" auto-filled into onboarding form.`);
+  };
+
   // Vendor Onboarding Form State
   const [vendorName, setVendorName] = useState('');
   const [vendorCategory, setVendorCategory] = useState(CATEGORIES[0]);
@@ -326,6 +363,14 @@ export default function SalesAdminPage() {
   const [vendorDesc, setVendorDesc] = useState('');
   const [vendorLat, setVendorLat] = useState('13.0827');
   const [vendorLng, setVendorLng] = useState('80.2707');
+
+  // Supervisor Form State
+  const [vendorAssignSupervisor, setVendorAssignSupervisor] = useState(false);
+  const [vendorSupervisorName, setVendorSupervisorName] = useState('');
+  const [vendorSupervisorPhone, setVendorSupervisorPhone] = useState('');
+  const [vendorSupervisorEmail, setVendorSupervisorEmail] = useState('');
+  const [vendorSupervisorAddress, setVendorSupervisorAddress] = useState('');
+  const [vendorSupervisorBnxMail, setVendorSupervisorBnxMail] = useState('');
 
   // Listing Form State
   const [selectedMerchantId, setSelectedMerchantId] = useState('');
@@ -390,6 +435,16 @@ export default function SalesAdminPage() {
     setStandardCommInput(String(commissionRate));
   }, [commissionRate]);
 
+  // Synchronize supervisor integrated BNX Mail ID
+  useEffect(() => {
+    if (vendorSupervisorName.trim() && vendorEmail.trim()) {
+      const cleanName = vendorSupervisorName.trim().toLowerCase().replace(/\s+/g, '');
+      setVendorSupervisorBnxMail(`${cleanName}/${vendorEmail.trim()}`);
+    } else {
+      setVendorSupervisorBnxMail('');
+    }
+  }, [vendorSupervisorName, vendorEmail]);
+
   if (!mounted) {
     return (
       <div className="min-h-screen bg-[color:var(--color-surface-dim)] flex items-center justify-center">
@@ -453,7 +508,15 @@ export default function SalesAdminPage() {
       description: vendorDesc.trim() || 'Premium service vendor.',
       rating: 5.0,
       latitude: parseFloat(vendorLat) || 13.0827,
-      longitude: parseFloat(vendorLng) || 80.2707
+      longitude: parseFloat(vendorLng) || 80.2707,
+      assignSupervisor: vendorAssignSupervisor,
+      ...(vendorAssignSupervisor ? {
+        supervisorName: vendorSupervisorName.trim(),
+        supervisorPhone: vendorSupervisorPhone.trim(),
+        supervisorEmail: vendorSupervisorEmail.trim(),
+        supervisorAddress: vendorSupervisorAddress.trim(),
+        supervisorBnxMail: vendorSupervisorBnxMail.trim(),
+      } : {})
     };
 
     addMerchant(newVendor);
@@ -465,6 +528,12 @@ export default function SalesAdminPage() {
     setVendorPhone('');
     setVendorAddress('');
     setVendorDesc('');
+    setVendorAssignSupervisor(false);
+    setVendorSupervisorName('');
+    setVendorSupervisorPhone('');
+    setVendorSupervisorEmail('');
+    setVendorSupervisorAddress('');
+    setVendorSupervisorBnxMail('');
     setSelectedMerchantId(newVendor.id); // Pre-select newly created vendor
   };
 
@@ -644,10 +713,6 @@ export default function SalesAdminPage() {
           </div>
           
           <div className="flex items-center gap-4">
-            <div className="hidden sm:flex items-center gap-1.5 border border-white/5 bg-white/[0.02] rounded-lg px-2.5 py-1.5 shrink-0">
-              <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">SYS TIME:</span>
-              <LiveClock />
-            </div>
             <button
               onClick={handleLogout}
               className="rounded-xl border border-white/10 hover:border-red-500/20 bg-white/[0.01] hover:bg-red-500/5 px-3 py-1.5 text-[10px] font-bold text-[color:var(--color-on-surface-variant)] hover:text-red-400 transition-all cursor-pointer"
@@ -928,6 +993,90 @@ export default function SalesAdminPage() {
                 </p>
               </div>
 
+              {/* Supervisor Onboarding Option */}
+              <div className="border-t border-white/5 pt-4 mt-2">
+                <label className="flex items-center gap-2 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={vendorAssignSupervisor}
+                    onChange={(e) => setVendorAssignSupervisor(e.target.checked)}
+                    className="rounded border-white/20 bg-white/[0.02] text-[color:var(--color-primary)] focus:ring-0 focus:ring-offset-0 cursor-pointer h-4 w-4"
+                  />
+                  <span className="text-xs font-bold text-white uppercase tracking-wider">Assign Supervisor to this Vendor</span>
+                </label>
+              </div>
+
+              {vendorAssignSupervisor && (
+                <div className="grid gap-4 sm:grid-cols-2 p-4 rounded-xl bg-white/[0.01] border border-white/5 mt-2">
+                  <div className="sm:col-span-2">
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-[color:var(--color-primary)]">Supervisor Configuration</h4>
+                  </div>
+                  
+                  <div className="space-y-1.5">
+                    <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider">Supervisor Name</label>
+                    <input
+                      type="text"
+                      required={vendorAssignSupervisor}
+                      placeholder="e.g. arun"
+                      value={vendorSupervisorName}
+                      onChange={(e) => setVendorSupervisorName(e.target.value)}
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.02] focus:bg-white/[0.05] px-3.5 py-2 text-xs text-white placeholder-slate-600 outline-none focus:border-indigo-500 transition-all"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider">Supervisor Phone</label>
+                    <input
+                      type="text"
+                      required={vendorAssignSupervisor}
+                      placeholder="e.g. +91 98765 12345"
+                      value={vendorSupervisorPhone}
+                      onChange={(e) => setVendorSupervisorPhone(e.target.value)}
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.02] focus:bg-white/[0.05] px-3.5 py-2 text-xs text-white placeholder-slate-600 outline-none focus:border-indigo-500 transition-all"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider">Supervisor Personal Email</label>
+                    <input
+                      type="email"
+                      required={vendorAssignSupervisor}
+                      placeholder="e.g. arun@gmail.com"
+                      value={vendorSupervisorEmail}
+                      onChange={(e) => setVendorSupervisorEmail(e.target.value)}
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.02] focus:bg-white/[0.05] px-3.5 py-2 text-xs text-white placeholder-slate-600 outline-none focus:border-indigo-500 transition-all"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider">Supervisor Address</label>
+                    <input
+                      type="text"
+                      required={vendorAssignSupervisor}
+                      placeholder="e.g. Flat 3B, Sunshine Apts"
+                      value={vendorSupervisorAddress}
+                      onChange={(e) => setVendorSupervisorAddress(e.target.value)}
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.02] focus:bg-white/[0.05] px-3.5 py-2 text-xs text-white placeholder-slate-600 outline-none focus:border-indigo-500 transition-all"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2 space-y-1.5">
+                    <label className="block text-[9px] font-bold text-[color:var(--color-primary)] uppercase tracking-wider">Supervisor Integrated BNX Mail ID</label>
+                    <input
+                      type="text"
+                      required={vendorAssignSupervisor}
+                      placeholder="e.g. arun/anderson@bnxmail.com"
+                      value={vendorSupervisorBnxMail}
+                      onChange={(e) => setVendorSupervisorBnxMail(e.target.value)}
+                      className="w-full rounded-xl border border-indigo-500/30 bg-indigo-500/5 focus:bg-indigo-500/10 px-3.5 py-2 text-xs text-indigo-300 font-mono outline-none focus:border-indigo-500 transition-all"
+                    />
+                    <p className="text-[9px] text-slate-500 font-medium">
+                      Generated automatically as <code className="text-slate-400">supervisor_name/vendor's_bnx_mail</code>. You can customize this if required.
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-1.5">
                 <label className="block text-[10px] font-bold text-[color:var(--color-on-surface-variant)] uppercase tracking-wider">Vendor Registry Description</label>
                 <textarea
@@ -1147,23 +1296,55 @@ export default function SalesAdminPage() {
                           <span className="text-[9px] uppercase font-bold text-[color:var(--color-outline)]">Business Bio / Description</span>
                           <p className="text-slate-400 leading-relaxed font-medium italic">"{req.description}"</p>
                         </div>
+
+                        {req.assignSupervisor && (
+                          <div className="col-span-2 border-t border-white/5 pt-2 mt-1 space-y-2">
+                            <span className="text-[9px] uppercase font-bold text-[color:var(--color-primary)]">Supervisor Request Details</span>
+                            <div className="grid grid-cols-2 gap-2 text-[10px]">
+                              <div>
+                                <span className="text-slate-500 font-medium block">Supervisor Name</span>
+                                <span className="text-white font-semibold">{req.supervisorName}</span>
+                              </div>
+                              <div>
+                                <span className="text-slate-500 font-medium block">Supervisor Phone</span>
+                                <span className="text-white font-semibold">{req.supervisorPhone}</span>
+                              </div>
+                              <div>
+                                <span className="text-slate-500 font-medium block">Supervisor Email</span>
+                                <span className="text-white font-semibold truncate block" title={req.supervisorEmail}>{req.supervisorEmail}</span>
+                              </div>
+                              <div>
+                                <span className="text-slate-500 font-medium block">Supervisor Address</span>
+                                <span className="text-white font-semibold truncate block" title={req.supervisorAddress}>{req.supervisorAddress}</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
 
                     {req.status === 'PENDING' && (
-                      <div className="flex gap-2.5 pt-3 border-t border-white/5 relative z-10">
+                      <div className="space-y-2.5 pt-3 border-t border-white/5 relative z-10">
                         <button
-                          onClick={() => handleRejectRequest(req.id, req.name)}
-                          className="flex-1 rounded-xl border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 text-red-400 py-2 text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+                          onClick={() => handleAutoUpdateDetails(req)}
+                          className="w-full rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white py-2 text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
                         >
-                          <XCircle size={13} /> Reject Request
+                          <PlusCircle size={13} /> Auto Fill & Configure Onboarding
                         </button>
-                        <button
-                          onClick={() => handleApproveRequest(req)}
-                          className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white py-2 text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1 cursor-pointer shadow-md shadow-emerald-900/15"
-                        >
-                          <CheckCircle2 size={13} /> Verify & Onboard
-                        </button>
+                        <div className="flex gap-2.5">
+                          <button
+                            onClick={() => handleRejectRequest(req.id, req.name)}
+                            className="flex-1 rounded-xl border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 text-red-400 py-2 text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+                          >
+                            <XCircle size={13} /> Reject Request
+                          </button>
+                          <button
+                            onClick={() => handleApproveRequest(req)}
+                            className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white py-2 text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1 cursor-pointer shadow-md shadow-emerald-900/15"
+                          >
+                            <CheckCircle2 size={13} /> Direct Onboard
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>

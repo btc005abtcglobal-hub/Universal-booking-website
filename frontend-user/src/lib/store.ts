@@ -66,6 +66,12 @@ export interface PersistedMerchant {
   vendorId?: string;
   latitude?: number;
   longitude?: number;
+  assignSupervisor?: boolean;
+  supervisorName?: string;
+  supervisorPhone?: string;
+  supervisorEmail?: string;
+  supervisorAddress?: string;
+  supervisorBnxMail?: string;
 }
 
 export interface VendorRequest {
@@ -79,6 +85,11 @@ export interface VendorRequest {
   description: string;
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
   submittedAt: string;
+  assignSupervisor?: boolean;
+  supervisorName?: string;
+  supervisorPhone?: string;
+  supervisorEmail?: string;
+  supervisorAddress?: string;
 }
 
 interface BookingFlowState {

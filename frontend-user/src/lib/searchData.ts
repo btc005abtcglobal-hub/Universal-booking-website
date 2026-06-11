@@ -9,7 +9,7 @@ export const GROUP_EMOJIS: Record<string, string> = {
   'Travel': '✈️',
   'Stay & Accomodation': '🏨',
   'Entertainment': '🎬',
-  'Sports&Turf': '⚽',
+  'Sports': '⚽',
   'Lifestyle Services': '💇',
   'Business': '🧑‍💻',
   'Religious Services': '🛕',
@@ -91,7 +91,7 @@ export const SERVICE_GROUPS = [
     ]
   },
   {
-    title: 'Sports&Turf',
+    title: 'Sports',
     description: 'Turfs, grounds, indoor courts, swimming pools, and play arenas',
     icon: 'sports_soccer',
     subcategories: [

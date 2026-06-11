@@ -191,7 +191,7 @@ const CATEGORY_THEMES: Record<string, CategoryTheme> = {
     text: 'group-hover:text-fuchsia-400',
     gradient: 'from-fuchsia-500/20 to-transparent'
   },
-  'Sports&Turf': {
+  'Sports': {
     border: 'group-hover:border-emerald-500/40',
     glow: 'group-hover:shadow-[0_0_20px_rgba(16,185,129,0.25)]',
     badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',

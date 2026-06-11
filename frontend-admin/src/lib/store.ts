@@ -104,12 +104,24 @@ export interface MerchantUser {
   logoLetter: string;
   aboutText: string;
   vendorId?: string;
+  email?: string;
+  assignSupervisor?: boolean;
+  supervisorName?: string;
+  supervisorPhone?: string;
+  supervisorEmail?: string;
+  supervisorAddress?: string;
 }
 
 interface VendorStoreState {
   currentMerchant: MerchantUser | null;
+  loginRole: 'vendor' | 'supervisor' | null;
+  supervisorId: string | null;
+  theme: 'system' | 'light' | 'dark';
   bookings: PersistedBooking[];
   services: CatalogService[];
+  
+  // Theme actions
+  setTheme: (theme: 'system' | 'light' | 'dark') => void;
   
   // Auth actions
   loginMerchant: (username: string, passwordHash: string) => boolean;
@@ -153,7 +165,8 @@ export const PRESET_MERCHANTS: MerchantUser[] = [
     category: 'Doctor Appointment', 
     logoLetter: 'A',
     aboutText: 'Apollo Dental Care is a multi-specialty dental clinic network dedicated to providing high-quality oral health services. From preventive care to advanced orthodontics and restorative treatments, our certified specialists ensure comfort and clinical excellence for all patients.',
-    vendorId: '2026050001'
+    vendorId: '2026050001',
+    email: 'doctor@bnxmail.com'
   },
   { 
     id: 'mer-2', 
@@ -162,7 +175,8 @@ export const PRESET_MERCHANTS: MerchantUser[] = [
     category: 'Gym / Yoga Slot Booking', 
     logoLetter: 'Z',
     aboutText: 'ZenFit is a holistic strength and wellness clinic combining personal functional training, vinyasa yoga, and evidence-based nutrition coaching. Our certified coaches provide structured training and diet plans to guide you toward sustainable health goals.',
-    vendorId: '2026050002'
+    vendorId: '2026050002',
+    email: 'fitness@bnxmail.com'
   },
   { 
     id: 'mer-3', 
@@ -171,7 +185,8 @@ export const PRESET_MERCHANTS: MerchantUser[] = [
     category: 'Salon / Spa Appointment', 
     logoLetter: 'S',
     aboutText: 'Style Studio is a premium beauty and wellness salon specializing in modern hair design, organic aesthetic therapies, and restorative body treatments. We combine advanced skin care with professional styling in an inviting, contemporary atmosphere.',
-    vendorId: '2026050003'
+    vendorId: '2026050003',
+    email: 'salon@bnxmail.com'
   },
   { 
     id: 'mer-4', 
@@ -180,7 +195,8 @@ export const PRESET_MERCHANTS: MerchantUser[] = [
     category: 'Restaurant Table Reservation', 
     logoLetter: 'T',
     aboutText: 'The Grand Temple Dine delivers an exceptional culinary experience, combining contemporary fusion menus with custom chef\'s tasting events and table-side service in a refined architectural setting.',
-    vendorId: '2026050004'
+    vendorId: '2026050004',
+    email: 'dining@bnxmail.com'
   },
   { 
     id: 'mer-5', 
@@ -189,7 +205,8 @@ export const PRESET_MERCHANTS: MerchantUser[] = [
     category: 'Salon / Spa Appointment', 
     logoLetter: 'G',
     aboutText: 'Glitz Parlour offers advanced bridal makeovers, nail art, and organic facial treatments designed to make you shine on every occasion.',
-    vendorId: '2026050003'
+    vendorId: '2026050003',
+    email: 'glitz@bnxmail.com'
   },
   { 
     id: 'mer-6', 
@@ -198,7 +215,8 @@ export const PRESET_MERCHANTS: MerchantUser[] = [
     category: 'Salon / Spa Appointment', 
     logoLetter: 'U',
     aboutText: 'Urban Haircut Co provides quick, premium grooming, haircuts, and beard stylings for the modern busy professional.',
-    vendorId: '2026050003'
+    vendorId: '2026050003',
+    email: 'urban@bnxmail.com'
   }
 ];
 
@@ -577,36 +595,74 @@ function getMockServicesForAdminMerchant(merchant: MerchantUser): CatalogService
   ];
 }
 
+export interface SubAccount {
+  subId: string;
+  merchantId: string;
+  passwordHash: string;
+}
+
+export const SUB_ACCOUNTS: SubAccount[] = [
+  { subId: 'D101', merchantId: 'mer-1', passwordHash: 'pass101' },
+  { subId: 'F202', merchantId: 'mer-2', passwordHash: 'pass202' },
+  { subId: 'S303', merchantId: 'mer-3', passwordHash: 'pass303' },
+  { subId: 'R404', merchantId: 'mer-4', passwordHash: 'pass404' },
+  { subId: 'G505', merchantId: 'mer-5', passwordHash: 'pass505' },
+  { subId: 'U606', merchantId: 'mer-6', passwordHash: 'pass606' }
+];
+
+export const VENDOR_ACCOUNTS = [
+  { username: 'admin', passwordHash: 'admin123' },
+  { username: 'vendor123', passwordHash: 'vendorpass123' }
+];
+
 export const useVendorStore = create<VendorStoreState>()(
   persist(
     (set, get) => ({
       currentMerchant: null,
+      loginRole: null,
+      supervisorId: null,
+      theme: 'system',
       bookings: INITIAL_BOOKINGS,
       services: INITIAL_SERVICES,
       
+      setTheme: (theme) => set({ theme }),
+      
       loginMerchant: (username, passwordHash) => {
-        if (passwordHash !== '123') return false;
-        const checkUsername = username.toLowerCase() === 'admin' ? 'doctor' : username.toLowerCase();
-        
-        let found = PRESET_MERCHANTS.find(
-          (m) => m.username === checkUsername
+        const cleanUser = username.trim();
+        const lowerUser = cleanUser.toLowerCase();
+
+        // 1. Check Sub ID (Supervisor)
+        const subAcc = SUB_ACCOUNTS.find(
+          (s) => s.subId.toUpperCase() === cleanUser.toUpperCase() && s.passwordHash === passwordHash
         );
-        
-        if (!found) {
-          const categoryName = formatSlug(checkUsername);
-          found = {
-            id: `mer-${checkUsername}`,
-            username: checkUsername,
-            merchantName: `${categoryName} Care Hub`,
-            category: categoryName,
-            logoLetter: categoryName.charAt(0),
-            aboutText: `Welcome to ${categoryName} Care Hub. We provide professional bookings and top-tier services.`,
-            vendorId: `2026060001`
-          };
+        if (subAcc) {
+          const found = PRESET_MERCHANTS.find((m) => m.id === subAcc.merchantId);
+          if (found) {
+            set({ currentMerchant: found, loginRole: 'supervisor', supervisorId: subAcc.subId });
+            // Seed services for this merchant if not present
+            const hasServices = get().services.some(s => s.merchant === found.merchantName);
+            if (!hasServices) {
+              const newServices = getMockServicesForAdminMerchant(found);
+              set({ services: [...get().services, ...newServices] });
+            }
+            return true;
+          }
         }
-        
-        if (found) {
-          set({ currentMerchant: found });
+
+        // 2. Check Main Vendor Account
+        const isVendor = VENDOR_ACCOUNTS.some(
+          (v) => v.username.toLowerCase() === lowerUser && v.passwordHash === passwordHash
+        );
+        // Fallback for old preset login for testing if passcode is '123'
+        const isLegacyPreset = passwordHash === '123' && PRESET_MERCHANTS.some(m => m.username === lowerUser || lowerUser === 'admin');
+
+        if (isVendor || isLegacyPreset) {
+          const checkUsername = lowerUser === 'admin' || lowerUser === 'vendor123' ? 'doctor' : lowerUser;
+          let found = PRESET_MERCHANTS.find((m) => m.username === checkUsername);
+          if (!found) {
+            found = PRESET_MERCHANTS[0];
+          }
+          set({ currentMerchant: found, loginRole: 'vendor', supervisorId: null });
           
           // Seed services for this merchant if not present
           const hasServices = get().services.some(s => s.merchant === found.merchantName);
@@ -616,11 +672,12 @@ export const useVendorStore = create<VendorStoreState>()(
           }
           return true;
         }
+
         return false;
       },
       
       logoutMerchant: () => {
-        set({ currentMerchant: null });
+        set({ currentMerchant: null, loginRole: null, supervisorId: null });
       },
       
       switchStore: (merchantId) => {

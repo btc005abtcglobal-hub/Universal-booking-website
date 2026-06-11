@@ -250,7 +250,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="flex h-screen overflow-hidden bg-bg-primary text-text-primary">
       {/* Sidebar */}
       <aside className={`fixed inset-y-0 left-0 z-50 w-64 transform bg-bg-secondary border-r border-border-brand transition-transform duration-300 lg:static lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="flex h-16 items-center gap-2.5 border-b border-border-brand px-4.5">
+        <div className="flex h-16 items-center gap-2.5 px-4.5 vendor-navbar">
           <div className="flex items-center gap-1.5 bg-white/95 px-2.5 py-1 rounded-full border border-white/20 shadow-md shrink-0">
             <Sparkles className="w-3.5 h-3.5 text-[#ff6325] fill-[#ff6325] animate-pulse" />
             <span className="font-['Playfair_Display'] text-[12px] tracking-[0.1em] uppercase font-bold text-slate-800">

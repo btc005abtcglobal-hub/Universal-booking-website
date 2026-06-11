@@ -75,14 +75,63 @@ body {
 }
 
 .vendor-navbar {
-  background: linear-gradient(to right, rgba(23, 37, 84, 0.45), rgba(3, 12, 23, 0.85), rgba(0, 0, 0, 0.95)) !important;
-  border-bottom: 1px solid rgba(139, 101, 8, 0.15) !important;
-}
-
-.light .vendor-navbar {
-  background: var(--bg-secondary) !important;
+  background: linear-gradient(to right, rgba(23, 37, 84, 0.75), rgba(3, 12, 23, 0.95), rgba(0, 0, 0, 0.98)) !important;
   border-bottom: 1px solid rgba(139, 101, 8, 0.2) !important;
 }
+
+/* Ensure all text, buttons, and icons inside vendor-navbar remain light and readable in light mode */
+.light .vendor-navbar {
+  .text-white,
+  .text-slate-100,
+  .text-slate-200,
+  .text-slate-300,
+  .text-slate-400,
+  .text-text-secondary,
+  .text-text-primary {
+    color: #cbd5e1 !important; /* light slate-300 */
+  }
+
+  .text-white:hover,
+  .text-slate-300:hover,
+  .text-text-primary:hover {
+    color: #ffffff !important;
+  }
+
+  button,
+  .border-white\/5,
+  .border-white\/10,
+  .border-white\/20,
+  .border-border-brand {
+    border-color: rgba(255, 255, 255, 0.15) !important;
+  }
+
+  button:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+  }
+
+  .text-\[\#fceea7\],
+  .bg-\[\#8b6508\]\/10 {
+    color: #fceea7 !important;
+    background-color: rgba(139, 101, 8, 0.2) !important;
+  }
+
+  /* Keep profile avatar icon white and deep blue */
+  .bg-white {
+    background-color: #ffffff !important;
+  }
+  .text-\[\#0a3161\] {
+    color: #0a3161 !important;
+  }
+
+  svg {
+    color: #94a3b8 !important;
+  }
+  
+  button:hover svg {
+    color: #ffffff !important;
+  }
+}
+
 
 .gradient-text {
   background: linear-gradient(135deg, #8b6508, #d4af37);

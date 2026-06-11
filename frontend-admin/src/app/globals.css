@@ -74,6 +74,16 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+.vendor-navbar {
+  background: linear-gradient(to right, rgba(23, 37, 84, 0.45), rgba(3, 12, 23, 0.85), rgba(0, 0, 0, 0.95)) !important;
+  border-bottom: 1px solid rgba(139, 101, 8, 0.15) !important;
+}
+
+.light .vendor-navbar {
+  background: var(--bg-secondary) !important;
+  border-bottom: 1px solid rgba(139, 101, 8, 0.2) !important;
+}
+
 .gradient-text {
   background: linear-gradient(135deg, #8b6508, #d4af37);
   -webkit-background-clip: text;

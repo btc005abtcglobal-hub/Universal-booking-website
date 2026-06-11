@@ -1,21 +1,73 @@
 'use client';
 
 import { useVendorStore, PersistedBooking } from '../../../lib/store';
-import { ChevronLeft, ChevronRight, Calendar, User, Clock, CheckCircle2, ShieldAlert, IndianRupee } from 'lucide-react';
+import { 
+  ChevronLeft, ChevronRight, Calendar, User, Clock, CheckCircle2, 
+  ShieldAlert, IndianRupee, Lock, Unlock, PlusCircle, Search, Trash2, XCircle 
+} from 'lucide-react';
 import { useState } from 'react';
 
 export default function CalendarPage() {
-  const { currentMerchant, bookings } = useVendorStore();
+  const { 
+    currentMerchant, 
+    bookings, 
+    services, 
+    checkInBooking, 
+    completeBooking, 
+    cancelBooking,
+    loginRole
+  } = useVendorStore();
+
   const [selectedSlotBooking, setSelectedSlotBooking] = useState<PersistedBooking | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<{ date: string; time: string } | null>(null);
+
+  // Filters State
+  const [searchQuery, setSearchQuery] = useState('');
+  const [serviceFilter, setServiceFilter] = useState('ALL');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+
+  // Walk-in form State
+  const [walkinName, setWalkinName] = useState('');
+  const [walkinPhone, setWalkinPhone] = useState('');
+  const [walkinServiceId, setWalkinServiceId] = useState('');
+  const [walkinPrice, setWalkinPrice] = useState<number>(0);
+  const [walkinNotes, setWalkinNotes] = useState('');
 
   if (!currentMerchant) {
-    return <div className="text-center text-slate-500">Loading calendar session...</div>;
+    return <div className="text-center text-slate-500 py-12">Loading calendar session...</div>;
   }
 
   // Filter bookings for this merchant
   const merchantBookings = bookings.filter(
     (b) => b.merchantName.toLowerCase() === currentMerchant.merchantName.toLowerCase()
   );
+
+  // Filter services for this merchant to populate form dropdown
+  const merchantServices = services.filter(
+    (s) => s.merchant.toLowerCase() === currentMerchant.merchantName.toLowerCase() && s.active
+  );
+
+  // Apply filters
+  const filteredBookings = merchantBookings.filter(b => {
+    // 1. Search Query (Client Name)
+    if (searchQuery && !b.customerName.toLowerCase().includes(searchQuery.toLowerCase())) {
+      return false;
+    }
+    // 2. Service Filter
+    if (serviceFilter !== 'ALL' && b.serviceName !== serviceFilter) {
+      return false;
+    }
+    // 3. Status Filter
+    if (statusFilter !== 'ALL') {
+      if (statusFilter === 'BLOCKED') {
+        return b.customerName === '🚫 Blocked / Busy Slot';
+      }
+      if (b.status !== statusFilter) {
+        return false;
+      }
+    }
+    return true;
+  });
 
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const dates = ['2026-05-25', '2026-05-26', '2026-05-27', '2026-05-28', '2026-05-29', '2026-05-30', '2026-05-31'];
@@ -35,7 +87,7 @@ export default function CalendarPage() {
   // Colors mapping for status
   const statusColors: Record<string, string> = {
     CONFIRMED: 'bg-[#8b6508]/15 text-[#fceea7] border border-[#8b6508]/30',
-    CHECKED_IN: 'bg-[#0a3161]/20 text-[#9cc3f5] border border-[#0a3161]/30',
+    CHECKED_IN: 'bg-[#0a3161]/25 text-[#9cc3f5] border border-[#0a3161]/35',
     COMPLETED: 'bg-green-500/10 text-green-400 border border-green-500/20',
     CANCELLED: 'bg-red-500/10 text-red-400 border border-red-500/20'
   };
@@ -44,15 +96,105 @@ export default function CalendarPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-4 border-b border-white/5 pb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Calendar Slots</h1>
-          <p className="text-xs text-slate-400">Weekly scheduling planner. Syncs in real-time with customer check-ins.</p>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Interactive Calendar Slots</h1>
+          <p className="text-xs text-slate-400">Weekly scheduling planner. Block slots, add walk-ins, and manage bookings instantly.</p>
         </div>
         <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.01] px-4 py-2 text-xs text-slate-400 font-bold">
           <Calendar size={14} className="text-[#d4af37]" /> May 25 – May 31, 2026
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
+      {/* Interactive Stats Dashboard Row */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-2xl border border-white/5 bg-white/[0.005]">
+        <div className="space-y-1">
+          <span className="text-[9px] uppercase tracking-wider text-slate-500 font-extrabold">Weekly Bookings</span>
+          <div className="text-lg font-black text-white">
+            {merchantBookings.filter(b => b.customerName !== '🚫 Blocked / Busy Slot' && b.status !== 'CANCELLED').length} slots
+          </div>
+        </div>
+        <div className="space-y-1">
+          <span className="text-[9px] uppercase tracking-wider text-slate-500 font-extrabold">Scheduled Revenue</span>
+          <div className="text-lg font-black text-[#fceea7]">
+            {loginRole === 'supervisor' ? 'Protected' : `₹${merchantBookings.filter(b => b.status !== 'CANCELLED' && b.customerName !== '🚫 Blocked / Busy Slot').reduce((acc, b) => acc + b.amount, 0).toLocaleString('en-IN')}`}
+          </div>
+        </div>
+        <div className="space-y-1">
+          <span className="text-[9px] uppercase tracking-wider text-slate-500 font-extrabold">Blocked Slots</span>
+          <div className="text-lg font-black text-slate-400">
+            {merchantBookings.filter(b => b.customerName === '🚫 Blocked / Busy Slot').length} slots
+          </div>
+        </div>
+        <div className="space-y-1">
+          <span className="text-[9px] uppercase tracking-wider text-slate-500 font-extrabold">Capacity Utilized</span>
+          <div className="text-lg font-black text-emerald-400">
+            {Math.round((merchantBookings.filter(b => b.customerName !== '🚫 Blocked / Busy Slot').length / (dates.length * hours.length)) * 100)}%
+          </div>
+        </div>
+      </div>
+
+      {/* Search & Filters Panel */}
+      <div className="flex flex-wrap gap-4 items-center justify-between bg-white/[0.005] border border-white/5 p-4 rounded-2xl">
+        <div className="flex items-center gap-3 flex-wrap flex-1 max-w-2xl">
+          {/* Search */}
+          <div className="relative flex-1 min-w-[200px]">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">
+              <Search size={13} />
+            </span>
+            <input
+              type="text"
+              placeholder="Search customer name..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-slate-900/50 border border-white/5 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#8b6508]/40"
+            />
+          </div>
+
+          {/* Service Filter */}
+          <select
+            value={serviceFilter}
+            onChange={(e) => setServiceFilter(e.target.value)}
+            className="bg-slate-900/50 border border-white/5 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#8b6508]/40"
+          >
+            <option value="ALL">All Services</option>
+            {Array.from(new Set(merchantBookings.map(b => b.serviceName)))
+              .filter(name => name !== 'Blocked Slot' && name !== 'Manually Blocked')
+              .map(name => (
+                <option key={name} value={name}>{name}</option>
+              ))
+            }
+          </select>
+
+          {/* Status Filter */}
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="bg-slate-900/50 border border-white/5 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#8b6508]/40"
+          >
+            <option value="ALL">All Statuses</option>
+            <option value="CONFIRMED">Confirmed</option>
+            <option value="CHECKED_IN">Checked-in</option>
+            <option value="COMPLETED">Completed</option>
+            <option value="CANCELLED">Cancelled</option>
+            <option value="BLOCKED">Blocked Slots</option>
+          </select>
+        </div>
+
+        {/* Clear Filters */}
+        {(searchQuery || serviceFilter !== 'ALL' || statusFilter !== 'ALL') && (
+          <button
+            onClick={() => {
+              setSearchQuery('');
+              setServiceFilter('ALL');
+              setStatusFilter('ALL');
+            }}
+            className="text-xs text-[#fceea7] hover:underline font-bold"
+          >
+            Clear Filters
+          </button>
+        )}
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         {/* Weekly grid container */}
         <div className="rounded-2xl border border-white/5 bg-white/[0.01] p-5 overflow-x-auto">
           <div className="min-w-[800px]">
@@ -77,31 +219,44 @@ export default function CalendarPage() {
                   {/* Slots per day */}
                   {dates.map((date) => {
                     // Find booking for this date and time
-                    const slotBooking = merchantBookings.find(
+                    const slotBooking = filteredBookings.find(
                       (b) => b.date === date && b.time.toLowerCase() === hour.query.toLowerCase()
                     );
+                    const isBlocked = slotBooking?.customerName === '🚫 Blocked / Busy Slot';
                     
                     return (
                       <div 
                         key={`${date}-${hour.label}`} 
-                        className={`bg-white/[0.005] p-1.5 h-16 border-r border-white/5 last:border-r-0 flex flex-col justify-center transition-colors relative ${
-                          slotBooking ? 'hover:bg-white/[0.02]' : ''
-                        }`}
+                        className={`bg-white/[0.005] p-1.5 h-16 border-r border-white/5 last:border-r-0 flex flex-col justify-center transition-colors relative`}
                       >
                         {slotBooking ? (
                           <button
-                            onClick={() => setSelectedSlotBooking(slotBooking)}
+                            onClick={() => {
+                              setSelectedSlotBooking(slotBooking);
+                              setSelectedSlot(null);
+                            }}
                             className={`w-full h-full rounded-lg p-1.5 text-left border text-[9px] leading-tight truncate font-bold flex flex-col justify-between ${
-                              statusColors[slotBooking.status] || 'bg-white/5 border-white/10 text-white'
+                              isBlocked
+                                ? 'bg-slate-900/60 text-slate-500 border-slate-800/60'
+                                : statusColors[slotBooking.status] || 'bg-white/5 border-white/10 text-white'
                             } cursor-pointer`}
                           >
-                            <span className="truncate block font-black">{slotBooking.customerName}</span>
+                            <span className="truncate block font-black flex items-center gap-1">
+                              {isBlocked && <Lock size={8} className="text-slate-500" />}
+                              {slotBooking.customerName}
+                            </span>
                             <span className="opacity-70 truncate block mt-0.5">{slotBooking.serviceName}</span>
                           </button>
                         ) : (
-                          <div className="h-full w-full rounded-lg border border-dashed border-white/[0.02] flex items-center justify-center opacity-20">
+                          <button
+                            onClick={() => {
+                              setSelectedSlot({ date, time: hour.label });
+                              setSelectedSlotBooking(null);
+                            }}
+                            className="h-full w-full rounded-lg border border-dashed border-white/[0.02] flex items-center justify-center opacity-20 hover:opacity-100 hover:border-[#8b6508]/30 hover:bg-[#8b6508]/5 transition-all cursor-pointer"
+                          >
                             <span className="text-[8px] uppercase tracking-wider text-slate-600 font-bold">Free</span>
-                          </div>
+                          </button>
                         )}
                       </div>
                     );
@@ -112,25 +267,30 @@ export default function CalendarPage() {
           </div>
         </div>
 
-        {/* Selected Slot Information Panel */}
+        {/* Selected Slot / Form Action Panel */}
         <div className="space-y-4">
-          <div className="rounded-2xl border border-white/5 bg-white/[0.01] p-5 space-y-4 min-h-[300px] flex flex-col justify-between">
+          <div className="rounded-2xl border border-white/5 bg-white/[0.01] p-5 space-y-4 min-h-[420px] flex flex-col justify-between">
             {selectedSlotBooking ? (
+              // Case 1: Existing Booking Selected
               <div className="space-y-4 flex-1 flex flex-col justify-between">
                 <div className="space-y-4">
-                  <div className="flex justify-between items-start">
-                    <h3 className="font-extrabold text-sm text-white">Slot Booking Details</h3>
-                    <span className={`rounded-full px-2 py-0.5 text-[8px] font-black tracking-wide ${statusColors[selectedSlotBooking.status]}`}>
+                  <div className="flex justify-between items-start gap-2">
+                    <h3 className="font-extrabold text-xs text-white uppercase tracking-wider">
+                      {selectedSlotBooking.customerName === '🚫 Blocked / Busy Slot' ? 'Blocked Slot Details' : 'Slot Booking Details'}
+                    </h3>
+                    <span className={`rounded-full px-2.5 py-0.5 text-[8px] font-black tracking-wide shrink-0 ${statusColors[selectedSlotBooking.status]}`}>
                       {selectedSlotBooking.status}
                     </span>
                   </div>
 
                   <div className="space-y-3 bg-white/[0.02] border border-white/5 p-4 rounded-xl">
                     <div className="flex items-center gap-2.5">
-                      <div className="h-7 w-7 rounded-lg bg-[#8b6508]/10 border border-[#8b6508]/20 text-[#fceea7] flex items-center justify-center font-bold text-xs">{selectedSlotBooking.customerName[0]}</div>
-                      <div>
-                        <div className="font-bold text-xs text-white">{selectedSlotBooking.customerName}</div>
-                        <div className="text-[10px] text-slate-500">{selectedSlotBooking.ref}</div>
+                      <div className="h-7 w-7 rounded-lg bg-[#8b6508]/10 border border-[#8b6508]/20 text-[#fceea7] flex items-center justify-center font-bold text-xs shrink-0">
+                        {selectedSlotBooking.customerName[0]}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="font-bold text-xs text-white truncate">{selectedSlotBooking.customerName}</div>
+                        <div className="text-[10px] text-slate-500 font-mono truncate">{selectedSlotBooking.ref}</div>
                       </div>
                     </div>
 
@@ -143,37 +303,239 @@ export default function CalendarPage() {
                         <User size={11} className="text-slate-500" />
                         <span>Service: <strong className="text-white">{selectedSlotBooking.serviceName}</strong></span>
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <IndianRupee size={11} className="text-slate-500" />
-                        <span>Fee Charged: <strong className="text-white">₹{selectedSlotBooking.amount}</strong></span>
-                      </div>
+                      {selectedSlotBooking.customerName !== '🚫 Blocked / Busy Slot' && (
+                        <div className="flex items-center gap-1.5">
+                          <IndianRupee size={11} className="text-slate-500" />
+                          <span>Fee Charged: <strong className="text-white">₹{selectedSlotBooking.amount}</strong></span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
                   {selectedSlotBooking.notes && (
                     <div className="space-y-1">
                       <span className="text-[9px] uppercase font-black text-slate-500 tracking-wider">User Notes</span>
-                      <p className="text-[10px] text-slate-400 italic bg-white/[0.01] border border-white/5 p-2 rounded">
+                      <p className="text-[10px] text-slate-400 italic bg-white/[0.01] border border-white/5 p-2.5 rounded-lg leading-relaxed">
                         "{selectedSlotBooking.notes}"
                       </p>
                     </div>
                   )}
                 </div>
 
-                <div className="pt-4 border-t border-white/5">
-                  <a
-                    href="/dashboard/bookings"
-                    className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/5 py-2.5 text-xs font-bold text-white transition-all text-center cursor-pointer"
+                {/* Quick Interactive Actions */}
+                <div className="pt-4 border-t border-white/5 space-y-2">
+                  {selectedSlotBooking.customerName === '🚫 Blocked / Busy Slot' ? (
+                    <button
+                      onClick={() => {
+                        useVendorStore.setState({
+                          bookings: bookings.filter(b => b.id !== selectedSlotBooking.id)
+                        });
+                        setSelectedSlotBooking(null);
+                      }}
+                      className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 py-2.5 text-xs font-bold text-white transition-all text-center cursor-pointer shadow-md"
+                    >
+                      <Unlock size={13} /> Unblock Slot / Set Free
+                    </button>
+                  ) : (
+                    <>
+                      {selectedSlotBooking.status === 'CONFIRMED' && (
+                        <button
+                          onClick={() => {
+                            checkInBooking(selectedSlotBooking.id);
+                            setSelectedSlotBooking({ ...selectedSlotBooking, status: 'CHECKED_IN' });
+                          }}
+                          className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#0a3161] hover:bg-[#08264b] py-2.5 text-xs font-bold text-white transition-all text-center cursor-pointer shadow-sm"
+                        >
+                          <CheckCircle2 size={13} /> Check In Client
+                        </button>
+                      )}
+                      {selectedSlotBooking.status === 'CHECKED_IN' && (
+                        <button
+                          onClick={() => {
+                            completeBooking(selectedSlotBooking.id);
+                            setSelectedSlotBooking({ ...selectedSlotBooking, status: 'COMPLETED' });
+                          }}
+                          className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-green-600 hover:bg-green-700 py-2.5 text-xs font-bold text-white transition-all text-center cursor-pointer shadow-md"
+                        >
+                          <CheckCircle2 size={13} /> Mark Appointment Completed
+                        </button>
+                      )}
+                      {selectedSlotBooking.status !== 'CANCELLED' && selectedSlotBooking.status !== 'COMPLETED' && (
+                        <button
+                          onClick={() => {
+                            cancelBooking(selectedSlotBooking.id);
+                            setSelectedSlotBooking({ ...selectedSlotBooking, status: 'CANCELLED' });
+                          }}
+                          className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-red-950/45 border border-red-500/20 hover:bg-red-900/35 py-2.5 text-xs font-bold text-red-400 transition-all text-center cursor-pointer"
+                        >
+                          <XCircle size={13} /> Cancel Appointment
+                        </button>
+                      )}
+                      <a
+                        href="/dashboard/bookings"
+                        className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/5 py-2.5 text-xs font-bold text-slate-300 transition-all text-center cursor-pointer"
+                      >
+                        Open Complete Client File
+                      </a>
+                    </>
+                  )}
+                </div>
+              </div>
+            ) : selectedSlot ? (
+              // Case 2: Free Slot Clicked -> Block or Walk-in
+              <div className="space-y-4 flex-1 flex flex-col justify-between">
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                    <h3 className="font-extrabold text-xs text-[#fceea7] uppercase tracking-wider">Configure Free Slot</h3>
+                    <button onClick={() => setSelectedSlot(null)} className="text-slate-500 hover:text-slate-300">
+                      <XCircle size={15} />
+                    </button>
+                  </div>
+                  
+                  <div className="text-[10px] text-slate-400">
+                    Selected: <strong>{selectedSlot.date}</strong> at <strong>{selectedSlot.time}</strong>
+                  </div>
+
+                  <div className="space-y-3.5 pt-2">
+                    {/* Add Walk-in Form */}
+                    <div className="space-y-2">
+                      <span className="text-[9px] uppercase font-black text-slate-500 tracking-wider">Walk-in Client Name</span>
+                      <input
+                        type="text"
+                        placeholder="Rajesh Kumar"
+                        value={walkinName}
+                        onChange={(e) => setWalkinName(e.target.value)}
+                        className="w-full bg-slate-900/50 border border-white/5 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#8b6508]/40"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <span className="text-[9px] uppercase font-black text-slate-500 tracking-wider">Client Phone</span>
+                      <input
+                        type="text"
+                        placeholder="+91 98765 43210"
+                        value={walkinPhone}
+                        onChange={(e) => setWalkinPhone(e.target.value)}
+                        className="w-full bg-slate-900/50 border border-white/5 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#8b6508]/40"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <span className="text-[9px] uppercase font-black text-slate-500 tracking-wider">Select Service</span>
+                      <select
+                        value={walkinServiceId}
+                        onChange={(e) => {
+                          const sId = e.target.value;
+                          setWalkinServiceId(sId);
+                          const selectedSvc = merchantServices.find(s => s.id === sId);
+                          if (selectedSvc) setWalkinPrice(selectedSvc.price);
+                        }}
+                        className="w-full bg-slate-900/50 border border-white/5 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#8b6508]/40"
+                      >
+                        <option value="">-- Choose Service --</option>
+                        {merchantServices.map((s) => (
+                          <option key={s.id} value={s.id}>{s.name} (₹{s.price})</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <span className="text-[9px] uppercase font-black text-slate-500 tracking-wider">Service Fee (₹)</span>
+                      <input
+                        type="number"
+                        placeholder="500"
+                        value={walkinPrice}
+                        onChange={(e) => setWalkinPrice(Number(e.target.value))}
+                        className="w-full bg-slate-900/50 border border-white/5 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#8b6508]/40"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <span className="text-[9px] uppercase font-black text-slate-500 tracking-wider">Appointment Notes</span>
+                      <textarea
+                        placeholder="Walk-in comments..."
+                        value={walkinNotes}
+                        onChange={(e) => setWalkinNotes(e.target.value)}
+                        rows={2}
+                        className="w-full bg-slate-900/50 border border-white/5 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#8b6508]/40 resize-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-white/5 flex flex-col gap-2">
+                  <button
+                    onClick={() => {
+                      if (!walkinName) {
+                        alert("Please enter a client name for walk-in booking.");
+                        return;
+                      }
+                      const selectedService = merchantServices.find(s => s.id === walkinServiceId);
+                      const newBooking: PersistedBooking = {
+                        id: `bk-${Date.now()}`,
+                        ref: `BK-WI${Math.floor(1000 + Math.random() * 9000)}`,
+                        serviceId: walkinServiceId || 'manual-walkin',
+                        serviceName: selectedService ? selectedService.name : 'Custom Walk-in Service',
+                        merchantName: currentMerchant.merchantName,
+                        category: currentMerchant.category,
+                        date: selectedSlot.date,
+                        time: selectedSlot.time,
+                        amount: Number(walkinPrice) || 0,
+                        status: 'CONFIRMED',
+                        customerName: walkinName,
+                        customerEmail: 'walkin@bokspot.com',
+                        customerPhone: walkinPhone || 'N/A',
+                        notes: walkinNotes ? `Walk-in Notes: ${walkinNotes}` : 'Walk-in appointment.'
+                      };
+                      useVendorStore.setState({ bookings: [newBooking, ...bookings] });
+                      setSelectedSlot(null);
+                      // Clear forms
+                      setWalkinName('');
+                      setWalkinPhone('');
+                      setWalkinServiceId('');
+                      setWalkinPrice(0);
+                      setWalkinNotes('');
+                    }}
+                    className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#8b6508] hover:bg-[#a37910] py-2.5 text-xs font-bold text-white transition-all text-center cursor-pointer shadow-md"
                   >
-                    Open Complete Client File
-                  </a>
+                    <PlusCircle size={13} /> Confirm Walk-in Appointment
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      const newBooking: PersistedBooking = {
+                        id: `bk-blocked-${Date.now()}`,
+                        ref: `BK-BL${Math.floor(1000 + Math.random() * 9000)}`,
+                        serviceId: 'blocked',
+                        serviceName: 'Manually Blocked',
+                        merchantName: currentMerchant.merchantName,
+                        category: currentMerchant.category,
+                        date: selectedSlot.date,
+                        time: selectedSlot.time,
+                        amount: 0,
+                        status: 'CANCELLED',
+                        customerName: '🚫 Blocked / Busy Slot',
+                        customerEmail: 'blocked@bokspot.com',
+                        customerPhone: 'N/A',
+                        notes: 'Slot manually blocked by business owner.'
+                      };
+                      useVendorStore.setState({ bookings: [newBooking, ...bookings] });
+                      setSelectedSlot(null);
+                    }}
+                    className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl border border-dashed border-white/20 bg-white/[0.02] hover:bg-white/5 py-2.5 text-xs font-bold text-slate-300 transition-all text-center cursor-pointer"
+                  >
+                    <Lock size={13} /> Block Slot / Set Unavailable
+                  </button>
                 </div>
               </div>
             ) : (
+              // Case 3: Empty State
               <div className="flex-1 flex flex-col items-center justify-center text-center p-4 text-slate-500 space-y-2">
                 <ShieldAlert size={24} className="text-slate-600 animate-pulse" />
-                <h4 className="font-extrabold text-xs text-white">No Slot Selected</h4>
-                <p className="text-[10px] text-slate-500 leading-normal max-w-[200px]">Click any booked slot grid container on the weekly overview schedule to review client files.</p>
+                <h4 className="font-extrabold text-xs text-white">Interactive Planner</h4>
+                <p className="text-[10px] text-slate-500 leading-normal max-w-[200px]">
+                  Click any booked slot to review details and execute actions, or click any **Free** slot to add walk-ins and block slots.
+                </p>
               </div>
             )}
           </div>

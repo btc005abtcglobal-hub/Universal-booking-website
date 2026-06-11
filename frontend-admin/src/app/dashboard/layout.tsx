@@ -300,7 +300,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Main Container */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-border-brand bg-bg-secondary/40 backdrop-blur-md px-6 lg:px-8">
+        <header className="sticky top-0 z-40 flex h-16 items-center justify-between vendor-navbar backdrop-blur-md px-6 lg:px-8">
           <div className="flex items-center gap-3">
             <button onClick={() => setSidebarOpen(true)} className="lg:hidden rounded-lg p-2 hover:bg-white/5 text-slate-300"><Menu className="h-5 w-5" /></button>
             
@@ -494,12 +494,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         <span>Bookings Log</span>
                       </Link>
                     </li>
-                    <li>
-                      <Link href="/dashboard/calendar" onClick={() => setProfileOpen(false)} className="flex items-center gap-3 px-5 py-3 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary transition-colors text-xs font-bold">
-                        <Calendar className="h-4 w-4" />
-                        <span>Calendar View</span>
-                      </Link>
-                    </li>
+
                     
                     {/* Theme Switcher Segment */}
                     <li className="px-5 py-3.5 bg-bg-tertiary/20">

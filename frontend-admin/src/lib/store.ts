@@ -94,6 +94,31 @@ export interface CatalogService {
   difficultyLevel?: 'Beginner' | 'Intermediate' | 'Advanced';
   productsUsed?: string;
   tableCapacity?: number;
+
+  // Doctor/Medical specific
+  doctorName?: string;
+  roomNumber?: string;
+
+  // Fitness specific
+  trainerName?: string;
+  classCapacity?: number;
+
+  // Salon specific
+  stylistName?: string;
+  treatmentType?: string;
+
+  // Dining specific
+  cuisineType?: string;
+  seatingSection?: string;
+
+  // Cinema/Theatre specific
+  moviePoster?: string;
+  movieShowtimes?: string;
+  movieLanguage?: string;
+  movieRating?: string;
+  hallNumber?: string;
+
+  [key: string]: any;
 }
 
 export interface MerchantUser {

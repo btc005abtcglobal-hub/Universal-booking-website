@@ -6,12 +6,11 @@ import {
   LayoutDashboard, Calendar, BookOpen, Settings, QrCode, 
   Package, Menu, X, Bell, LogOut, Stethoscope, Dumbbell, 
   Scissors, Utensils, ShieldAlert, Check, Trash2, Info,
-  ChevronDown, Building, Sparkles, Sun, Moon, Laptop
+  ChevronDown, Building, Sparkles, Sun, Moon, Laptop, User
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useVendorStore, PRESET_MERCHANTS } from '../../lib/store';
 import { getVerticalFromCategory } from '../../lib/categoryUtils';
-import { LiveClock } from './LiveClock';
 
 
 const navItems = [
@@ -41,6 +40,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   // Store Switcher state
   const [showStoreSwitcher, setShowStoreSwitcher] = useState(false);
   const switcherRef = useRef<HTMLDivElement>(null);
+
+  // Profile Menu state
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
   
   // Stateful Notifications
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
@@ -95,7 +98,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
   }, [currentMerchant]);
 
-  // Click outside to close notifications and store switcher popovers
+  // Click outside to close notifications, store switcher, and profile popovers
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
@@ -103,6 +106,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       }
       if (switcherRef.current && !switcherRef.current.contains(event.target as Node)) {
         setShowStoreSwitcher(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setProfileOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -232,12 +238,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const getBnxMailId = () => {
     if (!currentMerchant) return '';
-    const vendorUniqueId = currentMerchant.vendorId || '2026050000';
+    const originalEmail = currentMerchant.email || '';
     if (loginRole === 'supervisor') {
       const supName = supervisorId || 'SUPERVISOR';
-      return `${supName}/${vendorUniqueId}@bnxmail.com`;
+      return `${supName}/${originalEmail}`;
     }
-    return `${vendorUniqueId}@bnxmail.com`;
+    return originalEmail;
   };
 
   return (
@@ -357,24 +363,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
           
           <div className="flex items-center gap-4 ml-auto">
-            {/* Live Clock */}
-            <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-white/5 bg-white/[0.01]">
-              <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider hidden sm:inline">SYS TIME:</span>
-              <LiveClock />
-            </div>
-
-            {/* Theme Toggle Button */}
-            <button 
-              onClick={() => {
-                const nextTheme = theme === 'light' ? 'dark' : theme === 'dark' ? 'system' : 'light';
-                setTheme(nextTheme);
-              }}
-              className="rounded-xl p-2 h-9 w-9 border border-border-brand bg-bg-secondary hover:bg-bg-tertiary text-text-secondary hover:text-text-primary transition-colors cursor-pointer flex items-center justify-center shrink-0"
-              title={`Theme: ${theme}. Click to change.`}
-            >
-              {theme === 'light' ? <Sun className="h-4 w-4" /> : theme === 'dark' ? <Moon className="h-4 w-4" /> : <Laptop className="h-4 w-4" />}
-            </button>
-
             {/* Stateful Notifications Popover */}
             <div className="relative" ref={popoverRef}>
               <button 
@@ -458,16 +446,103 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               )}
             </div>
             
-            {/* Quick user badge */}
-            <div className="flex items-center gap-3 border-l border-white/5 pl-4">
-              <button 
-                onClick={handleLogout}
-                className="flex items-center gap-1.5 rounded-xl border border-white/5 bg-white/[0.01] hover:bg-red-500/10 hover:border-red-500/20 px-3.5 py-2 text-xs font-bold text-slate-400 hover:text-red-400 transition-all cursor-pointer"
-                title="Switch Merchant Console"
+            {/* Profile Dropdown */}
+            <div className="relative border-l border-white/10 pl-4 animate-fade-in" ref={profileRef}>
+              <button
+                onClick={() => setProfileOpen(!profileOpen)}
+                className="flex items-center gap-2 rounded-full border border-white/10 hover:border-white/20 bg-white/[0.01] hover:bg-white/[0.04] px-3.5 py-1.5 text-xs font-bold text-slate-300 hover:text-white transition-all cursor-pointer select-none"
+                aria-label="Toggle profile menu"
+                title="Partner Profile Settings"
               >
-                <LogOut className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Switch Console</span>
+                <div className="h-5 w-5 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
+                  <User size={12} strokeWidth={2.5} className="text-[#0a3161]" />
+                </div>
+                <span>{loginRole === 'supervisor' ? (supervisorId || 'Supervisor') : (currentMerchant.username || 'Partner')}</span>
+                <ChevronDown className={`h-3 w-3 text-slate-500 transition-transform duration-200 ${profileOpen ? 'rotate-180' : ''}`} />
               </button>
+
+              {profileOpen && (
+                <div className="absolute right-0 mt-3 w-64 bg-bg-secondary rounded-2xl shadow-2xl border border-border-brand z-50 overflow-hidden animate-fade-in text-left">
+                  {/* User Profile Header */}
+                  <div className="px-5 py-4 bg-bg-tertiary border-b border-border-brand flex flex-col min-w-0 text-left">
+                    <span className="text-[9px] uppercase font-bold tracking-wider text-slate-500">Console User</span>
+                    <span className="font-extrabold text-[12.5px] text-text-primary mt-1 truncate max-w-full font-mono" title={getBnxMailId()}>
+                      {getBnxMailId()}
+                    </span>
+                    <span className="text-[10px] text-text-secondary flex items-center gap-1.5 mt-1 font-medium capitalize">
+                      🔑 Role: {loginRole || 'Partner'}
+                    </span>
+                  </div>
+                  
+                  {/* Dropdown Options */}
+                  <ul className="py-2 divide-y divide-white/[0.03]">
+                    <li>
+                      <Link href="/dashboard/settings" onClick={() => setProfileOpen(false)} className="flex items-center gap-3 px-5 py-3 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary transition-colors text-xs font-bold">
+                        <Settings className="h-4 w-4" />
+                        <span>Business Settings</span>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/dashboard/services" onClick={() => setProfileOpen(false)} className="flex items-center gap-3 px-5 py-3 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary transition-colors text-xs font-bold">
+                        <Package className="h-4 w-4" />
+                        <span>Manage Services</span>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/dashboard/bookings" onClick={() => setProfileOpen(false)} className="flex items-center gap-3 px-5 py-3 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary transition-colors text-xs font-bold">
+                        <BookOpen className="h-4 w-4" />
+                        <span>Bookings Log</span>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/dashboard/calendar" onClick={() => setProfileOpen(false)} className="flex items-center gap-3 px-5 py-3 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary transition-colors text-xs font-bold">
+                        <Calendar className="h-4 w-4" />
+                        <span>Calendar View</span>
+                      </Link>
+                    </li>
+                    
+                    {/* Theme Switcher Segment */}
+                    <li className="px-5 py-3.5 bg-bg-tertiary/20">
+                      <div className="flex flex-col gap-2">
+                        <span className="text-[9px] uppercase font-bold tracking-wider text-slate-500 text-left">Display Theme</span>
+                        <div className="grid grid-cols-3 gap-1 bg-bg-secondary p-1 rounded-xl border border-border-brand/40">
+                          {(['light', 'dark', 'system'] as const).map((t) => {
+                            const isThemeActive = theme === t;
+                            return (
+                              <button
+                                key={t}
+                                onClick={() => setTheme(t)}
+                                className={`py-1.5 rounded-lg text-[10px] font-bold transition-all uppercase tracking-wider capitalize cursor-pointer flex items-center justify-center gap-1 ${
+                                  isThemeActive
+                                    ? 'bg-[#8b6508] text-white shadow-sm'
+                                    : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary'
+                                }`}
+                              >
+                                {t === 'light' ? <Sun className="h-3 w-3" /> : t === 'dark' ? <Moon className="h-3 w-3" /> : <Laptop className="h-3 w-3" />}
+                                <span>{t}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                  
+                  {/* Bottom Divider & Sign Out */}
+                  <div className="border-t border-border-brand px-2.5 py-2.5 bg-bg-tertiary">
+                    <button
+                      onClick={() => {
+                        setProfileOpen(false);
+                        handleLogout();
+                      }}
+                      className="w-full flex items-center gap-3 px-3.5 py-2.5 text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors rounded-xl text-xs font-bold cursor-pointer"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      <span>Sign out console</span>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </header>

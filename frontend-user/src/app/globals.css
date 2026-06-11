@@ -602,6 +602,7 @@
   .glow-gold { animation: goldPulse 2.5s ease-in-out infinite; }
 
   /* Custom Navbar Styling - Dynamic Theme Adaptive (Premium Dark Shadowed Gold) */
+  /* Custom Navbar Styling - Dynamic Theme Adaptive (Premium Elegant Gold) */
   .custom-navbar {
     position: fixed;
     top: 0;
@@ -611,23 +612,23 @@
     transition: all 0.3s ease;
     backdrop-filter: blur(28px);
     -webkit-backdrop-filter: blur(28px);
-    background: #8b6508 !important;
-    border-bottom: 1px solid rgba(184, 134, 11, 0.4) !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    background: #b5901c !important;
+    border-bottom: 1px solid rgba(252, 238, 167, 0.4) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
   }
 
   /* Dark Mode Styling */
   .dark .custom-navbar {
-    background: #8b6508 !important;
-    border-bottom: 1px solid rgba(184, 134, 11, 0.4) !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    background: #b5901c !important;
+    border-bottom: 1px solid rgba(252, 238, 167, 0.4) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
   }
 
   /* Light Mode Styling */
   .light .custom-navbar {
-    background: #8b6508 !important;
-    border-bottom: 1px solid rgba(184, 134, 11, 0.4) !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    background: #b5901c !important;
+    border-bottom: 1px solid rgba(252, 238, 167, 0.4) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
   }
 
   /* Brand Logo Color Classes (To prevent overrides) */
@@ -638,7 +639,7 @@
     color: #ff6325 !important;
   }
 
-  /* High legibility color overrides inside Dark Gold Navbar */
+  /* High legibility color overrides inside Elegant Gold Navbar */
   .custom-navbar,
   .custom-navbar a,
   .custom-navbar select,

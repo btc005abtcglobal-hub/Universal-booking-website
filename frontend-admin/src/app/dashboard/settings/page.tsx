@@ -1,7 +1,7 @@
 'use client';
 
 import { useVendorStore } from '../../../lib/store';
-import { Building2, Mail, Phone, Globe, MapPin, Camera, Save, Info, CheckCircle2 } from 'lucide-react';
+import { Building2, Mail, Phone, Globe, MapPin, Camera, Save, Info, CheckCircle2, User } from 'lucide-react';
 import { useState } from 'react';
 
 export default function SettingsPage() {
@@ -10,16 +10,16 @@ export default function SettingsPage() {
   // Calculate dynamic integrated BNX Mail ID
   const getBnxMailId = () => {
     if (!currentMerchant) return '';
-    const vendorUniqueId = currentMerchant.vendorId || '2026050000';
+    const originalEmail = currentMerchant.email || '';
     if (loginRole === 'supervisor') {
       const supName = supervisorId || 'SUPERVISOR';
-      return `${supName}/${vendorUniqueId}@bnxmail.com`;
+      return `${supName}/${originalEmail}`;
     }
-    return `${vendorUniqueId}@bnxmail.com`;
+    return originalEmail;
   };
 
   const [name, setName] = useState(currentMerchant?.merchantName || '');
-  const [email, setEmail] = useState(getBnxMailId() || (currentMerchant?.username + '@merchant.com'));
+  const [email, setEmail] = useState(getBnxMailId() || '');
   const [phone, setPhone] = useState('+91 98765 43210');
   const [website, setWebsite] = useState('www.beta-booking.com');
   const [address, setAddress] = useState('42 Anna Nagar, Chennai');
@@ -163,7 +163,49 @@ export default function SettingsPage() {
                 <Save size={14} /> Save Profile Settings
               </button>
             </div>
-          </div>
+            </div>
+
+          {/* Supervisor Details Card (Conditionally shown if role is supervisor or merchant has assigned supervisor) */}
+          {(loginRole === 'supervisor' || currentMerchant.assignSupervisor) && (
+            <div className="rounded-2xl border border-border-brand bg-bg-secondary p-6 space-y-4 mt-6">
+              <h2 className="font-extrabold text-sm text-text-primary uppercase tracking-wider flex items-center gap-1.5 border-b border-border-brand pb-3">
+                <User size={16} className="text-[#d4af37]" /> Assigned Supervisor Information
+              </h2>
+              
+              <div className="grid sm:grid-cols-2 gap-4 text-xs font-semibold">
+                <div className="space-y-1">
+                  <span className="text-[10px] uppercase font-bold text-text-secondary">Supervisor Name</span>
+                  <p className="text-text-primary bg-bg-primary/20 px-3.5 py-2 rounded-xl border border-border-brand">
+                    {currentMerchant.supervisorName || supervisorId || 'Supervisor Agent'}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-[10px] uppercase font-bold text-text-secondary">Supervisor Phone</span>
+                  <p className="text-text-primary bg-bg-primary/20 px-3.5 py-2 rounded-xl border border-border-brand">
+                    {currentMerchant.supervisorPhone || '+91 98765 43210'}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-[10px] uppercase font-bold text-text-secondary">Supervisor Personal Email</span>
+                  <p className="text-text-primary bg-bg-primary/20 px-3.5 py-2 rounded-xl border border-border-brand">
+                    {currentMerchant.supervisorEmail || 'supervisor@personal.com'}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-[10px] uppercase font-bold text-text-secondary">Supervisor Physical Address</span>
+                  <p className="text-text-primary bg-bg-primary/20 px-3.5 py-2 rounded-xl border border-border-brand truncate" title={currentMerchant.supervisorAddress || 'Chennai, India'}>
+                    {currentMerchant.supervisorAddress || 'Chennai, India'}
+                  </p>
+                </div>
+                <div className="sm:col-span-2 space-y-1">
+                  <span className="text-[10px] uppercase font-bold text-[#d4af37]">Supervisor Integrated BNX Mail ID</span>
+                  <p className="text-[#fceea7] bg-bg-primary/40 px-3.5 py-2 rounded-xl border border-[#d4af37]/20 font-mono">
+                    {getBnxMailId()}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </form>
 
         <div className="space-y-6">

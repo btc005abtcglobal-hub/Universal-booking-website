@@ -85,7 +85,7 @@ const CATEGORY_DATA: Record<string, {
     ],
   },
   'sports-turf': {
-    name: 'Sports&Turf', emoji: '⚽', gradient: 'from-emerald-500 to-teal-600',
+    name: 'Sports', emoji: '⚽', gradient: 'from-emerald-500 to-teal-600',
     desc: 'Sports turfs, courts, grounds, swimming, and indoor recreation zones',
     sections: [
       {

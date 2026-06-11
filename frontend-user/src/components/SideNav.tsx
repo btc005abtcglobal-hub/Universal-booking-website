@@ -61,16 +61,6 @@ export function SideNav() {
             <p className="text-[10px] text-[color:var(--color-primary)] uppercase tracking-[0.2em] font-bold">Gold Status</p>
           </div>
         </div>
-
-        {/* Founder Console Link */}
-        <div className="text-center pt-2">
-          <Link
-            href="/superadmin"
-            className="text-[9px] text-[color:var(--color-on-surface-variant)] opacity-30 hover:opacity-100 hover:text-[color:var(--color-primary)] transition-all font-bold uppercase tracking-wider block"
-          >
-            Founder Console
-          </Link>
-        </div>
       </div>
     </aside>
   );

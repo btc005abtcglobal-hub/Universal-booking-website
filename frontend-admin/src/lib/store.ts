@@ -104,6 +104,12 @@ export interface MerchantUser {
   logoLetter: string;
   aboutText: string;
   vendorId?: string;
+  email?: string;
+  assignSupervisor?: boolean;
+  supervisorName?: string;
+  supervisorPhone?: string;
+  supervisorEmail?: string;
+  supervisorAddress?: string;
 }
 
 interface VendorStoreState {
@@ -159,7 +165,8 @@ export const PRESET_MERCHANTS: MerchantUser[] = [
     category: 'Doctor Appointment', 
     logoLetter: 'A',
     aboutText: 'Apollo Dental Care is a multi-specialty dental clinic network dedicated to providing high-quality oral health services. From preventive care to advanced orthodontics and restorative treatments, our certified specialists ensure comfort and clinical excellence for all patients.',
-    vendorId: '2026050001'
+    vendorId: '2026050001',
+    email: 'doctor@bnxmail.com'
   },
   { 
     id: 'mer-2', 
@@ -168,7 +175,8 @@ export const PRESET_MERCHANTS: MerchantUser[] = [
     category: 'Gym / Yoga Slot Booking', 
     logoLetter: 'Z',
     aboutText: 'ZenFit is a holistic strength and wellness clinic combining personal functional training, vinyasa yoga, and evidence-based nutrition coaching. Our certified coaches provide structured training and diet plans to guide you toward sustainable health goals.',
-    vendorId: '2026050002'
+    vendorId: '2026050002',
+    email: 'fitness@bnxmail.com'
   },
   { 
     id: 'mer-3', 
@@ -177,7 +185,8 @@ export const PRESET_MERCHANTS: MerchantUser[] = [
     category: 'Salon / Spa Appointment', 
     logoLetter: 'S',
     aboutText: 'Style Studio is a premium beauty and wellness salon specializing in modern hair design, organic aesthetic therapies, and restorative body treatments. We combine advanced skin care with professional styling in an inviting, contemporary atmosphere.',
-    vendorId: '2026050003'
+    vendorId: '2026050003',
+    email: 'salon@bnxmail.com'
   },
   { 
     id: 'mer-4', 
@@ -186,7 +195,8 @@ export const PRESET_MERCHANTS: MerchantUser[] = [
     category: 'Restaurant Table Reservation', 
     logoLetter: 'T',
     aboutText: 'The Grand Temple Dine delivers an exceptional culinary experience, combining contemporary fusion menus with custom chef\'s tasting events and table-side service in a refined architectural setting.',
-    vendorId: '2026050004'
+    vendorId: '2026050004',
+    email: 'dining@bnxmail.com'
   },
   { 
     id: 'mer-5', 
@@ -195,7 +205,8 @@ export const PRESET_MERCHANTS: MerchantUser[] = [
     category: 'Salon / Spa Appointment', 
     logoLetter: 'G',
     aboutText: 'Glitz Parlour offers advanced bridal makeovers, nail art, and organic facial treatments designed to make you shine on every occasion.',
-    vendorId: '2026050003'
+    vendorId: '2026050003',
+    email: 'glitz@bnxmail.com'
   },
   { 
     id: 'mer-6', 
@@ -204,7 +215,8 @@ export const PRESET_MERCHANTS: MerchantUser[] = [
     category: 'Salon / Spa Appointment', 
     logoLetter: 'U',
     aboutText: 'Urban Haircut Co provides quick, premium grooming, haircuts, and beard stylings for the modern busy professional.',
-    vendorId: '2026050003'
+    vendorId: '2026050003',
+    email: 'urban@bnxmail.com'
   }
 ];
 

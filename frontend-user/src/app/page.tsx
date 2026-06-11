@@ -4,9 +4,10 @@ import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { MapPin, Star, Compass, ArrowRight, X, Sparkles } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { TopNav } from '../components/TopNav';
 import { BottomNav } from '../components/BottomNav';
+import { SupportChat } from '../components/SupportChat';
 import { ShortcutManagerModal } from '../components/shortcuts/ShortcutManagerModal';
 import { ActionModalManager } from '../components/shortcuts/ActionModalManager';
 import { useBookingFlowStore, useLocationStore } from '../lib/store';
@@ -326,6 +327,16 @@ const MOCK_ADS = [
   }
 ];
 
+const MOCK_ACTIVITIES = [
+  { user: 'Rohan', city: 'Chennai', action: 'booked', item: 'Root Canal Treatment', merchant: 'Apollo Dental Care', time: '2 mins ago', emoji: '🦷', link: '/service/s1' },
+  { user: 'Sneha', city: 'Coimbatore', action: 'booked', item: 'Photography Session', merchant: 'Western Ghats ClickPro', time: '5 mins ago', emoji: '📸', link: '/service/svc-8' },
+  { user: 'Amit', city: 'Bangalore', action: 'booked', item: 'Art Workshop', merchant: 'Cubbon ArtHouse', time: '10 mins ago', emoji: '🎨', link: '/service/svc-10' },
+  { user: 'Vijay', city: 'Madurai', action: 'reserved a table', item: 'Table Reservation', merchant: 'The Grand Temple Dine', time: '1 min ago', emoji: '🍴', link: '/service/svc-3' },
+  { user: 'Vikram', city: 'Delhi', action: 'booked', item: 'Tennis Court Reservation', merchant: 'Connaught SportArena', time: '15 mins ago', emoji: '🎾', link: '/service/svc-12' },
+  { user: 'Harini', city: 'Chennai', action: 'booked', item: 'Premium Haircut', merchant: 'Style Studio', time: '4 mins ago', emoji: '💇', link: '/service/svc-1' },
+  { user: 'Rahul', city: 'Chennai', action: 'booked', item: 'Yoga Class', merchant: 'ZenFit', time: '7 mins ago', emoji: '🧘', link: '/service/svc-2' }
+];
+
 export default function HomePage() {
   const { bookings } = useBookingFlowStore();
   const { city, latitude, longitude } = useLocationStore();
@@ -338,6 +349,11 @@ export default function HomePage() {
   const [activeExploreTab, setActiveExploreTab] = useState('news');
   const [adIndex, setAdIndex] = useState(0);
 
+  // Live activity notification ticker state
+  const [currentActivity, setCurrentActivity] = useState<any>(null);
+  const [showActivity, setShowActivity] = useState(false);
+  const [activityDismissed, setActivityDismissed] = useState(false);
+
   // Advertisement auto-play rotation
   useEffect(() => {
     const timer = setInterval(() => {
@@ -345,6 +361,33 @@ export default function HomePage() {
     }, 5000);
     return () => clearInterval(timer);
   }, []);
+
+  // Live activity notification ticker logic
+  useEffect(() => {
+    const initialDelay = setTimeout(() => {
+      if (!activityDismissed) {
+        const randomIdx = Math.floor(Math.random() * MOCK_ACTIVITIES.length);
+        setCurrentActivity(MOCK_ACTIVITIES[randomIdx]);
+        setShowActivity(true);
+      }
+    }, 6000);
+
+    const interval = setInterval(() => {
+      setShowActivity(false);
+      setTimeout(() => {
+        if (!activityDismissed) {
+          const randomIdx = Math.floor(Math.random() * MOCK_ACTIVITIES.length);
+          setCurrentActivity(MOCK_ACTIVITIES[randomIdx]);
+          setShowActivity(true);
+        }
+      }, 500);
+    }, 18000);
+
+    return () => {
+      clearTimeout(initialDelay);
+      clearInterval(interval);
+    };
+  }, [activityDismissed]);
 
   const getDiff = (idx: number) => {
     let d = idx - adIndex;
@@ -510,7 +553,7 @@ export default function HomePage() {
                 { label: 'Travel', emoji: '✈️', href: '/travel-transport' },
                 { label: 'Stay & Accomodation', emoji: '🏨', href: '/stay-accommodation' },
                 { label: 'Entertainment', emoji: '🎥', href: '/entertainment-events' },
-                { label: 'Sports&Turf', emoji: '⚽', href: '/sports-turf' },
+                { label: 'Sports', emoji: '⚽', href: '/sports-turf' },
                 { label: 'Lifestyle Services', emoji: '💇', href: '/lifestyle-local' },
               ].map((cat) => (
                 <Link
@@ -1357,6 +1400,57 @@ export default function HomePage() {
         </div>
       )}
 
+      {/* Real-time floating activity ticker */}
+      <AnimatePresence>
+        {showActivity && currentActivity && !activityDismissed && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 30, scale: 0.9 }}
+            transition={{ type: 'spring', damping: 20, stiffness: 100 }}
+            className="fixed bottom-20 lg:bottom-6 left-4 z-40 max-w-sm rounded-2xl border border-white/10 bg-black/75 backdrop-blur-xl p-4 shadow-2xl flex gap-3 text-left group"
+          >
+            {/* Live Indicator Icon */}
+            <div className="h-9 w-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg shrink-0 shadow-inner">
+              {currentActivity.emoji}
+            </div>
+
+            {/* Text details */}
+            <div className="flex-1 space-y-1 pr-4">
+              <div className="flex items-center gap-1.5">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                </span>
+                <span className="text-[9px] uppercase font-black tracking-widest text-emerald-400">Live booking activity</span>
+              </div>
+              <p className="text-[11px] font-semibold text-slate-300 leading-normal">
+                <span className="font-extrabold text-white">{currentActivity.user}</span> in <span className="text-[#fceea7] font-bold">{currentActivity.city}</span> {currentActivity.action} <span className="font-bold text-white underline underline-offset-2 decoration-indigo-400">{currentActivity.item}</span> <span className="text-slate-400 text-[10px] block font-medium mt-0.5">at {currentActivity.merchant}</span>
+              </p>
+              <div className="flex items-center gap-2 pt-1">
+                <span className="text-[9px] font-bold text-slate-500 uppercase">{currentActivity.time}</span>
+                <Link href={currentActivity.link || '/'} className="text-[9px] font-black text-indigo-400 uppercase tracking-wider hover:text-indigo-300 transition-colors flex items-center gap-0.5">
+                  View Service <ArrowRight size={8} />
+                </Link>
+              </div>
+            </div>
+
+            {/* Dismiss Button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowActivity(false);
+                setActivityDismissed(true);
+              }}
+              className="absolute top-2 right-2 text-slate-500 hover:text-slate-300 p-1 hover:bg-white/5 rounded-lg transition-all cursor-pointer"
+            >
+              <X size={12} />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <SupportChat />
       <BottomNav />
     </>
   );

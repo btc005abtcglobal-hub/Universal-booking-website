@@ -274,6 +274,64 @@ const RECOMMENDED_ITEMS = [
   }
 ];
 
+const UPCOMING_EVENTS = [
+  {
+    id: 'ue1',
+    title: 'A.R. Rahman Live in Concert',
+    category: 'Music Concert',
+    emoji: '🎵',
+    rating: '4.9',
+    price: 'From ₹1,499',
+    link: '/entertainment-events/concerts',
+    bgGradient: 'from-violet-950/50 to-black/85',
+    borderColor: 'border-violet-500/20'
+  },
+  {
+    id: 'ue2',
+    title: 'Anubhav Singh Bassi Standup',
+    category: 'Comedy Show',
+    emoji: '🎤',
+    rating: '4.8',
+    price: 'From ₹799',
+    link: '/entertainment-events/events',
+    bgGradient: 'from-amber-950/50 to-black/85',
+    borderColor: 'border-amber-500/20'
+  },
+  {
+    id: 'ue3',
+    title: 'IPL Final Live Screening',
+    category: 'Sports & Screening',
+    emoji: '🏏',
+    rating: '4.9',
+    price: 'From ₹290',
+    link: '/entertainment-events/events',
+    bgGradient: 'from-blue-950/50 to-black/85',
+    borderColor: 'border-blue-500/20'
+  },
+  {
+    id: 'ue4',
+    title: 'Weekend Clay Pottery Workshop',
+    category: 'Art & Craft Class',
+    emoji: '🎨',
+    rating: '4.7',
+    price: 'From ₹450',
+    link: '/entertainment-events/workshops',
+    bgGradient: 'from-emerald-950/50 to-black/85',
+    borderColor: 'border-emerald-500/20'
+  },
+  {
+    id: 'ue5',
+    title: 'Chennai Food Festival 2026',
+    category: 'Food Expo & Carnival',
+    emoji: '🍔',
+    rating: '4.8',
+    price: 'Free Entry',
+    link: '/entertainment-events/events',
+    bgGradient: 'from-rose-950/50 to-black/85',
+    borderColor: 'border-rose-500/20'
+  }
+];
+
 const MOCK_ADS = [
   {
     id: 1,
@@ -752,6 +810,64 @@ export default function HomePage() {
 
             <div className="flex gap-4 overflow-x-auto pb-4 pt-1 custom-scrollbar scroll-smooth snap-x">
               {RECOMMENDED_ITEMS.map((item) => (
+                <Link
+                  key={item.id}
+                  href={item.link}
+                  className="w-[215px] sm:w-[235px] shrink-0 snap-start group"
+                >
+                  <div
+                    className={`relative h-[290px] rounded-3xl p-5 overflow-hidden flex flex-col justify-between border ${item.borderColor} bg-gradient-to-b ${item.bgGradient} hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 card-glass shadow-lg`}
+                  >
+                    {/* Top category label & rating */}
+                    <div className="flex items-center justify-between gap-2 z-10">
+                      <span className="text-[9px] uppercase font-black tracking-widest text-[#FFD700] bg-black/65 px-2 py-0.5 rounded-md border border-[#FFD700]/30 backdrop-blur-md">
+                        {item.category}
+                      </span>
+                      <div className="flex items-center gap-0.5 text-[9px] font-black text-yellow-500 bg-black/45 px-2 py-0.5 rounded-md border border-white/5 backdrop-blur-md">
+                        <Star className="h-2.5 w-2.5 fill-yellow-500 text-yellow-500" />
+                        <span>{item.rating}</span>
+                      </div>
+                    </div>
+
+                    {/* Big center emoji / illustration */}
+                    <div className="flex items-center justify-center my-4 z-10 transition-transform duration-300 group-hover:scale-110">
+                      <span className="text-6xl drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)] select-none">
+                        {item.emoji}
+                      </span>
+                    </div>
+
+                    {/* Bottom title & price info */}
+                    <div className="z-10 text-left">
+                      <h3 className="font-extrabold text-xs text-white leading-tight group-hover:text-[#FFD700] transition-colors truncate">
+                        {item.title}
+                      </h3>
+                      <div className="flex items-center justify-between mt-2.5">
+                        <span className="text-[10px] font-bold text-gray-300">{item.price}</span>
+                        <span className="flex items-center gap-0.5 text-[9px] font-black uppercase text-[#FFD700] opacity-0 group-hover:opacity-100 transition-opacity">
+                          Book <span className="material-symbols-outlined text-[10px]">arrow_forward</span>
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Ambient Glow */}
+                    <div className="absolute inset-0 bg-radial-gradient from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+
+          {/* Row 4.5: Upcoming Events Section */}
+          <section className="mb-10 text-left">
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <h2 className="text-[18px] font-extrabold text-[color:var(--color-on-surface)] tracking-tight">Upcoming Events</h2>
+                <p className="text-[11px] mt-0.5 text-[color:var(--color-outline)]">Exciting local activities and experiences coming up soon</p>
+              </div>
+            </div>
+
+            <div className="flex gap-4 overflow-x-auto pb-4 pt-1 custom-scrollbar scroll-smooth snap-x">
+              {UPCOMING_EVENTS.map((item) => (
                 <Link
                   key={item.id}
                   href={item.link}

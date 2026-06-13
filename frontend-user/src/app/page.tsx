@@ -274,17 +274,70 @@ const RECOMMENDED_ITEMS = [
   }
 ];
 
-const UPCOMING_JOURNEYS = [
+const CONCIERGE_JOURNEYS_POOL = [
   {
-    id: 'uj1',
     trainName: 'Vande Bharat Express (#20608)',
-    status: 'CONFIRMED',
     source: 'SBC (Bengaluru)',
     destination: 'MAS (Chennai)',
-    departs: 'Departs tomorrow 14:20',
     platform: 'Expected PF 7',
     icon: '🚆',
     iconColor: '#ff6325'
+  },
+  {
+    trainName: 'Chennai Express (#12602)',
+    source: 'MAQ (Mangaluru)',
+    destination: 'MAS (Chennai)',
+    platform: 'Expected PF 3',
+    icon: '🚆',
+    iconColor: '#3b82f6'
+  },
+  {
+    trainName: 'Shatabdi Express (#12007)',
+    source: 'MAS (Chennai)',
+    destination: 'MYS (Mysuru)',
+    platform: 'Expected PF 1',
+    icon: '🚆',
+    iconColor: '#10b981'
+  },
+  {
+    trainName: 'Tejas Express (#22672)',
+    source: 'MDU (Madurai)',
+    destination: 'MS (Chennai)',
+    platform: 'Expected PF 2A',
+    icon: '🚆',
+    iconColor: '#ec4899'
+  },
+  {
+    trainName: 'Brindavan Express (#12640)',
+    source: 'SBC (Bengaluru)',
+    destination: 'MAS (Chennai)',
+    platform: 'Expected PF 5',
+    icon: '🚆',
+    iconColor: '#eab308'
+  },
+  {
+    trainName: 'Double Decker (#22626)',
+    source: 'SBC (Bengaluru)',
+    destination: 'MAS (Chennai)',
+    platform: 'Expected PF 6',
+    icon: '🚆',
+    iconColor: '#a855f7'
+  },
+  {
+    trainName: 'Indrayani Express (#22105)',
+    source: 'CSMT (Mumbai)',
+    destination: 'PUNE (Pune)',
+    platform: 'Expected PF 4',
+    icon: '🚆',
+    iconColor: '#14b8a6'
+  },
+  {
+    trainName: 'Rajdhani Express (#12430)',
+    source: 'NDLS (New Delhi)',
+    destination: 'LKO (Lucknow)',
+    platform: 'Expected PF 12',
+    icon: '🚆',
+    iconColor: '#ef4444'
   }
 ];
 
@@ -362,6 +415,99 @@ export default function HomePage() {
   const [realServices, setRealServices] = useState<any[]>([]);
   const [activeExploreTab, setActiveExploreTab] = useState('news');
   const [adIndex, setAdIndex] = useState(0);
+
+  // Real-time active Concierge Journeys
+  const [activeJourneys, setActiveJourneys] = useState<any[]>([]);
+
+  // Initialize active journeys on mount
+  useEffect(() => {
+    const initial = [
+      {
+        id: 'uj-1',
+        ...CONCIERGE_JOURNEYS_POOL[0],
+        status: 'CONFIRMED',
+        secondsLeft: 35
+      },
+      {
+        id: 'uj-2',
+        ...CONCIERGE_JOURNEYS_POOL[1],
+        status: 'CONFIRMED',
+        secondsLeft: 70
+      },
+      {
+        id: 'uj-3',
+        ...CONCIERGE_JOURNEYS_POOL[2],
+        status: 'CONFIRMED',
+        secondsLeft: 120
+      },
+      {
+        id: 'uj-4',
+        ...CONCIERGE_JOURNEYS_POOL[3],
+        status: 'CONFIRMED',
+        secondsLeft: 180
+      },
+      {
+        id: 'uj-5',
+        ...CONCIERGE_JOURNEYS_POOL[4],
+        status: 'CONFIRMED',
+        secondsLeft: 250
+      }
+    ];
+    setActiveJourneys(initial);
+  }, []);
+
+  // Update journeys time & rotate on departure
+  useEffect(() => {
+    if (activeJourneys.length === 0) return;
+
+    const timer = setInterval(() => {
+      setActiveJourneys((prev) => {
+        let departedIds: string[] = [];
+        const updated = prev.map((j) => {
+          const nextSec = j.secondsLeft - 1;
+          if (nextSec <= 0) {
+            departedIds.push(j.id);
+          }
+          return { ...j, secondsLeft: nextSec };
+        });
+
+        // Filter out expired journeys
+        let remaining = updated.filter((j) => j.secondsLeft > 0);
+
+        if (departedIds.length > 0) {
+          departedIds.forEach(() => {
+            const activeNames = remaining.map(r => r.trainName);
+            const candidates = CONCIERGE_JOURNEYS_POOL.filter(p => !activeNames.includes(p.trainName));
+            const poolItem = candidates.length > 0 
+              ? candidates[Math.floor(Math.random() * candidates.length)] 
+              : CONCIERGE_JOURNEYS_POOL[Math.floor(Math.random() * CONCIERGE_JOURNEYS_POOL.length)];
+
+            remaining.push({
+              id: 'uj-' + Date.now() + Math.random(),
+              ...poolItem,
+              status: 'CONFIRMED',
+              secondsLeft: Math.floor(Math.random() * 120) + 90
+            });
+          });
+        }
+
+        // Sort by soonest departing
+        return remaining.sort((a, b) => a.secondsLeft - b.secondsLeft);
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [activeJourneys.length]);
+
+  const formatSecondsLeft = (seconds: number) => {
+    if (seconds <= 0) return 'Departing...';
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    if (m > 0) {
+      return `Departs in ${m}m ${s}s`;
+    }
+    return `Departs in ${s}s`;
+  };
 
   // Live activity notification ticker state
   const [currentActivity, setCurrentActivity] = useState<any>(null);
@@ -821,44 +967,46 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="space-y-4 max-w-xl">
-              {UPCOMING_JOURNEYS.map((journey) => (
+            <div className="flex gap-4 overflow-x-auto pb-4 pt-1 custom-scrollbar scroll-smooth snap-x">
+              {activeJourneys.map((journey) => (
                 <div 
                   key={journey.id}
-                  className="rounded-2xl border border-white/10 bg-[#0e0e11] p-5 shadow-lg relative overflow-hidden"
+                  className="w-[280px] sm:w-[325px] shrink-0 snap-start rounded-2xl border border-white/10 bg-[#0e0e11] p-5 shadow-lg relative overflow-hidden flex flex-col justify-between"
                 >
                   {/* Header row */}
-                  <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 mb-4">
-                    <div className="flex items-center gap-2">
-                      {/* Train Icon in Orange */}
+                  <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 mb-4 shrink-0">
+                    <div className="flex items-center gap-2 max-w-[70%]">
+                      {/* Train Icon */}
                       <span className="text-xl" style={{ color: journey.iconColor }}>{journey.icon}</span>
-                      <span className="text-xs font-bold text-gray-300">
+                      <span className="text-xs font-bold text-gray-300 truncate font-sans">
                         {journey.trainName}
                       </span>
                     </div>
                     {/* Confirmed badge */}
-                    <div className="px-2 py-0.5 rounded border border-emerald-500/30 bg-emerald-500/10 text-[9px] font-bold text-emerald-400 uppercase tracking-wide">
+                    <div className="px-2 py-0.5 rounded border border-emerald-500/30 bg-emerald-500/10 text-[9px] font-bold text-emerald-400 uppercase tracking-wide shrink-0">
                       {journey.status}
                     </div>
                   </div>
 
                   {/* Station routing row */}
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between flex-1">
                     {/* Source station */}
                     <div className="text-left">
-                      <div className="text-sm sm:text-base font-extrabold text-white">{journey.source}</div>
-                      <div className="text-[10px] sm:text-xs text-gray-400 mt-1">{journey.departs}</div>
+                      <div className="text-sm font-extrabold text-white">{journey.source}</div>
+                      <div className="text-[10px] text-gray-400 mt-1 font-mono font-medium">
+                        {formatSecondsLeft(journey.secondsLeft)}
+                      </div>
                     </div>
 
                     {/* Arrow */}
-                    <div className="text-lg font-black text-[#d4af37] px-4">
+                    <div className="text-lg font-black text-[#d4af37] px-3">
                       →
                     </div>
 
                     {/* Destination station */}
                     <div className="text-right">
-                      <div className="text-sm sm:text-base font-extrabold text-white">{journey.destination}</div>
-                      <div className="text-[10px] sm:text-xs text-[#d4af37] font-semibold mt-1">{journey.platform}</div>
+                      <div className="text-sm font-extrabold text-white">{journey.destination}</div>
+                      <div className="text-[10px] text-[#d4af37] font-semibold mt-1 font-sans">{journey.platform}</div>
                     </div>
                   </div>
                 </div>

@@ -284,62 +284,154 @@ const CONCIERGE_JOURNEYS_POOL = [
     iconColor: '#ff6325'
   },
   {
-    trainName: 'Chennai Express (#12602)',
-    source: 'MAQ (Mangaluru)',
-    destination: 'MAS (Chennai)',
-    platform: 'Expected PF 3',
-    icon: '🚆',
-    iconColor: '#3b82f6'
-  },
-  {
-    trainName: 'Shatabdi Express (#12007)',
-    source: 'MAS (Chennai)',
-    destination: 'MYS (Mysuru)',
-    platform: 'Expected PF 1',
-    icon: '🚆',
-    iconColor: '#10b981'
-  },
-  {
-    trainName: 'Tejas Express (#22672)',
-    source: 'MDU (Madurai)',
-    destination: 'MS (Chennai)',
-    platform: 'Expected PF 2A',
-    icon: '🚆',
-    iconColor: '#ec4899'
-  },
-  {
-    trainName: 'Brindavan Express (#12640)',
-    source: 'SBC (Bengaluru)',
-    destination: 'MAS (Chennai)',
-    platform: 'Expected PF 5',
-    icon: '🚆',
+    trainName: 'Avengers: Secret Wars',
+    source: 'Inox: Forum Mall',
+    destination: 'Premium Audi 3',
+    platform: 'Seat H-14, H-15',
+    icon: '🍿',
     iconColor: '#eab308'
   },
   {
-    trainName: 'Double Decker (#22626)',
-    source: 'SBC (Bengaluru)',
-    destination: 'MAS (Chennai)',
-    platform: 'Expected PF 6',
-    icon: '🚆',
-    iconColor: '#a855f7'
+    trainName: 'Metro High-Speed Rail',
+    source: 'Central Metro Station',
+    destination: 'Airport Terminal 2',
+    platform: 'Platform 2 (South)',
+    icon: '🚇',
+    iconColor: '#3b82f6'
   },
   {
-    trainName: 'Indrayani Express (#22105)',
-    source: 'CSMT (Mumbai)',
-    destination: 'PUNE (Pune)',
-    platform: 'Expected PF 4',
-    icon: '🚆',
+    trainName: 'Sunburn EDM Festival',
+    source: 'VGP Golden Beach',
+    destination: 'VIP Arena Zone A',
+    platform: 'Pass #SB-8920',
+    icon: '🎸',
+    iconColor: '#ec4899'
+  },
+  {
+    trainName: 'ZenFit Yoga Session',
+    source: 'ZenFit Health Studio',
+    destination: 'Studio Room B',
+    platform: 'Starts 07:00 AM',
+    icon: '🧘',
+    iconColor: '#10b981'
+  },
+  {
+    trainName: 'Kapaleeshwarar Darshan',
+    source: 'Mylapore East Gate',
+    destination: 'Inner Sanctum Queue',
+    platform: 'Special Entry Pass',
+    icon: '🛕',
+    iconColor: '#f97316'
+  },
+  {
+    trainName: 'IndiGo Flight 6E-204',
+    source: 'MAA (Chennai)',
+    destination: 'DEL (New Delhi)',
+    platform: 'Boarding Gate 4',
+    icon: '✈️',
+    iconColor: '#2563eb'
+  },
+  {
+    trainName: 'The Grand Temple Dine',
+    source: 'Main Dining Hall',
+    destination: 'Rooftop Table 12',
+    platform: 'Confirmed Booking',
+    icon: '🍴',
     iconColor: '#14b8a6'
-  },
-  {
-    trainName: 'Rajdhani Express (#12430)',
-    source: 'NDLS (New Delhi)',
-    destination: 'LKO (Lucknow)',
-    platform: 'Expected PF 12',
-    icon: '🚆',
-    iconColor: '#ef4444'
   }
 ];
+
+const mapExploreItemToConcierge = (item: any, sectionId: string) => {
+  const mappings: Record<string, { source: string; destination: string; platform: string; icon: string; iconColor: string }> = {
+    'n1': {
+      source: 'Chennai Central',
+      destination: 'New Metro Routes',
+      platform: 'Open Today',
+      icon: '🚇',
+      iconColor: '#3b82f6'
+    },
+    'n2': {
+      source: 'ZenFit Studio',
+      destination: 'Morning Yoga Batch',
+      platform: 'Starts Mon 7AM',
+      icon: '🧘',
+      iconColor: '#10b981'
+    },
+    'n3': {
+      source: 'City Gateways',
+      destination: 'Hill Station Alert',
+      platform: 'Monsoon Guide',
+      icon: '🌧️',
+      iconColor: '#f59e0b'
+    },
+    'n4': {
+      source: 'Mylapore Gate',
+      destination: 'Temple Darshan',
+      platform: 'Festival Booking',
+      icon: '🛕',
+      iconColor: '#ec4899'
+    },
+    'e1': {
+      source: 'Chennai Workshop',
+      destination: 'Clay Pottery Class',
+      platform: 'Sat 4:00 PM',
+      icon: '🎨',
+      iconColor: '#a855f7'
+    },
+    'e2': {
+      source: 'Zen Arena Screen',
+      destination: 'IPL Live Screening',
+      platform: 'Sun 7:00 PM',
+      icon: '⚽',
+      iconColor: '#ef4444'
+    },
+    'e3': {
+      source: 'Arena Courts',
+      destination: 'Badminton League',
+      platform: 'Starts June 15',
+      icon: '🏸',
+      iconColor: '#14b8a6'
+    },
+    'e4': {
+      source: 'VGP Beach Stage',
+      destination: 'Sunburn EDM Concert',
+      platform: 'Gate Open June 20',
+      icon: '🎵',
+      iconColor: '#ec4899'
+    }
+  };
+
+  const mapped = mappings[item.id];
+  if (mapped) {
+    return {
+      trainName: item.title,
+      source: mapped.source,
+      destination: mapped.destination,
+      platform: mapped.platform,
+      icon: mapped.icon,
+      iconColor: mapped.iconColor
+    };
+  }
+
+  return {
+    trainName: item.title,
+    source: sectionId === 'news' ? 'Local Update' : 'Local Event',
+    destination: item.subtitle,
+    platform: item.tag || 'Live Info',
+    icon: item.emoji || (sectionId === 'news' ? '📰' : '📅'),
+    iconColor: sectionId === 'news' ? '#3b82f6' : '#10b981'
+  };
+};
+
+const getCombinedConciergePool = () => {
+  const newsSec = EXPLORE_SECTIONS.find(s => s.id === 'news');
+  const eventsSec = EXPLORE_SECTIONS.find(s => s.id === 'events');
+
+  const newsItems = newsSec ? newsSec.items.map(item => mapExploreItemToConcierge(item, 'news')) : [];
+  const eventItems = eventsSec ? eventsSec.items.map(item => mapExploreItemToConcierge(item, 'events')) : [];
+
+  return [...CONCIERGE_JOURNEYS_POOL, ...newsItems, ...eventItems];
+};
 
 const MOCK_ADS = [
   {
@@ -421,34 +513,35 @@ export default function HomePage() {
 
   // Initialize active journeys on mount
   useEffect(() => {
+    const combinedPool = getCombinedConciergePool();
     const initial = [
       {
         id: 'uj-1',
-        ...CONCIERGE_JOURNEYS_POOL[0],
+        ...combinedPool[0 % combinedPool.length],
         status: 'CONFIRMED',
         secondsLeft: 35
       },
       {
         id: 'uj-2',
-        ...CONCIERGE_JOURNEYS_POOL[1],
+        ...combinedPool[1 % combinedPool.length],
         status: 'CONFIRMED',
         secondsLeft: 70
       },
       {
         id: 'uj-3',
-        ...CONCIERGE_JOURNEYS_POOL[2],
+        ...combinedPool[2 % combinedPool.length],
         status: 'CONFIRMED',
         secondsLeft: 120
       },
       {
         id: 'uj-4',
-        ...CONCIERGE_JOURNEYS_POOL[3],
+        ...combinedPool[3 % combinedPool.length],
         status: 'CONFIRMED',
         secondsLeft: 180
       },
       {
         id: 'uj-5',
-        ...CONCIERGE_JOURNEYS_POOL[4],
+        ...combinedPool[4 % combinedPool.length],
         status: 'CONFIRMED',
         secondsLeft: 250
       }
@@ -475,12 +568,13 @@ export default function HomePage() {
         let remaining = updated.filter((j) => j.secondsLeft > 0);
 
         if (departedIds.length > 0) {
+          const combinedPool = getCombinedConciergePool();
           departedIds.forEach(() => {
             const activeNames = remaining.map(r => r.trainName);
-            const candidates = CONCIERGE_JOURNEYS_POOL.filter(p => !activeNames.includes(p.trainName));
+            const candidates = combinedPool.filter(p => !activeNames.includes(p.trainName));
             const poolItem = candidates.length > 0 
               ? candidates[Math.floor(Math.random() * candidates.length)] 
-              : CONCIERGE_JOURNEYS_POOL[Math.floor(Math.random() * CONCIERGE_JOURNEYS_POOL.length)];
+              : combinedPool[Math.floor(Math.random() * combinedPool.length)];
 
             remaining.push({
               id: 'uj-' + Date.now() + Math.random(),
@@ -963,7 +1057,7 @@ export default function HomePage() {
           <section className="mb-10 text-left">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-[18px] font-extrabold text-[color:var(--color-on-surface)] tracking-tight">Upcoming Concierge Journey</h2>
+                <h2 className="text-[18px] font-extrabold text-[color:var(--color-on-surface)] tracking-tight">Upcoming Concierge Journeys & Events</h2>
               </div>
             </div>
 

@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { useLocationStore, useUIStore } from '../lib/store';
 import { LiveClock } from './LiveClock';
 import { ALL_SEARCHABLE_SERVICES } from '../lib/searchData';
+import { UtilityDrawer } from './UtilityDrawer';
 
 const CITY_NODES = [
   { name: 'Chennai', x: 80, y: 35, display: 'Chennai (Metro)', lat: 13.0827, lng: 80.2707 },
@@ -49,6 +50,7 @@ export function TopNav() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [profileOpenMobile, setProfileOpenMobile] = useState(false);
   const [locationDropdownOpen, setLocationDropdownOpen] = useState(false);
+  const [utilityDrawerOpen, setUtilityDrawerOpen] = useState(false);
   // Refs for dropdown positioning / click‑outside handling
   const profileRef = useRef<HTMLDivElement>(null);
   const profileRefMobile = useRef<HTMLDivElement>(null);
@@ -245,13 +247,9 @@ export function TopNav() {
           <div className="flex-1 flex justify-start items-center gap-6">
             <Link
               href="/"
-              className="flex items-center gap-2 bg-white/95 dark:bg-white/95 px-3 py-1 rounded-full border border-white/20 shadow-md font-['Playfair_Display'] text-[15px] lg:text-[16px] tracking-[0.15em] uppercase font-bold hover:scale-102 active:scale-98 transition-all duration-300 shrink-0"
+              className="flex items-center hover:scale-102 active:scale-98 transition-all duration-300 shrink-0"
             >
-              <Sparkles className="w-3.5 h-3.5 text-[#ff6325] fill-[#ff6325] animate-pulse" />
-              <span className="font-black">
-                <span className="logo-text-bok text-[#0a3161]">BOK</span>
-                <span className="logo-text-spot text-[#ff6325]">SPOT</span>
-              </span>
+              <img src="/logo.png" alt="BokSpot" className="h-8 md:h-9 object-contain rounded-xl shadow-md" />
             </Link>
 
             <div className="relative hidden lg:inline-block" ref={locationRef}>
@@ -642,6 +640,15 @@ export function TopNav() {
                 </select>
               </div>
             </div>
+
+            {/* Utility Drawer Button */}
+            <button
+              onClick={() => setUtilityDrawerOpen(true)}
+              className="w-8 h-8 rounded-full shadow-md flex items-center justify-center hover:scale-105 active:scale-95 cursor-pointer overflow-hidden p-1.5 border border-white/20 bg-[#5a4409]"
+              title="Bokspot Utilities"
+            >
+              <img src="/utility-icon.png" alt="Utilities" className="w-full h-full object-contain" />
+            </button>
           </div>
         </div>
       </header>
@@ -800,6 +807,7 @@ export function TopNav() {
           </div>
         </div>
       )}
+      <UtilityDrawer isOpen={utilityDrawerOpen} onClose={() => setUtilityDrawerOpen(false)} />
     </>
   );
 }

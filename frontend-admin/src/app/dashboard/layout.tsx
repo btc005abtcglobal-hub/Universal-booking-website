@@ -6,8 +6,10 @@ import {
   LayoutDashboard, Calendar, BookOpen, Settings, QrCode, 
   Package, Menu, X, Bell, LogOut, Stethoscope, Dumbbell, 
   Scissors, Utensils, ShieldAlert, Check, Trash2, Info,
-  ChevronDown, Building, Sparkles, Sun, Moon, Laptop, User
+  ChevronDown, Building, Film, Sparkles, LogOut as LogOutIcon, Laptop, User,
+  Sun, Moon
 } from 'lucide-react';
+import { UtilityDrawer } from '../../components/UtilityDrawer';
 import { useState, useEffect, useRef } from 'react';
 import { useVendorStore, PRESET_MERCHANTS } from '../../lib/store';
 import { getVerticalFromCategory } from '../../lib/categoryUtils';
@@ -34,6 +36,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { currentMerchant, logoutMerchant, switchStore, loginRole, theme, setTheme, supervisorId } = useVendorStore();
+  const [utilityDrawerOpen, setUtilityDrawerOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [hasHydrated, setHasHydrated] = useState(false);
   
@@ -251,13 +254,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Sidebar */}
       <aside className={`fixed inset-y-0 left-0 z-50 w-64 transform bg-bg-secondary border-r border-border-brand transition-transform duration-300 lg:static lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex h-16 items-center gap-2.5 px-4.5 vendor-navbar">
-          <div className="flex items-center gap-1.5 bg-white/95 px-2.5 py-1 rounded-full border border-white/20 shadow-md shrink-0">
-            <Sparkles className="w-3.5 h-3.5 text-[#ff6325] fill-[#ff6325] animate-pulse" />
-            <span className="font-['Playfair_Display'] text-[12px] tracking-[0.1em] uppercase font-bold text-slate-800">
-              <span className="text-[#0a3161] font-black">BOK</span>
-              <span className="text-[#ff6325] font-black">SPOT</span>
-            </span>
-          </div>
+          <img src="/logo.png" alt="BokSpot Partner" className="h-8 object-contain" />
           <span className="px-1.5 py-0.5 rounded-md text-[7.5px] font-black uppercase tracking-wider bg-[#8b6508]/15 border border-[#8b6508]/30 text-[#fceea7] shrink-0 select-none">
             {loginRole === 'supervisor' ? 'SUPERVISOR' : 'PARTNER'}
           </span>
@@ -539,6 +536,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </div>
               )}
             </div>
+
+            {/* Utility Drawer Button */}
+            <button
+              onClick={() => setUtilityDrawerOpen(true)}
+              className="relative rounded-xl p-2.5 border border-border-brand bg-bg-secondary hover:bg-bg-tertiary text-text-secondary hover:text-text-primary transition-colors cursor-pointer w-9 h-9 flex items-center justify-center overflow-hidden"
+              title="Bokspot Utilities"
+            >
+              <img src="/utility-icon.png" alt="Utilities" className="w-full h-full object-contain" />
+            </button>
           </div>
         </header>
  
@@ -546,6 +552,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {children}
         </main>
       </div>
+      <UtilityDrawer isOpen={utilityDrawerOpen} onClose={() => setUtilityDrawerOpen(false)} isVendor={true} />
     </div>
   );
 }

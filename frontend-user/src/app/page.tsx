@@ -820,19 +820,21 @@ export default function HomePage() {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setDashboardOpen(true)}
-                style={{ height: '0.5cm', width: '2cm' }}
-                className="rounded-full text-[8px] font-black tracking-tight bg-[color:var(--color-primary)]/10 border border-[color:var(--color-primary)]/45 text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/20 hover:scale-102 active:scale-98 transition-all flex items-center justify-center gap-0.5 cursor-pointer shrink-0 shadow-md backdrop-blur-md p-0"
+                className="custom-nav-btn pl-1 pr-3.5 h-8 rounded-full flex items-center gap-2 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all text-xs font-bold cursor-pointer shrink-0"
               >
-                <span className="material-symbols-outlined text-[11px]">dashboard</span>
-                <span>DASHBOARD</span>
+                <div className="h-6 w-6 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
+                  <span className="material-symbols-outlined text-[15px] text-[#0a3161]">dashboard</span>
+                </div>
+                <span className="text-[color:var(--color-on-surface)] text-[12px] font-bold tracking-wide select-none">DASHBOARD</span>
               </button>
               <Link
                 href="/vendor/register"
-                style={{ height: '0.5cm', width: '2cm' }}
-                className="rounded-full text-[8px] font-black tracking-tight bg-[#0a3161]/5 dark:bg-white/5 border border-[#0a3161]/60 dark:border-white/20 text-[#0a3161] dark:text-white hover:bg-[#0a3161]/15 dark:hover:bg-white/10 hover:border-[#0a3161] dark:hover:border-white/40 hover:scale-102 active:scale-98 transition-all flex items-center justify-center gap-0.5 cursor-pointer shrink-0 shadow-md backdrop-blur-md p-0"
+                className="custom-nav-btn pl-1 pr-3.5 h-8 rounded-full flex items-center gap-2 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all text-xs font-bold cursor-pointer shrink-0"
               >
-                <span className="material-symbols-outlined text-[11px]">storefront</span>
-                <span>VENDOR</span>
+                <div className="h-6 w-6 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
+                  <span className="material-symbols-outlined text-[15px] text-[#0a3161]">storefront</span>
+                </div>
+                <span className="text-[color:var(--color-on-surface)] text-[12px] font-bold tracking-wide select-none">VENDOR</span>
               </Link>
             </div>
           </div>

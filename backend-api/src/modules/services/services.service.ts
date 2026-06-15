@@ -79,7 +79,7 @@ export class ServicesService {
         ) sub
         WHERE distance_km <= ${radiusKm}
       `;
-      const merchantIds = nearbyMerchants.map((m) => m.id);
+      const merchantIds = nearbyMerchants.map((m: any) => m.id);
       
       // If we found nearby merchants, filter by them, otherwise force empty result by passing dummy UUID or empty in list if Prisma allows,
       // or we can use empty array if Prisma supports it (in Prisma, { in: [] } returns empty list correctly).

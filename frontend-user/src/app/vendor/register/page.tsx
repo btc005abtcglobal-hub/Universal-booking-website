@@ -5,8 +5,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Store, Send, ShieldAlert, Sparkles, Building } from 'lucide-react';
 import { useBookingFlowStore } from '../../../lib/store';
-import { TopNav } from '../../../components/TopNav';
-import { BottomNav } from '../../../components/BottomNav';
 
 const CITIES = [
   'Chennai', 'Bangalore', 'Coimbatore', 'Theni', 'Madurai', 'Mumbai', 'Delhi',
@@ -94,7 +92,6 @@ export default function VendorRegisterPage() {
 
   return (
     <>
-      <TopNav />
       <main className="min-h-screen bg-[color:var(--color-surface-dim)] text-[color:var(--color-on-surface)] pb-16 relative pt-4">
         {/* Background Grid Pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(var(--color-outline-variant)_1px,transparent_1px),linear-gradient(90deg,var(--color-outline-variant)_1px,transparent_1px)] bg-[size:32px_32px] opacity-[0.02] pointer-events-none" />
@@ -358,7 +355,6 @@ export default function VendorRegisterPage() {
           )}
         </div>
       </main>
-      <BottomNav />
     </>
   );
 }

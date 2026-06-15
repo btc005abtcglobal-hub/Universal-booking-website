@@ -4,8 +4,6 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Calendar, Clock, MapPin, QrCode, CheckCircle2, XCircle, ArrowLeft, ChevronRight, AlertCircle, Sparkles } from 'lucide-react';
 import { useBookingFlowStore } from '../../../lib/store';
-import { TopNav } from '../../../components/TopNav';
-import { BottomNav } from '../../../components/BottomNav';
 
 export default function UserBookingsPage() {
   const { bookings, cancelBooking } = useBookingFlowStore();
@@ -19,8 +17,6 @@ export default function UserBookingsPage() {
 
   return (
     <>
-      <TopNav />
-      
       <main className="page-content px-4 md:px-8 lg:pr-8">
         <div className="mx-auto max-w-4xl py-6 sm:py-8">
           <div className="w-full">
@@ -115,8 +111,6 @@ export default function UserBookingsPage() {
           </div>
         </div>
       </main>
-      
-      <BottomNav />
     </>
   );
 }

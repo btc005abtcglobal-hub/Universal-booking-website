@@ -6,8 +6,6 @@ import {
   User, Mail, Phone, Camera, Bell, Shield, LogOut, 
   Award, Sparkles, Check, CheckCircle2, Sliders, ShieldCheck, Heart 
 } from 'lucide-react';
-import { TopNav } from '../../components/TopNav';
-import { BottomNav } from '../../components/BottomNav';
 import { useUserStore, useUIStore } from '../../lib/store';
 
 const AVATAR_PRESETS = [
@@ -103,8 +101,6 @@ export default function ProfilePage() {
 
   return (
     <>
-      <TopNav />
-      
       <main className="page-content px-4 md:px-8 lg:pr-8 pb-24 animate-fade-in">
         <div className="mx-auto max-w-5xl pt-4">
           
@@ -482,7 +478,6 @@ export default function ProfilePage() {
 
         </div>
       </main>
-      <BottomNav />
     </>
   );
 }

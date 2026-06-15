@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { ThemeManager } from '../components/ThemeManager';
+import ClientLayout from '../components/ClientLayout';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -40,8 +41,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="selection:bg-primary/30">
         <ThemeManager />
-        {children}
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );
 }
+

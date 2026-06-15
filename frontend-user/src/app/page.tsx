@@ -5,8 +5,6 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { MapPin, Star, Compass, ArrowRight, X, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { TopNav } from '../components/TopNav';
-import { BottomNav } from '../components/BottomNav';
 import { SupportChat } from '../components/SupportChat';
 import { ShortcutManagerModal } from '../components/shortcuts/ShortcutManagerModal';
 import { ActionModalManager } from '../components/shortcuts/ActionModalManager';
@@ -796,7 +794,6 @@ export default function HomePage() {
     <>
       <ShortcutManagerModal />
       <ActionModalManager />
-      <TopNav />
 
       <main className="page-content px-4 md:px-8 lg:pr-8">
         <div className="mx-auto max-w-7xl">
@@ -823,17 +820,19 @@ export default function HomePage() {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setDashboardOpen(true)}
-                className="px-4 py-2 rounded-full text-[11px] font-black tracking-widest bg-[color:var(--color-primary)]/10 border border-[color:var(--color-primary)]/40 text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/20 hover:scale-102 active:scale-98 transition-all flex items-center gap-1.5 cursor-pointer shrink-0 shadow-md backdrop-blur-md"
+                style={{ height: '0.5cm', width: '2cm' }}
+                className="rounded-full text-[8px] font-black tracking-tight bg-[color:var(--color-primary)]/10 border border-[color:var(--color-primary)]/45 text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/20 hover:scale-102 active:scale-98 transition-all flex items-center justify-center gap-0.5 cursor-pointer shrink-0 shadow-md backdrop-blur-md p-0"
               >
-                <span className="material-symbols-outlined text-[15px]">dashboard</span>
+                <span className="material-symbols-outlined text-[11px]">dashboard</span>
                 <span>DASHBOARD</span>
               </button>
               <Link
                 href="/vendor/register"
-                className="px-4 py-2 rounded-full text-[11px] font-black tracking-widest bg-[#0a3161]/5 dark:bg-white/5 border border-[#0a3161]/60 dark:border-white/20 text-[#0a3161] dark:text-white hover:bg-[#0a3161]/15 dark:hover:bg-white/10 hover:border-[#0a3161] dark:hover:border-white/40 hover:scale-102 active:scale-98 transition-all flex items-center gap-1.5 cursor-pointer shrink-0 shadow-md backdrop-blur-md"
+                style={{ height: '0.5cm', width: '2cm' }}
+                className="rounded-full text-[8px] font-black tracking-tight bg-[#0a3161]/5 dark:bg-white/5 border border-[#0a3161]/60 dark:border-white/20 text-[#0a3161] dark:text-white hover:bg-[#0a3161]/15 dark:hover:bg-white/10 hover:border-[#0a3161] dark:hover:border-white/40 hover:scale-102 active:scale-98 transition-all flex items-center justify-center gap-0.5 cursor-pointer shrink-0 shadow-md backdrop-blur-md p-0"
               >
-                <span className="material-symbols-outlined text-[15px]">storefront</span>
-                <span>Become a Vendor</span>
+                <span className="material-symbols-outlined text-[11px]">storefront</span>
+                <span>VENDOR</span>
               </Link>
             </div>
           </div>
@@ -1760,7 +1759,6 @@ export default function HomePage() {
       </AnimatePresence>
 
       <SupportChat />
-      <BottomNav />
     </>
   );
 }

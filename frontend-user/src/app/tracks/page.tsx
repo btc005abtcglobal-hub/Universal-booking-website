@@ -3,8 +3,6 @@
 import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { TopNav } from '../../components/TopNav';
-import { BottomNav } from '../../components/BottomNav';
 import { 
   Plane, TrainFront, Bus, Car, Search, X, 
   MapPin, Clock, User, Phone, CheckCircle2, 
@@ -310,8 +308,6 @@ function TracksContent() {
 
   return (
     <>
-      <TopNav />
-      
       <main className="page-content px-4 md:px-8 lg:pr-8 pb-24">
         <div className="mx-auto max-w-5xl">
           
@@ -668,7 +664,6 @@ function TracksContent() {
               
               {/* Header */}
               <div className="mb-6">
-                <p className="text-[11px] uppercase tracking-[0.28em] text-[color:var(--color-outline)] font-semibold">Dashboard</p>
                 <h1 className="mt-2 text-[30px] md:text-[42px] font-black tracking-tight text-[color:var(--color-on-surface)]">
                   Track your bookings and live activity
                 </h1>
@@ -944,10 +939,8 @@ function TracksContent() {
             </div>
           )}
 
-        </div>
+          </div>
       </main>
-      
-      <BottomNav />
     </>
   );
 }

@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Search, SlidersHorizontal, MapPin, Star, Clock, ChevronDown, Grid3X3, List } from 'lucide-react';
-import { TopNav } from '../../components/TopNav';
-import { BottomNav } from '../../components/BottomNav';
 import { useLocationStore, useBookingFlowStore } from '../../lib/store';
 import { calculateDistance } from '../../lib/mockData';
 
@@ -75,7 +73,6 @@ export default function SearchPage() {
 
   return (
     <>
-      <TopNav />
       <main className="page-content px-4 md:px-8 lg:pr-8">
         {/* Search Header */}
         <div className="border-b border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-container)]/80 backdrop-blur-md sticky top-[var(--topnav-height)] z-40 -mx-4 px-4 md:-mx-8 md:px-8 lg:-mr-8 lg:pr-8">
@@ -227,7 +224,6 @@ export default function SearchPage() {
           )}
         </div>
       </main>
-      <BottomNav />
     </>
   );
 }

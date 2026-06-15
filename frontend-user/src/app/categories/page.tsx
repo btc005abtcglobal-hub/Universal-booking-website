@@ -3,8 +3,6 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { TopNav } from '../../components/TopNav';
-import { BottomNav } from '../../components/BottomNav';
 import { SERVICE_GROUPS, GROUP_EMOJIS, getHrefForCategoryItem } from '../../lib/searchData';
 
 function getGroupHref(title: string): string {
@@ -306,12 +304,11 @@ export default function CategoriesPage() {
 
   return (
     <>
-      <TopNav />
-      <main className="page-content px-4 md:px-8 lg:pr-8">
+      <main className="page-content px-4 md:px-8 lg:pr-8 pt-[100px] md:pt-[132px]">
         <div className="mx-auto max-w-7xl">
 
         {/* Category Tabs Switcher (Sticky Row) */}
-        <div className="sticky top-[80px] md:top-[104px] z-30 bg-[color:var(--color-background)]/80 backdrop-blur-lg border-b border-[color:var(--color-outline-variant)]/20 py-3 mb-8 -mx-4 px-4 md:-mx-8 md:px-8 overflow-x-auto flex gap-2.5 scrollbar-none scroll-smooth">
+        <div className="sticky top-[42px] md:top-[48px] z-30 bg-[color:var(--color-background)]/80 backdrop-blur-lg border-b border-[color:var(--color-outline-variant)]/20 py-3 mb-8 -mx-4 px-4 md:-mx-8 md:px-8 overflow-x-auto flex gap-2.5 scrollbar-none scroll-smooth">
           {SERVICE_GROUPS.map((group) => {
             const id = group.title.toLowerCase().replace(/\s+/g, '-');
             return (
@@ -439,7 +436,6 @@ export default function CategoriesPage() {
         </div>
         </div>
       </main>
-      <BottomNav />
     </>
   );
 }

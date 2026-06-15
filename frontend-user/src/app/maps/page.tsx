@@ -1,8 +1,6 @@
 'use client';
 
 import { MapPin, Star, Navigation, Compass, Loader, ArrowRight, Grid, List as ListIcon, Search } from 'lucide-react';
-import { TopNav } from '../../components/TopNav';
-import { BottomNav } from '../../components/BottomNav';
 import { useState, useEffect, useMemo } from 'react';
 import { useLocationStore, useBookingFlowStore } from '../../lib/store';
 import { calculateDistance, getProvidersByCategory } from '../../lib/mockData';
@@ -418,7 +416,6 @@ export default function MapsPage() {
 
   return (
     <>
-      <TopNav />
       <main className="page-content h-screen flex flex-col bg-[color:var(--color-background)]">
         <div className="flex h-full relative overflow-hidden">
           
@@ -724,7 +721,6 @@ export default function MapsPage() {
 
         </div>
       </main>
-      <BottomNav />
     </>
   );
 }

@@ -254,7 +254,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Sidebar */}
       <aside className={`fixed inset-y-0 left-0 z-50 w-64 transform bg-bg-secondary border-r border-border-brand transition-transform duration-300 lg:static lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex h-16 items-center gap-2.5 px-4.5 vendor-navbar">
-          <img src="/logo.png" alt="BokSpot Partner" className="h-8 object-contain" />
+          <img src="/logo.png" alt="BokSpot Partner" className="h-10 object-contain" />
           <span className="px-1.5 py-0.5 rounded-md text-[7.5px] font-black uppercase tracking-wider bg-[#8b6508]/15 border border-[#8b6508]/30 text-[#fceea7] shrink-0 select-none">
             {loginRole === 'supervisor' ? 'SUPERVISOR' : 'PARTNER'}
           </span>

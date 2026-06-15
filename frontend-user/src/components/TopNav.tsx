@@ -249,7 +249,7 @@ export function TopNav() {
               href="/"
               className="flex items-center hover:scale-102 active:scale-98 transition-all duration-300 shrink-0"
             >
-              <img src="/logo.png" alt="BokSpot" className="h-8 md:h-9 object-contain rounded-xl shadow-md" />
+              <img src="/logo.png" alt="BokSpot" className="h-10 md:h-12 object-contain shadow-lg" />
             </Link>
 
             <div className="relative hidden lg:inline-block" ref={locationRef}>

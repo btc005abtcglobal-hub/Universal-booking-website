@@ -2,9 +2,9 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary-brand: #8b6508;
-  --color-primary-dark: #664a05;
-  --color-accent-brand: #0a3161;
+  --color-primary-brand: var(--primary);
+  --color-primary-dark: var(--primary-dark);
+  --color-accent-brand: var(--accent);
   
   --color-bg-primary: var(--bg-primary);
   --color-bg-secondary: var(--bg-secondary);
@@ -18,54 +18,80 @@
 }
 
 :root {
-  --primary: #8b6508;
-  --primary-dark: #664a05;
-  --accent: #0a3161;
+  --primary: #d4af37;
+  --primary-dark: #cca022;
+  --accent: #ff6325;
   --success: #10b981;
   --warning: #f59e0b;
   --danger: #ef4444;
-  --border: rgba(139, 101, 8, 0.12);
+  --border: rgba(252, 238, 167, 0.15);
   
   /* Defaults to Dark theme variable values */
-  --bg-primary: #030c17;
-  --bg-secondary: #061528;
-  --bg-tertiary: #0a223f;
+  --bg-primary: #0c0c10;
+  --bg-secondary: #111116;
+  --bg-tertiary: #18181f;
   
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
   
-  --sidebar-bg: #061528;
+  --sidebar-bg: #111116;
   --sidebar-text: #94a3b8;
 }
 
 .light {
-  --bg-primary: #f8fafc;
-  --bg-secondary: #ffffff;
-  --bg-tertiary: #f1f5f9;
+  --primary: #8b6508;
+  --primary-dark: #664a05;
+  --accent: #ff6325;
+  
+  --bg-primary: #fdfbf7;      /* warm beige background */
+  --bg-secondary: #ffffff;    /* clean white sidebar */
+  --bg-tertiary: #f5f0e1;     /* warmer beige card containers */
   
   --text-primary: #0f172a;
   --text-secondary: #475569;
   --text-muted: #64748b;
   
   --border: rgba(139, 101, 8, 0.2);
-  --sidebar-bg: #f8fafc;
+  --sidebar-bg: #fdfbf7;
   --sidebar-text: #475569;
 }
 
 .dark {
-  --bg-primary: #030c17;
-  --bg-secondary: #061528;
-  --bg-tertiary: #0a223f;
+  --primary: #d4af37;
+  --primary-dark: #cca022;
+  --accent: #ff6325;
+  
+  --bg-primary: #0c0c10;      /* near black body */
+  --bg-secondary: #111116;    /* dark charcoal sidebar */
+  --bg-tertiary: #18181f;     /* dark charcoal card backgrounds */
   
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
   
-  --border: rgba(139, 101, 8, 0.12);
-  --sidebar-bg: #061528;
+  --border: rgba(252, 238, 167, 0.15);
+  --sidebar-bg: #111116;
   --sidebar-text: #94a3b8;
 }
+
+/* Global overrides for hardcoded Tailwind backgrounds and brand colors */
+.bg-\[\#030c17\] { background-color: var(--bg-primary) !important; }
+.bg-\[\#061528\] { background-color: var(--bg-secondary) !important; }
+.bg-\[\#0d1120\] { background-color: var(--bg-tertiary) !important; }
+
+/* Map old gold color class (#8b6508) to new variable primary color (#d4af37) */
+.text-\[\#8b6508\] { color: var(--primary) !important; }
+.bg-\[\#8b6508\] { background-color: var(--primary) !important; }
+.border-\[\#8b6508\] { border-color: var(--primary) !important; }
+
+.bg-\[\#8b6508\]\/10 { background-color: color-mix(in srgb, var(--primary) 10%, transparent) !important; }
+.bg-\[\#8b6508\]\/15 { background-color: color-mix(in srgb, var(--primary) 15%, transparent) !important; }
+.bg-\[\#8b6508\]\/20 { background-color: color-mix(in srgb, var(--primary) 20%, transparent) !important; }
+
+.border-\[\#8b6508\]\/20 { border-color: color-mix(in srgb, var(--primary) 20%, transparent) !important; }
+.border-\[\#8b6508\]\/30 { border-color: color-mix(in srgb, var(--primary) 30%, transparent) !important; }
+.border-\[\#8b6508\]\/15 { border-color: color-mix(in srgb, var(--primary) 15%, transparent) !important; }
 
 * { font-family: 'Inter', sans-serif; }
 body {
@@ -75,8 +101,30 @@ body {
 }
 
 .vendor-navbar {
-  background: #0a1526 !important;
-  border-bottom: 1px solid rgba(139, 101, 8, 0.2) !important;
+  background: #d4a729 !important;
+  border-bottom: 1px solid rgba(252, 238, 167, 0.4) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Ensure all text, buttons, and icons inside vendor-navbar remain styled, dark-bronze-contrast on gold */
+.vendor-navbar,
+.vendor-navbar span,
+.vendor-navbar button,
+.vendor-navbar svg {
+  color: #fceea7 !important;
+}
+
+/* Adjust nested button fills for high contrast on the gold navbar */
+.vendor-navbar button,
+.vendor-navbar .relative > button {
+  background-color: #5a4409 !important;
+  border: 1px solid rgba(252, 238, 167, 0.28) !important;
+}
+
+.vendor-navbar button:hover,
+.vendor-navbar .relative > button:hover {
+  background-color: #72560c !important;
+  border-color: rgba(252, 238, 167, 0.45) !important;
 }
 
 /* Ensure all text, buttons, and icons inside vendor-navbar remain light and readable in light mode */
@@ -231,4 +279,52 @@ body {
   .font-mono.text-slate-500 {
     color: #475569 !important;
   }
+}
+
+/* Sidebar Active & Inactive Links Theme Alignment */
+.sidebar-link-active {
+  background-color: color-mix(in srgb, var(--primary) 12%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent) !important;
+  color: var(--primary) !important;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--primary) 6%, transparent) !important;
+}
+
+.sidebar-link-active svg {
+  color: var(--primary) !important;
+}
+
+.sidebar-link-inactive {
+  color: var(--text-secondary) !important;
+  border: 1px solid transparent !important;
+}
+
+.sidebar-link-inactive svg {
+  color: var(--text-muted) !important;
+  transition: color 0.2s ease;
+}
+
+.sidebar-link-inactive:hover {
+  color: var(--text-primary) !important;
+  background-color: color-mix(in srgb, var(--text-primary) 5%, transparent) !important;
+}
+
+.sidebar-link-inactive:hover svg {
+  color: var(--text-primary) !important;
+}
+
+/* Sidebar Badge (PARTNER / SUPERVISOR) */
+.sidebar-badge {
+  background-color: color-mix(in srgb, var(--primary) 15%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent) !important;
+  color: var(--primary) !important;
+}
+
+/* Sidebar Footer Details Container and Keys/Values */
+.sidebar-footer-container {
+  background-color: color-mix(in srgb, var(--bg-tertiary) 20%, transparent) !important;
+  border: 1px solid var(--border) !important;
+}
+
+.sidebar-footer-val {
+  color: var(--primary) !important;
 }

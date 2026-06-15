@@ -175,25 +175,25 @@ export function UtilityDrawer({ isOpen, onClose, isVendor = false }: UtilityDraw
         <>
           {/* Backdrop */}
           <div
-            className="fixed inset-0 z-[120] bg-black/60 backdrop-blur-xs"
+            className="fixed inset-x-0 bottom-0 top-14 lg:top-16 z-[120] bg-black/60 backdrop-blur-xs"
             onClick={onClose}
           />
 
           {/* Drawer Panel - dynamically resizes based on active tab */}
           <motion.div
-            initial={{ x: '100%', width: 70 }}
-            animate={{ x: 0, width: activeTab ? 350 : 70 }}
+            initial={{ x: '100%', width: 90 }}
+            animate={{ x: 0, width: activeTab ? 390 : 90 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 26, stiffness: 220 }}
-            className="fixed right-0 top-0 bottom-0 z-[130] bg-slate-950/95 backdrop-blur-xl border-l border-white/10 text-white shadow-2xl flex flex-row overflow-hidden"
+            className="fixed right-0 top-14 lg:top-16 bottom-0 z-[130] bg-slate-950/95 backdrop-blur-xl border-l border-white/10 text-white shadow-2xl flex flex-row overflow-hidden"
           >
-            {/* Left Content Panel (280px) - slides out to the left of the sidebar */}
+            {/* Left Content Panel (300px) - slides out to the left of the sidebar */}
             <AnimatePresence mode="wait">
               {activeTab && (
                 <motion.div
                   key={activeTab}
                   initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: 280 }}
+                  animate={{ opacity: 1, width: 300 }}
                   exit={{ opacity: 0, width: 0 }}
                   transition={{ type: 'spring', damping: 28, stiffness: 240 }}
                   className="h-full border-r border-white/10 flex flex-col overflow-hidden select-none shrink-0"
@@ -547,8 +547,8 @@ export function UtilityDrawer({ isOpen, onClose, isVendor = false }: UtilityDraw
               )}
             </AnimatePresence>
 
-            {/* Right Sidebar (70px) - always visible, displays icons aligned downside */}
-            <div className="w-[70px] h-full flex flex-col items-center py-5 bg-white/[0.01] shrink-0 select-none border-l border-white/5">
+            {/* Right Sidebar (90px) - always visible, displays icons aligned downside */}
+            <div className="w-[90px] h-full flex flex-col items-center py-5 bg-white/[0.01] shrink-0 select-none border-l border-white/5">
               {/* Top Sparkles Icon */}
               <div className="h-9 w-9 rounded-xl bg-[color:var(--color-primary)]/10 border border-[color:var(--color-primary)]/30 flex items-center justify-center mb-6">
                 <Sparkles size={16} className="text-[color:var(--color-primary)] animate-pulse" />

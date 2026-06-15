@@ -255,7 +255,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <aside className={`fixed inset-y-0 left-0 z-50 w-64 transform bg-bg-secondary border-r border-border-brand transition-transform duration-300 lg:static lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex h-16 items-center gap-2.5 px-4.5 vendor-navbar">
           <img src="/logo.png" alt="BokSpot Partner" className="h-10 object-contain" />
-          <span className="px-1.5 py-0.5 rounded-md text-[7.5px] font-black uppercase tracking-wider bg-[#8b6508]/15 border border-[#8b6508]/30 text-[#fceea7] shrink-0 select-none">
+          <span className="px-1.5 py-0.5 rounded-md text-[7.5px] font-black uppercase tracking-wider sidebar-badge shrink-0 select-none">
             {loginRole === 'supervisor' ? 'SUPERVISOR' : 'PARTNER'}
           </span>
         </div>
@@ -269,11 +269,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 href={item.href}
                 className={`flex items-center gap-3 rounded-xl px-4 py-2.5 text-xs uppercase tracking-wide font-bold transition-all ${
                   active 
-                    ? 'bg-gradient-to-r from-[#8b6508]/15 to-[#d4af37]/5 border border-[#8b6508]/15 text-[#fceea7] shadow-md shadow-[#8b6508]/5' 
-                    : 'text-slate-400 border border-transparent hover:bg-white/[0.01] hover:text-white'
+                    ? 'sidebar-link-active' 
+                    : 'sidebar-link-inactive'
                 }`}
               >
-                <item.icon className={`h-4 w-4 ${active ? 'text-[#fceea7]' : 'text-slate-500'}`} />
+                <item.icon className="h-4 w-4 transition-colors duration-200" />
                 {item.label}
               </Link>
             );
@@ -281,14 +281,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </nav>
  
         {/* Sidebar Footer Info */}
-        <div className="absolute bottom-4 left-4 right-4 p-4 rounded-xl bg-bg-tertiary/20 border border-border-brand space-y-1.5">
+        <div className="absolute bottom-4 left-4 right-4 p-4 rounded-xl sidebar-footer-container space-y-1.5">
           <div className="flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
             <span className="text-[9px] text-text-secondary font-bold uppercase tracking-wider">Console Secured</span>
           </div>
-          <p className="text-[9px] text-text-secondary">Vendor ID: <span className="font-mono text-[#fceea7]">{currentMerchant.vendorId || 'N/A'}</span></p>
-          <p className="text-[9px] text-text-secondary">Merchant key: <span className="font-mono text-[#fceea7]">{currentMerchant.username}</span></p>
-          <p className="text-[9px] text-text-secondary truncate" title={getBnxMailId()}>BNX Mail: <span className="font-mono text-[#fceea7]">{getBnxMailId()}</span></p>
+          <p className="text-[9px] text-text-secondary">Vendor ID: <span className="font-mono sidebar-footer-val">{currentMerchant.vendorId || 'N/A'}</span></p>
+          <p className="text-[9px] text-text-secondary">Merchant key: <span className="font-mono sidebar-footer-val">{currentMerchant.username}</span></p>
+          <p className="text-[9px] text-text-secondary truncate" title={getBnxMailId()}>BNX Mail: <span className="font-mono sidebar-footer-val">{getBnxMailId()}</span></p>
         </div>
       </aside>
 

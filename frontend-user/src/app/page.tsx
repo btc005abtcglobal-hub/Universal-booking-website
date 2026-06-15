@@ -5,7 +5,6 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { MapPin, Star, Compass, ArrowRight, X, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { SupportChat } from '../components/SupportChat';
 import { ShortcutManagerModal } from '../components/shortcuts/ShortcutManagerModal';
 import { ActionModalManager } from '../components/shortcuts/ActionModalManager';
 import { useBookingFlowStore, useLocationStore } from '../lib/store';
@@ -1759,8 +1758,6 @@ export default function HomePage() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      <SupportChat />
     </>
   );
 }

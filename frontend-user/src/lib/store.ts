@@ -39,16 +39,18 @@ export interface PersistedBooking {
   serviceId: string;
   serviceName: string;
   merchantName: string;
+  category?: string;
   date: string;
   time: string;
   amount: number;
-  status: 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
+  status: 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED' | 'CHECKED_IN';
   city?: string;
   durationMinutes?: number;
   customerName?: string;
   customerEmail?: string;
   customerPhone?: string;
   notes?: string;
+  otp?: string;
   bookedAt?: string;
 }
 

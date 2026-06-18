@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { useLocationStore } from '../../../lib/store';
+import { useLocationStore, useBookingFlowStore, useUserStore } from '../../../lib/store';
 import { api, Service } from '../../../lib/api';
 import { calculateDistance } from '../../../lib/mockData';
 
@@ -108,6 +108,47 @@ const SORT_OPTIONS = [
   { value: 'reviews', label: 'Most Reviewed' },
 ];
 
+function MockQRCode({ value }: { value: string }) {
+  let hash = 0;
+  for (let i = 0; i < value.length; i++) {
+    hash = value.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  
+  const size = 17;
+  const blocks = [];
+  
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size; c++) {
+      const isTopLeft = r < 5 && c < 5;
+      const isTopRight = r < 5 && c >= size - 5;
+      const isBottomLeft = r >= size - 5 && c < 5;
+      
+      let fill = false;
+      if (isTopLeft || isTopRight || isBottomLeft) {
+        const localR = r < 5 ? r : r >= size - 5 ? r - (size - 5) : r;
+        const localC = c < 5 ? c : c >= size - 5 ? c - (size - 5) : c;
+        fill = (localR === 0 || localR === 4 || localC === 0 || localC === 4) || (localR === 2 && localC === 2);
+      } else {
+        const val = Math.abs(Math.sin(hash + r * 19 + c * 31));
+        fill = val > 0.48;
+      }
+      
+      if (fill) {
+        blocks.push(<rect key={`${r}-${c}`} x={c} y={r} width="1" height="1" fill="currentColor" />);
+      }
+    }
+  }
+
+  return (
+    <div className="bg-white p-2 rounded-2xl inline-block shadow-lg border border-slate-200">
+      <svg viewBox={`0 0 ${size} ${size}`} className="w-24 h-24 text-slate-900 animate-scale-up" shapeRendering="crispEdges">
+        <rect width={size} height={size} fill="white" />
+        {blocks}
+      </svg>
+    </div>
+  );
+}
+
 /* ============================================================================
  * 1. CAB SERVICE VIEW (cabs)
  * ============================================================================ */
@@ -117,6 +158,13 @@ function CabBookingView({ categoryName, city }: any) {
   const [drop, setDrop] = useState('Chennai International Airport');
   const [cabType, setCabType] = useState<'mini' | 'sedan' | 'suv' | 'auto'>('mini');
   const [rideState, setRideState] = useState<'idle' | 'searching' | 'driver_found' | 'riding' | 'completed'>('idle');
+  const [activeBooking, setActiveBooking] = useState<{ ref: string; otp: string } | null>(null);
+
+  const addBooking = useBookingFlowStore((state) => state.addBooking);
+  const user = useUserStore((state) => state.user);
+  const customerName = user?.name || "Premium Traveler";
+  const customerEmail = user?.email || "traveler@bnxmail.com";
+  const customerPhone = user?.phone || "+91 99887 76655";
 
   const cabDetails = {
     mini: { name: 'Go Mini', price: 160, time: '2 mins away' },
@@ -127,6 +175,42 @@ function CabBookingView({ categoryName, city }: any) {
 
   const handleBook = () => {
     setRideState('searching');
+
+    const ref = `TRV-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    const id = `trv-${Date.now()}`;
+    const bookingDetails = {
+      id,
+      ref,
+      otp,
+      serviceId: `svc-cab-${cabType}`,
+      serviceName: `Cab Booking (${cabDetails[cabType].name})`,
+      merchantName: 'Beta Transit Cabs',
+      category: 'cabs',
+      date: new Date().toISOString().split('T')[0],
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      amount: cabDetails[cabType].price,
+      status: 'CONFIRMED' as const,
+      city: city || 'Chennai',
+      durationMinutes: 30,
+      customerName,
+      customerEmail,
+      customerPhone,
+      bookedAt: new Date().toISOString(),
+    };
+
+    setActiveBooking({ ref, otp });
+    addBooking(bookingDetails);
+
+    fetch('/api/v1/bookings/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(bookingDetails),
+    })
+      .then(res => res.json())
+      .then(data => console.log('Successfully synced cab booking to backend:', data))
+      .catch(err => console.error('Error syncing cab booking to backend:', err));
+
     setTimeout(() => {
       setRideState('driver_found');
       setTimeout(() => {
@@ -237,7 +321,7 @@ function CabBookingView({ categoryName, city }: any) {
             </div>
             <div>
               <span className="text-[9px] uppercase tracking-wider text-[color:var(--color-outline)] font-bold">OTP Code</span>
-              <p className="text-base font-black mt-1 text-[color:var(--color-primary)] tracking-widest">4829</p>
+              <p className="text-base font-black mt-1 text-[color:var(--color-primary)] tracking-widest">{activeBooking?.otp || '4829'}</p>
             </div>
           </div>
         </div>
@@ -273,17 +357,39 @@ function CabBookingView({ categoryName, city }: any) {
       )}
 
       {rideState === 'completed' && (
-        <div className="py-8 flex flex-col items-center justify-center text-center space-y-4 animate-fade-up">
-          <div className="h-12 w-12 rounded-full bg-[color:var(--color-primary)]/10 text-[color:var(--color-primary)] border border-[color:var(--color-primary)]/30 flex items-center justify-center">
-            <Sparkles size={22} className="animate-pulse" />
+        <div className="py-6 flex flex-col items-center justify-center text-center space-y-4 animate-fade-up">
+          <div className="h-10 w-10 rounded-full bg-[color:var(--color-primary)]/10 text-[color:var(--color-primary)] border border-[color:var(--color-primary)]/30 flex items-center justify-center">
+            <Sparkles size={20} className="animate-pulse" />
           </div>
           <div>
             <h3 className="font-extrabold text-sm text-[color:var(--color-on-surface)]">Ride Completed!</h3>
             <p className="text-[11px] text-[color:var(--color-on-surface-variant)] mt-1">Thank you for traveling with Beta Transit.</p>
           </div>
+          
+          {activeBooking && (
+            <div className="w-full max-w-xs rounded-2xl border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-dim)] p-4 space-y-3 shadow-lg text-left mx-auto">
+              <div className="flex justify-between items-center border-b border-[color:var(--color-outline-variant)]/20 pb-2">
+                <span className="text-[9px] uppercase font-extrabold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md">
+                  Confirmed Pass
+                </span>
+                <span className="text-[10px] font-mono text-[color:var(--color-outline)]">{activeBooking.ref}</span>
+              </div>
+              <div className="flex justify-between gap-3 items-center">
+                <div className="space-y-1">
+                  <span className="text-[8px] uppercase tracking-wider text-[color:var(--color-outline)] block">Boarding OTP</span>
+                  <span className="text-lg font-black tracking-widest text-[color:var(--color-primary)] block">{activeBooking.otp}</span>
+                  <span className="text-[9px] text-[color:var(--color-outline)] block">Fare Paid: ₹{cabDetails[cabType].price}</span>
+                </div>
+                <div className="shrink-0 flex justify-center items-center">
+                  <MockQRCode value={activeBooking.ref} />
+                </div>
+              </div>
+            </div>
+          )}
+
           <button
             onClick={() => setRideState('idle')}
-            className="border border-[color:var(--color-primary)]/30 hover:bg-[color:var(--color-primary)]/10 text-[color:var(--color-primary)] text-xs font-bold uppercase tracking-wider py-2.5 px-6 rounded-xl cursor-pointer transition-all"
+            className="border border-[color:var(--color-primary)]/30 hover:bg-[color:var(--color-primary)]/10 text-[color:var(--color-primary)] text-xs font-bold uppercase tracking-wider py-2 px-6 rounded-xl cursor-pointer transition-all"
           >
             Book Another Ride
           </button>
@@ -295,13 +401,19 @@ function CabBookingView({ categoryName, city }: any) {
 
 /* ============================================================================
  * 2. FLIGHT BOOKING VIEW (flights)
- * ============================================================================ */
-function FlightBookingView({ categoryName, city }: any) {
+ * ========================================================================function FlightBookingView({ categoryName, city }: any) {
   const [tripType, setTripType] = useState<'one-way' | 'round'>('one-way');
   const [fromAirport, setFromAirport] = useState('MAA - Chennai');
   const [toAirport, setToAirport] = useState('BLR - Bangalore');
   const [flightState, setFlightState] = useState<'idle' | 'searching' | 'results' | 'booked'>('idle');
   const [selectedFlight, setSelectedFlight] = useState<any>(null);
+  const [activeBooking, setActiveBooking] = useState<{ ref: string; otp: string; pnr: string } | null>(null);
+
+  const addBooking = useBookingFlowStore((state) => state.addBooking);
+  const user = useUserStore((state) => state.user);
+  const customerName = user?.name || "Premium Traveler";
+  const customerEmail = user?.email || "traveler@bnxmail.com";
+  const customerPhone = user?.phone || "+91 99887 76655";
 
   const mockFlights = [
     { id: 'f1', carrier: 'Air India', code: 'AI-439', time: '08:00 AM – 09:15 AM', price: 4200, duration: '1h 15m' },
@@ -314,6 +426,49 @@ function FlightBookingView({ categoryName, city }: any) {
     setTimeout(() => {
       setFlightState('results');
     }, 3500);
+  };
+
+  const handleBookFlight = (flight: any) => {
+    const ref = `TRV-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    const pnr = `PNR-FLT-${Math.floor(1000 + Math.random() * 9000)}`;
+    const id = `trv-${Date.now()}`;
+    
+    const bookingDetails = {
+      id,
+      ref,
+      otp,
+      serviceId: `svc-flight-${flight.id}`,
+      serviceName: `Flight Booking (${flight.carrier} - ${flight.code})`,
+      merchantName: 'Beta Airways',
+      category: 'flights',
+      date: new Date().toISOString().split('T')[0],
+      time: flight.time.split(' – ')[0],
+      amount: flight.price,
+      status: 'CONFIRMED' as const,
+      city: city || 'Chennai',
+      durationMinutes: 75,
+      customerName,
+      customerEmail,
+      customerPhone,
+      notes: `Route: ${fromAirport} to ${toAirport}. PNR: ${pnr}`,
+      bookedAt: new Date().toISOString(),
+    };
+
+    setActiveBooking({ ref, otp, pnr });
+    addBooking(bookingDetails);
+
+    fetch('/api/v1/bookings/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(bookingDetails),
+    })
+      .then(res => res.json())
+      .then(data => console.log('Successfully synced flight booking to backend:', data))
+      .catch(err => console.error('Error syncing flight booking to backend:', err));
+
+    setSelectedFlight(flight);
+    setFlightState('booked');
   };
 
   return (
@@ -416,7 +571,7 @@ function FlightBookingView({ categoryName, city }: any) {
                     <span className="text-base font-black text-[color:var(--color-primary)]">₹{flight.price}</span>
                   </div>
                   <button
-                    onClick={() => { setSelectedFlight(flight); setFlightState('booked'); }}
+                    onClick={() => handleBookFlight(flight)}
                     className="bg-[color:var(--color-primary)] text-[color:var(--color-on-primary)] text-[10px] font-extrabold uppercase py-2 px-4 rounded-xl cursor-pointer hover:bg-[color:var(--color-primary-fixed-dim)] transition-colors"
                   >
                     Select Seat & Book
@@ -428,8 +583,8 @@ function FlightBookingView({ categoryName, city }: any) {
         </div>
       )}
 
-      {flightState === 'booked' && selectedFlight && (
-        <div className="py-4 flex flex-col items-center justify-center text-center space-y-5 animate-fade-up">
+      {flightState === 'booked' && selectedFlight && activeBooking && (
+        <div className="py-4 flex flex-col items-center justify-center text-center space-y-5 animate-fade-up animate-scale-up">
           <div className="h-11 w-11 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center">
             <Check size={20} />
           </div>
@@ -438,7 +593,7 @@ function FlightBookingView({ categoryName, city }: any) {
             <p className="text-[11px] text-[color:var(--color-on-surface-variant)] mt-0.5">Your seat 12A is locked and ticket is compiled.</p>
           </div>
 
-          <div className="w-full max-w-sm rounded-3xl border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-dim)] overflow-hidden shadow-xl">
+          <div className="w-full max-w-sm rounded-3xl border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-dim)] overflow-hidden shadow-xl mx-auto">
             <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 text-white text-left flex justify-between items-center">
               <div>
                 <span className="text-[9px] font-bold uppercase tracking-widest opacity-60">Boarding Pass</span>
@@ -462,12 +617,20 @@ function FlightBookingView({ categoryName, city }: any) {
               </div>
               <div>
                 <span className="text-[9px] uppercase tracking-wider text-[color:var(--color-outline)] font-bold">Ticket PNR</span>
-                <p className="text-xs font-bold text-[color:var(--color-on-surface)] mt-0.5 font-mono">PNR-FLT-{Math.floor(1000 + Math.random() * 9000)}</p>
+                <p className="text-xs font-bold text-[color:var(--color-on-surface)] mt-0.5 font-mono">{activeBooking.pnr}</p>
+              </div>
+              <div>
+                <span className="text-[9px] uppercase tracking-wider text-[color:var(--color-outline)] font-bold">Boarding OTP</span>
+                <p className="text-base font-black text-[color:var(--color-primary)] tracking-widest leading-none mt-0.5">{activeBooking.otp}</p>
+              </div>
+              <div>
+                <span className="text-[9px] uppercase tracking-wider text-[color:var(--color-outline)] font-bold">Ticket Ref</span>
+                <p className="text-xs font-bold text-[color:var(--color-on-surface)] mt-0.5 font-mono">{activeBooking.ref}</p>
               </div>
             </div>
 
             <div className="bg-[color:var(--color-surface-container-high)]/60 py-4 px-6 border-t border-[color:var(--color-outline-variant)]/20 flex flex-col items-center justify-center gap-2 select-none">
-              <QrCode size={48} className="text-[color:var(--color-on-surface)] opacity-75" />
+              <MockQRCode value={activeBooking.ref} />
               <span className="text-[8px] font-mono text-[color:var(--color-outline)] tracking-widest uppercase">Digital Security Barcode</span>
             </div>
           </div>
@@ -493,6 +656,13 @@ function TrainBookingView({ categoryName, city }: any) {
   const [classType, setClassType] = useState<'3AC' | '2AC' | 'SL'>('3AC');
   const [trainState, setTrainState] = useState<'idle' | 'searching' | 'results' | 'booked'>('idle');
   const [selectedTrain, setSelectedTrain] = useState<any>(null);
+  const [activeBooking, setActiveBooking] = useState<{ ref: string; otp: string; pnr: string } | null>(null);
+
+  const addBooking = useBookingFlowStore((state) => state.addBooking);
+  const user = useUserStore((state) => state.user);
+  const customerName = user?.name || "Premium Traveler";
+  const customerEmail = user?.email || "traveler@bnxmail.com";
+  const customerPhone = user?.phone || "+91 99887 76655";
 
   const mockTrains = [
     { id: 't1', name: 'Shatabdi Express', no: '12007', time: '06:00 AM – 11:00 AM', price: 890, seats: 'AVBL 14' },
@@ -505,6 +675,49 @@ function TrainBookingView({ categoryName, city }: any) {
     setTimeout(() => {
       setTrainState('results');
     }, 3500);
+  };
+
+  const handleBookTrain = (train: any) => {
+    const ref = `TRV-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    const pnr = `PNR-TRN-${Math.floor(1000000000 + Math.random() * 9000000000)}`;
+    const id = `trv-${Date.now()}`;
+    
+    const bookingDetails = {
+      id,
+      ref,
+      otp,
+      serviceId: `svc-train-${train.id}`,
+      serviceName: `Train Booking (${train.name} - ${train.no})`,
+      merchantName: 'Beta Rail Connect',
+      category: 'trains',
+      date: new Date().toISOString().split('T')[0],
+      time: train.time.split(' – ')[0],
+      amount: train.price,
+      status: 'CONFIRMED' as const,
+      city: city || 'Chennai',
+      durationMinutes: 300,
+      customerName,
+      customerEmail,
+      customerPhone,
+      notes: `Train: ${train.no} ${train.name}. PNR: ${pnr}`,
+      bookedAt: new Date().toISOString(),
+    };
+
+    setActiveBooking({ ref, otp, pnr });
+    addBooking(bookingDetails);
+
+    fetch('/api/v1/bookings/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(bookingDetails),
+    })
+      .then(res => res.json())
+      .then(data => console.log('Successfully synced train booking to backend:', data))
+      .catch(err => console.error('Error syncing train booking to backend:', err));
+
+    setSelectedTrain(train);
+    setTrainState('booked');
   };
 
   return (
@@ -609,7 +822,7 @@ function TrainBookingView({ categoryName, city }: any) {
                     <span className="text-base font-black text-[color:var(--color-primary)]">₹{train.price}</span>
                   </div>
                   <button
-                    onClick={() => { setSelectedTrain(train); setTrainState('booked'); }}
+                    onClick={() => handleBookTrain(train)}
                     className="bg-[color:var(--color-primary)] text-[color:var(--color-on-primary)] text-[10px] font-extrabold uppercase py-2 px-4 rounded-xl cursor-pointer hover:bg-[color:var(--color-primary-fixed-dim)] transition-colors"
                   >
                     Book Berth
@@ -621,8 +834,8 @@ function TrainBookingView({ categoryName, city }: any) {
         </div>
       )}
 
-      {trainState === 'booked' && selectedTrain && (
-        <div className="py-4 flex flex-col items-center justify-center text-center space-y-5 animate-fade-up">
+      {trainState === 'booked' && selectedTrain && activeBooking && (
+        <div className="py-4 flex flex-col items-center justify-center text-center space-y-5 animate-fade-up animate-scale-up">
           <div className="h-11 w-11 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center">
             <Check size={20} />
           </div>
@@ -631,7 +844,7 @@ function TrainBookingView({ categoryName, city }: any) {
             <p className="text-[11px] text-[color:var(--color-on-surface-variant)] mt-0.5">Seat assigned inside coach {classType}.</p>
           </div>
 
-          <div className="w-full max-w-sm rounded-3xl border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-dim)] overflow-hidden shadow-xl">
+          <div className="w-full max-w-sm rounded-3xl border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-dim)] overflow-hidden shadow-xl mx-auto">
             <div className="bg-gradient-to-r from-emerald-600 to-teal-600 p-4 text-white text-left flex justify-between items-center">
               <div>
                 <span className="text-[9px] font-bold uppercase tracking-widest opacity-60">Indian Railways</span>
@@ -655,8 +868,21 @@ function TrainBookingView({ categoryName, city }: any) {
               </div>
               <div>
                 <span className="text-[9px] uppercase tracking-wider text-[color:var(--color-outline)] font-bold">IRCTC PNR</span>
-                <p className="text-xs font-bold text-[color:var(--color-on-surface)] mt-0.5 font-mono">PNR-TRN-{Math.floor(1000000000 + Math.random() * 9000000000)}</p>
+                <p className="text-xs font-bold text-[color:var(--color-on-surface)] mt-0.5 font-mono">{activeBooking.pnr}</p>
               </div>
+              <div>
+                <span className="text-[9px] uppercase tracking-wider text-[color:var(--color-outline)] font-bold">Boarding OTP</span>
+                <p className="text-base font-black text-[color:var(--color-primary)] tracking-widest leading-none mt-0.5">{activeBooking.otp}</p>
+              </div>
+              <div>
+                <span className="text-[9px] uppercase tracking-wider text-[color:var(--color-outline)] font-bold">Ticket Ref</span>
+                <p className="text-xs font-bold text-[color:var(--color-on-surface)] mt-0.5 font-mono">{activeBooking.ref}</p>
+              </div>
+            </div>
+
+            <div className="bg-[color:var(--color-surface-container-high)]/60 py-4 px-6 border-t border-[color:var(--color-outline-variant)]/20 flex flex-col items-center justify-center gap-2 select-none">
+              <MockQRCode value={activeBooking.ref} />
+              <span className="text-[8px] font-mono text-[color:var(--color-outline)] tracking-widest uppercase">Digital Security Barcode</span>
             </div>
           </div>
 
@@ -674,12 +900,18 @@ function TrainBookingView({ categoryName, city }: any) {
 
 /* ============================================================================
  * 4. BUS BOOKING VIEW (buses)
- * ============================================================================ */
-function BusBookingView({ categoryName, city }: any) {
+ * ============================================function BusBookingView({ categoryName, city }: any) {
   const [fromCity, setFromCity] = useState('Chennai');
   const [toCity, setToCity] = useState('Madurai');
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
   const [busState, setBusState] = useState<'seat_selection' | 'booked'>('seat_selection');
+  const [activeBooking, setActiveBooking] = useState<{ ref: string; otp: string } | null>(null);
+
+  const addBooking = useBookingFlowStore((state) => state.addBooking);
+  const user = useUserStore((state) => state.user);
+  const customerName = user?.name || "Premium Traveler";
+  const customerEmail = user?.email || "traveler@bnxmail.com";
+  const customerPhone = user?.phone || "+91 99887 76655";
 
   const SEAT_PRICE = 650;
   const mockSeats = [
@@ -701,6 +933,44 @@ function BusBookingView({ categoryName, city }: any) {
 
   const handleCheckout = () => {
     if (selectedSeats.length === 0) return;
+
+    const ref = `TRV-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    const id = `trv-${Date.now()}`;
+    
+    const bookingDetails = {
+      id,
+      ref,
+      otp,
+      serviceId: `svc-bus-${id}`,
+      serviceName: `Bus Booking (Volvo AC - Seats: ${selectedSeats.join(', ')})`,
+      merchantName: 'Beta Roadlines',
+      category: 'buses',
+      date: new Date().toISOString().split('T')[0],
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      amount: selectedSeats.length * SEAT_PRICE,
+      status: 'CONFIRMED' as const,
+      city: city || 'Chennai',
+      durationMinutes: 360,
+      customerName,
+      customerEmail,
+      customerPhone,
+      notes: `Seats: ${selectedSeats.join(', ')}. Route: ${fromCity} to ${toCity}`,
+      bookedAt: new Date().toISOString(),
+    };
+
+    setActiveBooking({ ref, otp });
+    addBooking(bookingDetails);
+
+    fetch('/api/v1/bookings/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(bookingDetails),
+    })
+      .then(res => res.json())
+      .then(data => console.log('Successfully synced bus booking to backend:', data))
+      .catch(err => console.error('Error syncing bus booking to backend:', err));
+
     setBusState('booked');
   };
 
@@ -784,8 +1054,8 @@ function BusBookingView({ categoryName, city }: any) {
         </div>
       )}
 
-      {busState === 'booked' && (
-        <div className="py-4 flex flex-col items-center justify-center text-center space-y-5 animate-fade-up">
+      {busState === 'booked' && activeBooking && (
+        <div className="py-4 flex flex-col items-center justify-center text-center space-y-5 animate-fade-up animate-scale-up">
           <div className="h-11 w-11 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center">
             <Check size={20} />
           </div>
@@ -794,7 +1064,7 @@ function BusBookingView({ categoryName, city }: any) {
             <p className="text-[11px] text-[color:var(--color-on-surface-variant)] mt-0.5">Seats {selectedSeats.join(', ')} secured successfully.</p>
           </div>
 
-          <div className="w-full max-w-sm rounded-3xl border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-dim)] overflow-hidden shadow-xl">
+          <div className="w-full max-w-sm rounded-3xl border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-dim)] overflow-hidden shadow-xl mx-auto">
             <div className="bg-gradient-to-r from-sky-600 to-indigo-600 p-4 text-white text-left flex justify-between items-center">
               <div>
                 <span className="text-[9px] font-bold uppercase tracking-widest opacity-60">Beta Roadlines</span>
@@ -818,8 +1088,17 @@ function BusBookingView({ categoryName, city }: any) {
               </div>
               <div>
                 <span className="text-[9px] uppercase tracking-wider text-[color:var(--color-outline)] font-bold">Boarding OTP</span>
-                <p className="text-xs font-bold text-[color:var(--color-on-surface)] mt-0.5 font-mono">OTP-{Math.floor(100 + Math.random() * 900)}</p>
+                <p className="text-base font-black text-[color:var(--color-primary)] tracking-widest leading-none mt-0.5">{activeBooking.otp}</p>
               </div>
+              <div>
+                <span className="text-[9px] uppercase tracking-wider text-[color:var(--color-outline)] font-bold">Ticket Ref</span>
+                <p className="text-xs font-bold text-[color:var(--color-on-surface)] mt-0.5 font-mono">{activeBooking.ref}</p>
+              </div>
+            </div>
+
+            <div className="bg-[color:var(--color-surface-container-high)]/60 py-4 px-6 border-t border-[color:var(--color-outline-variant)]/20 flex flex-col items-center justify-center gap-2 select-none">
+              <MockQRCode value={activeBooking.ref} />
+              <span className="text-[8px] font-mono text-[color:var(--color-outline)] tracking-widest uppercase">Digital Security Barcode</span>
             </div>
           </div>
 

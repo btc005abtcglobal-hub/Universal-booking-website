@@ -44,6 +44,7 @@ export interface PersistedBooking {
   customerEmail: string;
   customerPhone: string;
   notes?: string;
+  otp?: string;
   
   // Doctor/Medical specific fields
   vitals?: {

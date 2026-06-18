@@ -16,7 +16,7 @@ export class BookingsController {
 
   @Post('sync')
   @Public()
-  @ApiOperation({ summary: 'Add a synchronized booking for demo' })
+  @ApiOperation({ summary: 'Add or update a synchronized booking for demo' })
   async syncAdd(@Body() booking: any) {
     const filePath = path.join(process.cwd(), 'shared-bookings.json');
     let bookings = [];
@@ -28,11 +28,16 @@ export class BookingsController {
     } catch (e) {
       bookings = [];
     }
-    const exists = bookings.some((b: any) => b.ref === booking.ref || b.id === booking.id);
-    if (!exists) {
+    const index = bookings.findIndex((b: any) => b.ref === booking.ref || b.id === booking.id);
+    if (index === -1) {
       bookings.unshift(booking);
-      fs.writeFileSync(filePath, JSON.stringify(bookings, null, 2), 'utf8');
+    } else {
+      bookings[index] = {
+        ...bookings[index],
+        ...booking,
+      };
     }
+    fs.writeFileSync(filePath, JSON.stringify(bookings, null, 2), 'utf8');
     return { success: true, booking };
   }
 

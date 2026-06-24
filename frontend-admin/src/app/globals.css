@@ -328,3 +328,47 @@ body {
 .sidebar-footer-val {
   color: var(--primary) !important;
 }
+
+/* Capsule Menu Styling (from customer page navbar) */
+.custom-nav-capsule {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border-radius: 9999px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.dark .custom-nav-capsule, .light .custom-nav-capsule, .vendor-navbar .custom-nav-capsule {
+  background-color: #2b1f02 !important;
+  border: 1px solid rgba(252, 238, 167, 0.15) !important;
+}
+
+/* Link Items */
+.custom-nav-link-inactive {
+  transition: color 0.2s ease;
+}
+
+.dark .custom-nav-link-inactive, .light .custom-nav-link-inactive, .vendor-navbar .custom-nav-link-inactive {
+  color: rgba(252, 238, 167, 0.72) !important;
+}
+.dark .custom-nav-link-inactive:hover, .light .custom-nav-link-inactive:hover, .vendor-navbar .custom-nav-link-inactive:hover {
+  color: #ffffff !important;
+}
+
+/* Active Nav Link */
+.dark .custom-nav-link-active, .light .custom-nav-link-active, .vendor-navbar .custom-nav-link-active {
+  color: #ffffff !important;
+  font-weight: 900 !important;
+}
+
+/* Active indicator background */
+.vendor-navbar .custom-nav-active-bg {
+  background-color: #8b6508 !important;
+  border: 1px solid rgba(252, 238, 167, 0.35) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2) !important;
+}
+

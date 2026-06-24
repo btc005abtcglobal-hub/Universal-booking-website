@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { motion } from 'framer-motion';
 import { 
   LayoutDashboard, Calendar, BookOpen, Settings, QrCode, 
   Package, Menu, X, Bell, LogOut, Stethoscope, Dumbbell, 
@@ -13,6 +14,7 @@ import { UtilityDrawer } from '../../components/UtilityDrawer';
 import { useState, useEffect, useRef } from 'react';
 import { useVendorStore, PRESET_MERCHANTS } from '../../lib/store';
 import { getVerticalFromCategory } from '../../lib/categoryUtils';
+
 
 
 const navItems = [
@@ -40,9 +42,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [isMounted, setIsMounted] = useState(false);
   const [hasHydrated, setHasHydrated] = useState(false);
   
-  // Store Switcher state
-  const [showStoreSwitcher, setShowStoreSwitcher] = useState(false);
-  const switcherRef = useRef<HTMLDivElement>(null);
+
 
   // Profile Menu state
   const [profileOpen, setProfileOpen] = useState(false);
@@ -107,9 +107,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
         setShowNotifications(false);
       }
-      if (switcherRef.current && !switcherRef.current.contains(event.target as Node)) {
-        setShowStoreSwitcher(false);
-      }
+
       if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
         setProfileOpen(false);
       }
@@ -302,64 +300,65 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <header className="sticky top-0 z-40 flex h-16 items-center justify-between vendor-navbar backdrop-blur-md px-6 lg:px-8">
           <div className="flex items-center gap-3">
             <button onClick={() => setSidebarOpen(true)} className="lg:hidden rounded-lg p-2 hover:bg-white/5 text-slate-300"><Menu className="h-5 w-5" /></button>
-            
-            {/* Store Switcher */}
-            {allStores.length > 1 ? (
-              <div className="relative" ref={switcherRef}>
-                <button 
-                  onClick={() => setShowStoreSwitcher(!showStoreSwitcher)}
-                  className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.04] px-3.5 py-2 text-xs font-bold text-slate-300 hover:text-white transition-all cursor-pointer select-none"
-                >
-                  <div className="flex h-5 w-5 items-center justify-center rounded-lg bg-[#8b6508]/10 border border-[#8b6508]/20 text-[#fceea7]">
-                    <Building className="h-3 w-3" />
-                  </div>
-                  <span className="max-w-[150px] truncate">{currentMerchant.merchantName}</span>
-                  <ChevronDown className={`h-3 w-3 text-slate-500 transition-transform duration-200 ${showStoreSwitcher ? 'rotate-180' : ''}`} />
-                </button>
- 
-                {showStoreSwitcher && (
-                  <div className="absolute left-0 mt-3 w-56 rounded-xl border border-border-brand bg-bg-tertiary p-2 shadow-2xl z-50 space-y-1 animate-fade-in">
-                    <div className="px-2.5 py-1.5 border-b border-white/5 mb-1">
-                      <span className="text-[9px] uppercase tracking-wider text-slate-500 font-extrabold block">Switch Business Store</span>
-                      <span className="text-[10px] text-[#fceea7] font-semibold truncate block">Vendor ID: {currentMerchant.vendorId || 'N/A'}</span>
-                    </div>
-                    <div className="max-h-60 overflow-y-auto space-y-0.5 custom-scrollbar">
-                      {allStores.map((store) => {
-                        const isActive = store.id === currentMerchant.id;
-                        const StoreIcon = getCategoryIcon(store.category);
-                        return (
-                          <button
-                            key={store.id}
-                            onClick={() => {
-                              switchStore(store.id);
-                              setShowStoreSwitcher(false);
-                            }}
-                            className={`w-full flex items-center justify-between rounded-lg px-2.5 py-2 text-left text-xs transition-colors cursor-pointer ${
-                              isActive
-                                ? 'bg-gradient-to-r from-[#8b6508]/15 to-[#d4af37]/5 text-[#fceea7] font-extrabold'
-                                : 'text-slate-400 hover:bg-white/[0.02] hover:text-white'
-                            }`}
-                          >
-                            <div className="flex items-center gap-2 min-w-0">
-                              <StoreIcon className={`h-3.5 w-3.5 shrink-0 ${isActive ? 'text-[#fceea7]' : 'text-slate-500'}`} />
-                              <span className="truncate">{store.merchantName}</span>
-                            </div>
-                            {isActive && <Check className="h-3 w-3 text-[#fceea7] shrink-0" />}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              // Static display or single store fallback
-              <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl border border-white/5 bg-white/[0.005] select-none">
-                <div className="h-1.5 w-1.5 rounded-full bg-[#8b6508]/50 animate-pulse" />
-                <span className="text-[10px] uppercase tracking-wider font-extrabold text-slate-400">{currentMerchant.merchantName}</span>
-              </div>
-            )}
           </div>
+
+          {/* Center Column: Floating Navigation Menu */}
+          <div className="hidden lg:flex flex-none justify-center">
+            <nav className="custom-nav-capsule shadow-lg relative">
+              <Link
+                href="/"
+                className={`w-20 text-center py-1 text-[13px] font-extrabold tracking-wide hover:scale-[1.02] active:scale-[0.98] relative z-10 custom-nav-link ${
+                  pathname === '/'
+                    ? 'custom-nav-link-active'
+                    : 'custom-nav-link-inactive'
+                }`}
+              >
+                {pathname === '/' && (
+                  <motion.div
+                    layoutId="activeNavIndicatorAdmin"
+                    className="absolute inset-0 rounded-full bg-[#8b6508]/20 border border-[#8b6508]/45 shadow-[0_0_12px_rgba(255,215,0,0.15)] backdrop-blur-md -z-10 custom-nav-active-bg"
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  />
+                )}
+                Home
+              </Link>
+              <Link
+                href="/dashboard"
+                className={`w-28 text-center py-1 text-[13px] font-extrabold tracking-wide hover:scale-[1.02] active:scale-[0.98] relative z-10 custom-nav-link ${
+                  pathname.startsWith('/dashboard')
+                    ? 'custom-nav-link-active'
+                    : 'custom-nav-link-inactive'
+                }`}
+              >
+                {pathname.startsWith('/dashboard') && (
+                  <motion.div
+                    layoutId="activeNavIndicatorAdmin"
+                    className="absolute inset-0 rounded-full bg-[#8b6508]/20 border border-[#8b6508]/45 shadow-[0_0_12px_rgba(255,215,0,0.15)] backdrop-blur-md -z-10 custom-nav-active-bg"
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  />
+                )}
+                Workspace
+              </Link>
+              <Link
+                href="/tracks"
+                className={`w-24 text-center py-1 text-[13px] font-extrabold tracking-wide hover:scale-[1.02] active:scale-[0.98] relative z-10 custom-nav-link ${
+                  pathname === '/tracks'
+                    ? 'custom-nav-link-active'
+                    : 'custom-nav-link-inactive'
+                }`}
+              >
+                {pathname === '/tracks' && (
+                  <motion.div
+                    layoutId="activeNavIndicatorAdmin"
+                    className="absolute inset-0 rounded-full bg-[#8b6508]/20 border border-[#8b6508]/45 shadow-[0_0_12px_rgba(255,215,0,0.15)] backdrop-blur-md -z-10 custom-nav-active-bg"
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  />
+                )}
+                Tracks
+              </Link>
+            </nav>
+          </div>
+
           
           <div className="flex items-center gap-4 ml-auto">
             {/* Stateful Notifications Popover */}
@@ -520,6 +519,41 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         </div>
                       </div>
                     </li>
+
+                    {/* Switch Business segment */}
+                    {allStores.length > 1 && (
+                      <li className="px-5 py-3.5 bg-bg-tertiary/20">
+                        <div className="flex flex-col gap-2">
+                          <span className="text-[9px] uppercase font-bold tracking-wider text-slate-500 text-left">Switch Business</span>
+                          <div className="max-h-32 overflow-y-auto space-y-0.5 custom-scrollbar bg-bg-secondary p-1 rounded-xl border border-border-brand/40">
+                            {allStores.map((store) => {
+                              const isActive = store.id === currentMerchant.id;
+                              const StoreIcon = getCategoryIcon(store.category);
+                              return (
+                                <button
+                                  key={store.id}
+                                  onClick={() => {
+                                    switchStore(store.id);
+                                    setProfileOpen(false);
+                                  }}
+                                  className={`w-full flex items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-xs transition-colors cursor-pointer ${
+                                    isActive
+                                      ? 'bg-[#8b6508]/20 text-[#fceea7] font-extrabold border border-[#8b6508]/30'
+                                      : 'text-slate-400 hover:bg-white/[0.02] hover:text-white border border-transparent'
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-2 min-w-0">
+                                    <StoreIcon className={`h-3.5 w-3.5 shrink-0 ${isActive ? 'text-[#fceea7]' : 'text-slate-500'}`} />
+                                    <span className="truncate text-[11px]">{store.merchantName}</span>
+                                  </div>
+                                  {isActive && <Check className="h-3 w-3 text-[#fceea7] shrink-0" />}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </li>
+                    )}
                   </ul>
                   
                   {/* Bottom Divider & Sign Out */}
@@ -541,8 +575,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             {/* Utility Drawer Button */}
             <button
-              onClick={() => setUtilityDrawerOpen(true)}
-              className="relative rounded-xl p-2.5 border border-border-brand bg-bg-secondary hover:bg-bg-tertiary text-text-secondary hover:text-text-primary transition-colors cursor-pointer w-9 h-9 flex items-center justify-center overflow-hidden"
+              onClick={() => setUtilityDrawerOpen(!utilityDrawerOpen)}
+              className={`relative rounded-xl p-2.5 border transition-all cursor-pointer w-9 h-9 flex items-center justify-center overflow-hidden ${
+                utilityDrawerOpen
+                  ? 'border-[#8b6508] bg-[#8b6508]/10 text-white shadow-[0_0_8px_rgba(255,215,0,0.15)]'
+                  : 'border-border-brand bg-bg-secondary hover:bg-bg-tertiary text-text-secondary hover:text-text-primary'
+              }`}
               title="Bokspot Utilities"
             >
               <img src="/utility-icon.png" alt="Utilities" className="w-full h-full object-contain" />
@@ -550,7 +588,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </header>
  
-        <main className="flex-1 overflow-y-auto bg-bg-primary p-6 lg:p-8 custom-scrollbar">
+        <main className={`flex-1 overflow-y-auto bg-bg-primary p-6 lg:p-8 custom-scrollbar transition-all duration-300 ${
+          utilityDrawerOpen ? 'lg:pr-[74px]' : ''
+        }`}>
           {children}
         </main>
       </div>

@@ -401,7 +401,8 @@ function CabBookingView({ categoryName, city }: any) {
 
 /* ============================================================================
  * 2. FLIGHT BOOKING VIEW (flights)
- * ========================================================================function FlightBookingView({ categoryName, city }: any) {
+ * ============================================================================ */
+function FlightBookingView({ categoryName, city }: any) {
   const [tripType, setTripType] = useState<'one-way' | 'round'>('one-way');
   const [fromAirport, setFromAirport] = useState('MAA - Chennai');
   const [toAirport, setToAirport] = useState('BLR - Bangalore');
@@ -900,7 +901,8 @@ function TrainBookingView({ categoryName, city }: any) {
 
 /* ============================================================================
  * 4. BUS BOOKING VIEW (buses)
- * ============================================function BusBookingView({ categoryName, city }: any) {
+ * ============================================================================ */
+function BusBookingView({ categoryName, city }: any) {
   const [fromCity, setFromCity] = useState('Chennai');
   const [toCity, setToCity] = useState('Madurai');
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
@@ -1001,8 +1003,6 @@ function TrainBookingView({ categoryName, city }: any) {
 
           <div className="border border-[color:var(--color-outline-variant)]/30 bg-[color:var(--color-surface-dim)]/50 rounded-2xl p-4 flex flex-col items-center">
             <span className="text-[9px] uppercase tracking-wider font-extrabold text-[color:var(--color-outline)] mb-4 block">Select Seats (Upper/Lower Deck)</span>
-            
-            {/* Steering Wheel Indicator */}
             <div className="w-full flex justify-end max-w-[200px] border-b border-[color:var(--color-outline-variant)]/20 pb-2 mb-3">
               <span className="text-[9px] uppercase font-bold text-[color:var(--color-outline)] flex items-center gap-1">
                 Driver <Compass size={11} className="rotate-45" />

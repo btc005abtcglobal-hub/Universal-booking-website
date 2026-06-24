@@ -306,7 +306,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="hidden lg:flex flex-none justify-center">
             <nav className="custom-nav-capsule shadow-lg relative">
               <Link
-                href="/"
+                href="http://localhost:3500/"
                 className={`w-20 text-center py-1 text-[13px] font-extrabold tracking-wide hover:scale-[1.02] active:scale-[0.98] relative z-10 custom-nav-link ${
                   pathname === '/'
                     ? 'custom-nav-link-active'
@@ -340,7 +340,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 Workspace
               </Link>
               <Link
-                href="/tracks"
+                href="http://localhost:3500/tracks"
                 className={`w-24 text-center py-1 text-[13px] font-extrabold tracking-wide hover:scale-[1.02] active:scale-[0.98] relative z-10 custom-nav-link ${
                   pathname === '/tracks'
                     ? 'custom-nav-link-active'

@@ -327,21 +327,21 @@ export function TopNav() {
                 Home
               </Link>
               <Link
-                href="/categories"
+                href="http://localhost:3600/dashboard"
                 className={`w-28 text-center py-1 text-[13px] font-extrabold tracking-wide hover:scale-[1.02] active:scale-[0.98] relative z-10 custom-nav-link ${
-                  pathname === '/categories'
+                  pathname.startsWith('/dashboard')
                     ? 'custom-nav-link-active'
                     : 'custom-nav-link-inactive'
                 }`}
               >
-                {pathname === '/categories' && (
+                {pathname.startsWith('/dashboard') && (
                   <motion.div
                     layoutId="activeNavIndicator"
                     className="absolute inset-0 rounded-full bg-[color:var(--color-primary)]/20 border border-[color:var(--color-primary)]/45 shadow-[0_0_12px_rgba(255,215,0,0.15)] backdrop-blur-md -z-10 custom-nav-active-bg"
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}
-                Categories
+                Workspace
               </Link>
               <Link
                 href="/tracks"
@@ -643,8 +643,12 @@ export function TopNav() {
 
             {/* Utility Drawer Button */}
             <button
-              onClick={() => setUtilityDrawerOpen(true)}
-              className="w-8 h-8 rounded-full shadow-md flex items-center justify-center hover:scale-105 active:scale-95 cursor-pointer overflow-hidden p-1.5 border border-white/20 bg-[#5a4409]"
+              onClick={() => setUtilityDrawerOpen(!utilityDrawerOpen)}
+              className={`w-8 h-8 rounded-full shadow-md flex items-center justify-center hover:scale-105 active:scale-95 cursor-pointer overflow-hidden p-1.5 border transition-all ${
+                utilityDrawerOpen 
+                  ? 'border-[#8b6508] bg-[#8b6508]/20 shadow-[0_0_8px_rgba(255,215,0,0.15)]'
+                  : 'border-white/20 bg-[#5a4409]'
+              }`}
               title="Bokspot Utilities"
             >
               <img src="/utility-icon.png" alt="Utilities" className="w-full h-full object-contain" />

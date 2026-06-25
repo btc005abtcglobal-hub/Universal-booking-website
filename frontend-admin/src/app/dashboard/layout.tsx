@@ -298,7 +298,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Main Container */}
       <div className="flex flex-1 flex-col overflow-hidden">
         <header className="sticky top-0 z-40 flex h-16 items-center justify-between vendor-navbar backdrop-blur-md px-6 lg:px-8">
-          <div className="flex items-center gap-3">
+          <div className="flex-1 flex items-center gap-3">
             <button onClick={() => setSidebarOpen(true)} className="lg:hidden rounded-lg p-2 hover:bg-white/5 text-slate-300"><Menu className="h-5 w-5" /></button>
           </div>
 
@@ -360,7 +360,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
 
           
-          <div className="flex items-center gap-4 ml-auto">
+          <div className="flex-1 flex items-center justify-end gap-4">
             {/* Stateful Notifications Popover */}
             <div className="relative" ref={popoverRef}>
               <button 

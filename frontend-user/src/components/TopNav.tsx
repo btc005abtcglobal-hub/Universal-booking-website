@@ -327,21 +327,21 @@ export function TopNav() {
                 Home
               </Link>
               <Link
-                href="http://localhost:3600/dashboard"
+                href="/categories"
                 className={`w-28 text-center py-1 text-[13px] font-extrabold tracking-wide hover:scale-[1.02] active:scale-[0.98] relative z-10 custom-nav-link ${
-                  pathname.startsWith('/dashboard')
+                  pathname === '/categories'
                     ? 'custom-nav-link-active'
                     : 'custom-nav-link-inactive'
                 }`}
               >
-                {pathname.startsWith('/dashboard') && (
+                {pathname === '/categories' && (
                   <motion.div
                     layoutId="activeNavIndicator"
                     className="absolute inset-0 rounded-full bg-[color:var(--color-primary)]/20 border border-[color:var(--color-primary)]/45 shadow-[0_0_12px_rgba(255,215,0,0.15)] backdrop-blur-md -z-10 custom-nav-active-bg"
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}
-                Workspace
+                Categories
               </Link>
               <Link
                 href="/tracks"

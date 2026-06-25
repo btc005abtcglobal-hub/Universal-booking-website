@@ -8,7 +8,7 @@ import {
   Package, Menu, X, Bell, LogOut, Stethoscope, Dumbbell, 
   Scissors, Utensils, ShieldAlert, Check, Trash2, Info,
   ChevronDown, Building, Film, Sparkles, LogOut as LogOutIcon, Laptop, User,
-  Sun, Moon
+  Sun, Moon, Users, Mail
 } from 'lucide-react';
 import { UtilityDrawer } from '../../components/UtilityDrawer';
 import { useState, useEffect, useRef } from 'react';
@@ -18,9 +18,11 @@ import { getVerticalFromCategory } from '../../lib/categoryUtils';
 
 
 const navItems = [
-  { href: '/dashboard/calendar', icon: Calendar, label: 'Calendar' },
   { href: '/dashboard/checkin', icon: QrCode, label: 'Verify Code' },
+  { href: '/dashboard/staff', icon: Users, label: 'Staff Management' },
+  { href: '/dashboard/customers', icon: User, label: 'Customer Directory' },
   { href: '/dashboard/settings', icon: Settings, label: 'Settings' },
+  { href: '/dashboard/contact', icon: Mail, label: 'Contact Us' },
 ];
 
 interface NotificationItem {
@@ -552,10 +554,27 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </header>
  
-        <main className={`flex-1 overflow-y-auto bg-bg-primary p-6 lg:p-8 custom-scrollbar transition-all duration-300 ${
+        <main className={`flex-1 overflow-y-auto bg-bg-primary p-6 lg:p-8 custom-scrollbar transition-all duration-300 flex flex-col justify-between ${
           utilityDrawerOpen ? 'lg:pr-[74px]' : ''
         }`}>
-          {children}
+          <div className="flex-1 pb-8">
+            {children}
+          </div>
+          {/* Footer containing About Us */}
+          <footer className="mt-auto pt-6 border-t border-border-brand/40 text-text-secondary select-none">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+              <div className="space-y-2">
+                <span className="text-[10px] uppercase font-black tracking-wider text-text-primary">About BokSpot Platform</span>
+                <p className="text-[11px] text-text-secondary/70 leading-relaxed max-w-xl">
+                  BokSpot Console provides next-generation merchant management systems designed to simplify booking experiences, optimize staff shifts, manage user calendars, and build robust customer CRM pipelines with absolute ease and performance. Developed by Beta Softnet.
+                </p>
+              </div>
+              <div className="flex flex-col md:items-end justify-end space-y-1 text-[10px] text-text-secondary/50 font-mono">
+                <p>Platform Version 2.4.0 • Secured Console</p>
+                <p>© 2026 BokSpot. All rights reserved.</p>
+              </div>
+            </div>
+          </footer>
         </main>
       </div>
       <UtilityDrawer isOpen={utilityDrawerOpen} onClose={() => setUtilityDrawerOpen(false)} isVendor={true} />

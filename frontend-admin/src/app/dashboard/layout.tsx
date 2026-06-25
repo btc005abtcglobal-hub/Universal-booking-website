@@ -18,10 +18,7 @@ import { getVerticalFromCategory } from '../../lib/categoryUtils';
 
 
 const navItems = [
-  { href: '/dashboard', icon: LayoutDashboard, label: 'Console' },
-  { href: '/dashboard/services', icon: Package, label: 'Services' },
   { href: '/dashboard/calendar', icon: Calendar, label: 'Calendar' },
-  { href: '/dashboard/bookings', icon: BookOpen, label: 'Bookings Log' },
   { href: '/dashboard/checkin', icon: QrCode, label: 'Verify Code' },
   { href: '/dashboard/settings', icon: Settings, label: 'Settings' },
 ];
@@ -306,14 +303,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="hidden lg:flex flex-none justify-center">
             <nav className="custom-nav-capsule shadow-lg relative">
               <Link
-                href="http://localhost:3500/"
+                href="/dashboard"
                 className={`w-20 text-center py-1 text-[13px] font-extrabold tracking-wide hover:scale-[1.02] active:scale-[0.98] relative z-10 custom-nav-link ${
-                  pathname === '/'
+                  pathname === '/dashboard'
                     ? 'custom-nav-link-active'
                     : 'custom-nav-link-inactive'
                 }`}
               >
-                {pathname === '/' && (
+                {pathname === '/dashboard' && (
                   <motion.div
                     layoutId="activeNavIndicatorAdmin"
                     className="absolute inset-0 rounded-full bg-[#8b6508]/20 border border-[#8b6508]/45 shadow-[0_0_12px_rgba(255,215,0,0.15)] backdrop-blur-md -z-10 custom-nav-active-bg"
@@ -323,14 +320,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 Home
               </Link>
               <Link
-                href="/dashboard"
+                href="/dashboard/services"
                 className={`w-28 text-center py-1 text-[13px] font-extrabold tracking-wide hover:scale-[1.02] active:scale-[0.98] relative z-10 custom-nav-link ${
-                  pathname.startsWith('/dashboard')
+                  (pathname.startsWith('/dashboard/') && pathname !== '/dashboard' && !pathname.startsWith('/dashboard/bookings'))
                     ? 'custom-nav-link-active'
                     : 'custom-nav-link-inactive'
                 }`}
               >
-                {pathname.startsWith('/dashboard') && (
+                {(pathname.startsWith('/dashboard/') && pathname !== '/dashboard' && !pathname.startsWith('/dashboard/bookings')) && (
                   <motion.div
                     layoutId="activeNavIndicatorAdmin"
                     className="absolute inset-0 rounded-full bg-[#8b6508]/20 border border-[#8b6508]/45 shadow-[0_0_12px_rgba(255,215,0,0.15)] backdrop-blur-md -z-10 custom-nav-active-bg"
@@ -340,14 +337,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 Workspace
               </Link>
               <Link
-                href="http://localhost:3500/tracks"
+                href="/dashboard/bookings"
                 className={`w-24 text-center py-1 text-[13px] font-extrabold tracking-wide hover:scale-[1.02] active:scale-[0.98] relative z-10 custom-nav-link ${
-                  pathname === '/tracks'
+                  pathname.startsWith('/dashboard/bookings')
                     ? 'custom-nav-link-active'
                     : 'custom-nav-link-inactive'
                 }`}
               >
-                {pathname === '/tracks' && (
+                {pathname.startsWith('/dashboard/bookings') && (
                   <motion.div
                     layoutId="activeNavIndicatorAdmin"
                     className="absolute inset-0 rounded-full bg-[#8b6508]/20 border border-[#8b6508]/45 shadow-[0_0_12px_rgba(255,215,0,0.15)] backdrop-blur-md -z-10 custom-nav-active-bg"
@@ -520,40 +517,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       </div>
                     </li>
 
-                    {/* Switch Business segment */}
-                    {allStores.length > 1 && (
-                      <li className="px-5 py-3.5 bg-bg-tertiary/20">
-                        <div className="flex flex-col gap-2">
-                          <span className="text-[9px] uppercase font-bold tracking-wider text-slate-500 text-left">Switch Business</span>
-                          <div className="max-h-32 overflow-y-auto space-y-0.5 custom-scrollbar bg-bg-secondary p-1 rounded-xl border border-border-brand/40">
-                            {allStores.map((store) => {
-                              const isActive = store.id === currentMerchant.id;
-                              const StoreIcon = getCategoryIcon(store.category);
-                              return (
-                                <button
-                                  key={store.id}
-                                  onClick={() => {
-                                    switchStore(store.id);
-                                    setProfileOpen(false);
-                                  }}
-                                  className={`w-full flex items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-xs transition-colors cursor-pointer ${
-                                    isActive
-                                      ? 'bg-[#8b6508]/20 text-[#fceea7] font-extrabold border border-[#8b6508]/30'
-                                      : 'text-slate-400 hover:bg-white/[0.02] hover:text-white border border-transparent'
-                                  }`}
-                                >
-                                  <div className="flex items-center gap-2 min-w-0">
-                                    <StoreIcon className={`h-3.5 w-3.5 shrink-0 ${isActive ? 'text-[#fceea7]' : 'text-slate-500'}`} />
-                                    <span className="truncate text-[11px]">{store.merchantName}</span>
-                                  </div>
-                                  {isActive && <Check className="h-3 w-3 text-[#fceea7] shrink-0" />}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      </li>
-                    )}
+
                   </ul>
                   
                   {/* Bottom Divider & Sign Out */}

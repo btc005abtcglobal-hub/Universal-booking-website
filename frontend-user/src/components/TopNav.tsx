@@ -644,14 +644,14 @@ export function TopNav() {
             {/* Utility Drawer Button */}
             <button
               onClick={() => setUtilityDrawerOpen(!utilityDrawerOpen)}
-              className={`w-8 h-8 rounded-full shadow-md flex items-center justify-center hover:scale-105 active:scale-95 cursor-pointer overflow-hidden p-1.5 border transition-all ${
+              className={`w-8 h-8 flex items-center justify-center hover:scale-110 active:scale-90 cursor-pointer transition-all ${
                 utilityDrawerOpen 
-                  ? 'border-[#8b6508] bg-[#8b6508]/20 shadow-[0_0_8px_rgba(255,215,0,0.15)]'
-                  : 'border-white/20 bg-[#5a4409]'
+                  ? 'opacity-100 scale-105'
+                  : 'opacity-85 hover:opacity-100'
               }`}
               title="Bokspot Utilities"
             >
-              <img src="/utility-icon.png" alt="Utilities" className="w-full h-full object-contain" />
+              <img src="/utility-icon.png" alt="Utilities" className="w-[22px] h-[22px] object-contain" />
             </button>
           </div>
         </div>

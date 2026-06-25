@@ -576,14 +576,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {/* Utility Drawer Button */}
             <button
               onClick={() => setUtilityDrawerOpen(!utilityDrawerOpen)}
-              className={`relative rounded-xl p-2.5 border transition-all cursor-pointer w-9 h-9 flex items-center justify-center overflow-hidden ${
+              className={`relative transition-all cursor-pointer w-8 h-8 flex items-center justify-center ${
                 utilityDrawerOpen
-                  ? 'border-[#8b6508] bg-[#8b6508]/10 text-white shadow-[0_0_8px_rgba(255,215,0,0.15)]'
-                  : 'border-border-brand bg-bg-secondary hover:bg-bg-tertiary text-text-secondary hover:text-text-primary'
+                  ? 'opacity-100 scale-105'
+                  : 'opacity-85 hover:opacity-100'
               }`}
               title="Bokspot Utilities"
             >
-              <img src="/utility-icon.png" alt="Utilities" className="w-full h-full object-contain" />
+              <img src="/utility-icon.png" alt="Utilities" className="w-[22px] h-[22px] object-contain" />
             </button>
           </div>
         </header>

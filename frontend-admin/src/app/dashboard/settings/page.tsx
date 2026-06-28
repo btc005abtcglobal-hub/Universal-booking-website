@@ -643,7 +643,7 @@ export default function SettingsPage() {
           {/* Logo container placed in top-right block with vertical separating divider */}
           <div className="border-l border-border-brand pl-4 flex items-center shrink-0">
             <div className="h-10 w-10 rounded-lg bg-bg-secondary border border-border-brand overflow-hidden flex items-center justify-center shadow-md p-1">
-              <img src="/logo.png" alt="Merchant Logo" className="h-full w-full object-contain" />
+              <img src="/logo.png?v=3" alt="Merchant Logo" className="h-full w-full object-contain" />
             </div>
           </div>
         </div>

@@ -664,6 +664,38 @@
     color: rgba(252, 238, 167, 0.5) !important;
   }
 
+  /* Light Mode Specific Legibility overrides inside Gold Navbar */
+  .light .custom-navbar,
+  .light .custom-navbar a,
+  .light .custom-navbar select,
+  .light .custom-navbar input,
+  .light .custom-navbar .custom-nav-link,
+  .light .custom-navbar .custom-nav-btn,
+  .light .custom-navbar .custom-nav-btn span,
+  .light .custom-navbar .custom-nav-btn div,
+  .light .custom-navbar .custom-nav-icon-container span,
+  .light .custom-navbar .custom-nav-icon-btn {
+    color: #8B7000 !important;
+  }
+
+  .light .custom-navbar svg:not(.lucide-sparkles) {
+    color: #8B7000 !important;
+    stroke: #8B7000 !important;
+  }
+
+  .light .custom-navbar input::placeholder {
+    color: rgba(139, 112, 0, 0.6) !important;
+  }
+
+  .light .custom-navbar .custom-nav-btn {
+    background-color: #fdf8e2 !important;
+    border: 1px solid rgba(139, 112, 0, 0.3) !important;
+  }
+  .light .custom-navbar .custom-nav-btn:hover {
+    background-color: #f9f0ca !important;
+    border-color: rgba(139, 112, 0, 0.5) !important;
+  }
+
   /* Button Styling */
   .custom-nav-btn {
     border-radius: 9999px;
@@ -679,17 +711,31 @@
     -webkit-backdrop-filter: blur(12px);
   }
 
-  .dark .custom-nav-btn, .light .custom-nav-btn, .custom-navbar .custom-nav-btn {
+  .dark .custom-nav-btn, .custom-navbar .custom-nav-btn {
     background-color: #5a4409 !important;
     border: 1px solid rgba(252, 238, 167, 0.28) !important;
     color: #fceea7 !important;
   }
-  .dark .custom-nav-btn:hover, .light .custom-nav-btn:hover, .custom-navbar .custom-nav-btn:hover {
+  .dark .custom-nav-btn:hover, .custom-navbar .custom-nav-btn:hover {
     background-color: #72560c !important;
     border-color: rgba(252, 238, 167, 0.45) !important;
     transform: scale(1.02);
   }
-  .dark .custom-nav-btn:active, .light .custom-nav-btn:active, .custom-navbar .custom-nav-btn:active {
+  .dark .custom-nav-btn:active, .custom-navbar .custom-nav-btn:active {
+    transform: scale(0.98);
+  }
+
+  .light .custom-nav-btn {
+    background-color: #fdf8e2 !important;
+    border: 1px solid rgba(139, 112, 0, 0.3) !important;
+    color: #8B7000 !important;
+  }
+  .light .custom-nav-btn:hover {
+    background-color: #f9f0ca !important;
+    border-color: rgba(139, 112, 0, 0.5) !important;
+    transform: scale(1.02);
+  }
+  .light .custom-nav-btn:active {
     transform: scale(0.98);
   }
 
@@ -861,6 +907,31 @@
   .custom-navbar .profile-avatar-circle *,
   .custom-navbar .custom-nav-btn div.profile-avatar-circle,
   .custom-navbar .custom-nav-btn div.profile-avatar-circle * {
+    color: #0a3161 !important;
+    stroke: #0a3161 !important;
+  }
+
+  /* Final explicit overrides to fix Location and Profile button visibility in Light Mode */
+  .light .custom-navbar .custom-nav-btn,
+  .light .custom-navbar .custom-nav-btn * {
+    color: #8B7000 !important;
+    stroke: #8B7000 !important;
+  }
+
+  .light .custom-navbar .custom-nav-btn {
+    background-color: #fdf8e2 !important;
+    border: 1px solid rgba(139, 112, 0, 0.3) !important;
+  }
+
+  .light .custom-navbar .custom-nav-btn:hover {
+    background-color: #f9f0ca !important;
+    border-color: rgba(139, 112, 0, 0.5) !important;
+  }
+
+  /* Keep the profile avatar circle itself white and its inside icon dark blue as designed */
+  .light .custom-navbar .custom-nav-btn .profile-avatar-circle,
+  .light .custom-navbar .custom-nav-btn .profile-avatar-circle * {
+    background-color: #ffffff !important;
     color: #0a3161 !important;
     stroke: #0a3161 !important;
   }

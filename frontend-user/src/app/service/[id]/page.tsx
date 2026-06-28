@@ -118,7 +118,7 @@ export default function ServiceDetailPage() {
   return (
     <main className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] transition-colors duration-300">
       {/* Sticky header */}
-      <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-[var(--border-subtle)]">
+      <nav className="fixed top-0 left-0 right-0 z-50 custom-navbar border-b border-[var(--border-subtle)]">
         <div className="container-main flex items-center justify-between h-16">
           <div className="flex items-center gap-4">
             <Link href="/search" className="btn-ghost p-2">

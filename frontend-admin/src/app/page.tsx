@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useVendorStore } from '../lib/store';
 import { 
   Lock, User, Eye, EyeOff, ArrowRight, ShieldCheck, KeyRound, AlertCircle,
-  Stethoscope, Dumbbell, Scissors, Utensils, Sparkles
+  Stethoscope, Dumbbell, Scissors, Utensils, Sparkles, Film
 } from 'lucide-react';
 
 export default function AdminGatePage() {
@@ -224,6 +224,8 @@ export default function AdminGatePage() {
                   { label: 'ZenFit Clinic (F202)', subId: 'F202', pass: 'pass202', icon: Dumbbell, color: 'hover:border-emerald-500/30 hover:text-emerald-400' },
                   { label: 'Style Studio (S303)', subId: 'S303', pass: 'pass303', icon: Scissors, color: 'hover:border-rose-500/30 hover:text-rose-400' },
                   { label: 'Grand Temple (R404)', subId: 'R404', pass: 'pass404', icon: Utensils, color: 'hover:border-purple-500/30 hover:text-purple-400' },
+                  { label: 'PVR IMAX (C707)', subId: 'C707', pass: 'pass707', icon: Film, color: 'hover:border-amber-500/30 hover:text-amber-400' },
+                  { label: 'Nirvana Spa (W808)', subId: 'W808', pass: 'pass808', icon: Sparkles, color: 'hover:border-teal-500/30 hover:text-teal-400' },
                   { label: 'Glitz Parlour (G505)', subId: 'G505', pass: 'pass505', icon: Scissors, color: 'hover:border-rose-500/30 hover:text-[#fceea7]' },
                   { label: 'Urban Haircut (U606)', subId: 'U606', pass: 'pass606', icon: Scissors, color: 'hover:border-rose-500/30 hover:text-[#fceea7]' }
                 ].map((p) => (

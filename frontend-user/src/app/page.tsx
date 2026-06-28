@@ -824,7 +824,7 @@ export default function HomePage() {
                 <div className="h-6 w-6 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
                   <span className="material-symbols-outlined text-[15px] text-[#0a3161]">dashboard</span>
                 </div>
-                <span className="text-[color:var(--color-on-surface)] text-[12px] font-bold tracking-wide select-none">DASHBOARD</span>
+                <span className="text-inherit text-[12px] font-bold tracking-wide select-none">DASHBOARD</span>
               </button>
               <Link
                 href="/vendor/register"
@@ -833,7 +833,7 @@ export default function HomePage() {
                 <div className="h-6 w-6 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
                   <span className="material-symbols-outlined text-[15px] text-[#0a3161]">storefront</span>
                 </div>
-                <span className="text-[color:var(--color-on-surface)] text-[12px] font-bold tracking-wide select-none">VENDOR</span>
+                <span className="text-inherit text-[12px] font-bold tracking-wide select-none">VENDOR</span>
               </Link>
             </div>
           </div>

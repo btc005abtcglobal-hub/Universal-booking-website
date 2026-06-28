@@ -136,7 +136,7 @@ export default function BookingSuccessPage() {
   return (
     <main className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-on-surface)] transition-colors duration-300">
       {/* Sticky header */}
-      <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-[color:var(--color-outline-variant)]/30 backdrop-blur-xl">
+      <nav className="fixed top-0 left-0 right-0 z-50 custom-navbar border-b border-[color:var(--color-outline-variant)]/30 backdrop-blur-xl">
         <div className="container-main flex items-center justify-between h-16 px-4 md:px-8">
           <div className="flex items-center gap-4">
             <Link href="/" className="btn-ghost p-2">

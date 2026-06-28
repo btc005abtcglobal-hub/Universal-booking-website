@@ -5,13 +5,39 @@ import { getVerticalFromCategory } from '../../lib/categoryUtils';
 import { 
   TrendingUp, Users, Calendar, IndianRupee, Clock, CheckCircle2, 
   Stethoscope, Scissors, Dumbbell, Utensils, AlertTriangle, 
-  Activity, Flame, User, Eye, ShieldAlert, Sparkles, MapPin, Award
+  Activity, Flame, User, Eye, ShieldAlert, Sparkles, MapPin, Award, Film
 } from 'lucide-react';
 import { useState } from 'react';
 
 export default function DashboardPage() {
-  const { currentMerchant, bookings, services } = useVendorStore();
+  const { currentMerchant, bookings, services, updateService } = useVendorStore();
   const [selectedTable, setSelectedTable] = useState<string | null>(null);
+
+  // Cinema states
+  const [editMovieId, setEditMovieId] = useState<string>('');
+  const [moviePosterInput, setMoviePosterInput] = useState<string>('');
+  const [movieShowtimesInput, setMovieShowtimesInput] = useState<string>('');
+  const [movieRatingInput, setMovieRatingInput] = useState<string>('UA');
+  const [movieLanguageInput, setMovieLanguageInput] = useState<string>('English');
+  const [movieHallInput, setMovieHallInput] = useState<string>('Screen 1');
+  
+  // Clinic states
+  const [prescriptionPatientId, setPrescriptionPatientId] = useState<string>('');
+  const [prescriptionSymptom, setPrescriptionSymptom] = useState<string>('');
+  const [medicationName, setMedicationName] = useState<string>('');
+  const [medicationDosage, setMedicationDosage] = useState<string>('');
+  const [medicationInterval, setMedicationInterval] = useState<string>('Once Daily');
+  const [localPrescriptions, setLocalPrescriptions] = useState<Array<{
+    id: string;
+    patientName: string;
+    symptoms: string;
+    meds: string;
+    dosage: string;
+    interval: string;
+    timestamp: string;
+  }>>([
+    { id: 'rx-1', patientName: 'Sanjay Kumar', symptoms: 'Severe tooth decay & inflammation', meds: 'Amoxicillin + Ibuprofen', dosage: '500mg + 400mg', interval: 'Thrice Daily', timestamp: '10:15 AM' }
+  ]);
 
   if (!currentMerchant) {
     return (
@@ -86,6 +112,20 @@ export default function DashboardPage() {
           { label: 'Active Reservations', value: String(activeBookings.length), change: 'Tonight\'s lists', icon: Calendar, color: 'from-[#664a05] to-[#8b6508]' },
           { label: 'Table Occupancy', value: '58%', change: 'Tables 1, 5, 7, 10', icon: Utensils, color: 'from-[#0a3161] to-[#8b6508]' }
         ];
+      case 'Cinema':
+        return [
+          { label: 'Box Office Sales', value: `₹${totalEarnings.toLocaleString()}`, change: 'Ticket sales', icon: IndianRupee, color: 'from-[#8b6508] to-[#d4af37]' },
+          { label: 'Tickets Booked', value: String(merchantBookings.reduce((sum, b) => sum + (b.seatCount || 1), 0)), change: 'Seats Reserved', icon: Users, color: 'from-[#0a3161] to-[#1a4b8c]' },
+          { label: 'Upcoming Movies', value: String(merchantServices.length), change: 'Active Schedule', icon: Film, color: 'from-[#664a05] to-[#8b6508]' },
+          { label: 'Avg Hall Occupancy', value: '68%', change: 'Screenings Live', icon: Clock, color: 'from-[#0a3161] to-[#8b6508]' }
+        ];
+      case 'Wellness':
+        return [
+          { label: 'Spa Revenue', value: `₹${totalEarnings.toLocaleString()}`, change: 'Spa Sessions', icon: IndianRupee, color: 'from-[#8b6508] to-[#d4af37]' },
+          { label: 'Rejuvenated Clients', value: String(merchantBookings.length), change: 'Total Booked', icon: Users, color: 'from-[#0a3161] to-[#1a4b8c]' },
+          { label: 'Rooms Booked', value: String(merchantBookings.filter(b => b.status === 'CONFIRMED' || b.status === 'CHECKED_IN').length), change: 'Lotus, Orchid Suite', icon: Sparkles, color: 'from-[#664a05] to-[#8b6508]' },
+          { label: 'Completed Therapies', value: String(completedBookings.length), change: 'Sessions Finished', icon: CheckCircle2, color: 'from-[#0a3161] to-[#8b6508]' }
+        ];
       default:
         return [];
     }
@@ -131,68 +171,217 @@ export default function DashboardPage() {
       {/* Industry Custom Dashboard Sections */}
       {getVerticalFromCategory(currentMerchant.category) === 'Dental' && (
         <div className="grid gap-6 lg:grid-cols-5">
-          {/* Waiting Room Patient Vitals Monitor */}
-          <div className="lg:col-span-3 rounded-2xl border border-white/5 bg-white/[0.01] p-6 space-y-4">
-            <h2 className="font-extrabold text-sm text-white uppercase tracking-wider flex items-center gap-2">
-              <Stethoscope size={16} className="text-[#d4af37] animate-pulse" /> Waiting Room Vitals Monitor
-            </h2>
-            <p className="text-[11px] text-slate-400">Vitals checked in by clinic staff upon patient arrival. Confirm records before clinic consult.</p>
-            
-            <div className="space-y-3 pt-2">
-              {checkedInBookings.length > 0 ? (
-                checkedInBookings.map((b) => (
-                  <div key={b.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-4 flex flex-col sm:flex-row justify-between gap-4">
-                    <div className="space-y-1">
-                      <div className="font-bold text-white text-xs">{b.customerName}</div>
-                      <div className="text-[10px] text-slate-400 flex items-center gap-1.5">
-                        <span>Ref: {b.ref}</span> · <span className="text-[#fceea7]">{b.serviceName}</span>
+          {/* Left: Vitals & Prescriptions Journal */}
+          <div className="lg:col-span-3 space-y-6">
+            {/* Waiting Room Patient Vitals Monitor */}
+            <div className="rounded-2xl border border-white/5 bg-white/[0.01] p-6 space-y-4">
+              <h2 className="font-extrabold text-sm text-white uppercase tracking-wider flex items-center gap-2">
+                <Stethoscope size={16} className="text-[#d4af37] animate-pulse" /> Clinic Patient Vitals Monitor
+              </h2>
+              <p className="text-[11px] text-slate-400">Vitals checked in by clinic staff upon patient arrival. Confirm records before clinic consult.</p>
+              
+              <div className="space-y-3 pt-2">
+                {checkedInBookings.length > 0 ? (
+                  checkedInBookings.map((b) => (
+                    <div key={b.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-4 flex flex-col sm:flex-row justify-between gap-4">
+                      <div className="space-y-1">
+                        <div className="font-bold text-white text-xs">{b.customerName}</div>
+                        <div className="text-[10px] text-slate-400 flex items-center gap-1.5">
+                          <span>Ref: {b.ref}</span> · <span className="text-[#fceea7]">{b.serviceName}</span>
+                        </div>
                       </div>
+                      {b.vitals && (
+                        <div className="grid grid-cols-4 gap-4 text-center sm:text-right">
+                          <div>
+                            <div className="text-[9px] text-slate-500 uppercase font-black">BP</div>
+                            <div className="text-[11px] font-bold text-white mt-0.5">{b.vitals.bp}</div>
+                          </div>
+                          <div>
+                            <div className="text-[9px] text-slate-500 uppercase font-black">Temp</div>
+                            <div className="text-[11px] font-bold text-white mt-0.5">{b.vitals.temp}</div>
+                          </div>
+                          <div>
+                            <div className="text-[9px] text-slate-500 uppercase font-black">Pulse</div>
+                            <div className="text-[11px] font-bold text-white mt-0.5">{b.vitals.pulse}</div>
+                          </div>
+                          <div>
+                            <div className="text-[9px] text-slate-500 uppercase font-black">O2</div>
+                            <div className="text-[11px] font-bold text-emerald-400 mt-0.5">{b.vitals.oxygen}</div>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    {b.vitals && (
-                      <div className="grid grid-cols-4 gap-4 text-center sm:text-right">
-                        <div>
-                          <div className="text-[9px] text-slate-500 uppercase font-black">BP</div>
-                          <div className="text-[11px] font-bold text-white mt-0.5">{b.vitals.bp}</div>
-                        </div>
-                        <div>
-                          <div className="text-[9px] text-slate-500 uppercase font-black">Temp</div>
-                          <div className="text-[11px] font-bold text-white mt-0.5">{b.vitals.temp}</div>
-                        </div>
-                        <div>
-                          <div className="text-[9px] text-slate-500 uppercase font-black">Pulse</div>
-                          <div className="text-[11px] font-bold text-white mt-0.5">{b.vitals.pulse}</div>
-                        </div>
-                        <div>
-                          <div className="text-[9px] text-slate-500 uppercase font-black">O2</div>
-                          <div className="text-[11px] font-bold text-emerald-400 mt-0.5">{b.vitals.oxygen}</div>
-                        </div>
-                      </div>
-                    )}
+                  ))
+                ) : (
+                  <div className="text-center py-10 rounded-xl border border-dashed border-white/5 text-slate-500 text-xs">
+                    No patients are currently checked-in at the waiting room.
                   </div>
-                ))
-              ) : (
-                <div className="text-center py-10 rounded-xl border border-dashed border-white/5 text-slate-500 text-xs">
-                  No patients are currently checked-in at the waiting room.
-                </div>
-              )}
+                )}
+              </div>
+            </div>
+
+            {/* Daily Prescriptions Journal */}
+            <div className="rounded-2xl border border-white/5 bg-white/[0.01] p-6 space-y-4">
+              <h2 className="font-extrabold text-sm text-white uppercase tracking-wider flex items-center gap-2">
+                <CheckCircle2 size={16} className="text-[#d4af37]" /> Daily Prescriptions Journal
+              </h2>
+              <p className="text-[11px] text-slate-400">Prescriptions logged by doctor during consult sessions today. Syncs to pharmacy and patient records.</p>
+              
+              <div className="space-y-3 pt-2">
+                {localPrescriptions.map((rx) => (
+                  <div key={rx.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-4 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="font-bold text-xs text-white">{rx.patientName}</span>
+                      <span className="text-[9px] font-mono text-slate-400 bg-white/5 px-2 py-0.5 rounded">{rx.timestamp}</span>
+                    </div>
+                    <div className="text-[10px] text-slate-400 space-y-1">
+                      <div>Diagnosis: <span className="text-slate-300 italic">"{rx.symptoms}"</span></div>
+                      <div>Medication: <strong className="text-white">{rx.meds}</strong> ({rx.dosage})</div>
+                      <div>Dosage Schedule: <span className="text-[#fceea7] font-semibold">{rx.interval}</span></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-
-          {/* Quick Symptoms Log */}
-          <div className="lg:col-span-2 rounded-2xl border border-white/5 bg-white/[0.01] p-6 space-y-4">
-            <h2 className="font-extrabold text-sm text-white uppercase tracking-wider flex items-center gap-2">
-              <AlertTriangle size={16} className="text-amber-400" /> Patient Symptoms Queue
-            </h2>
-            <div className="divide-y divide-white/5">
-              {merchantBookings.filter(b => b.status === 'CONFIRMED' || b.status === 'CHECKED_IN').map((b) => (
-                <div key={b.id} className="py-3 first:pt-0 last:pb-0 space-y-1">
-                  <div className="flex justify-between items-center">
-                    <span className="font-bold text-xs text-white">{b.customerName}</span>
-                    <span className="text-[9px] font-mono text-slate-400 bg-white/5 px-2 py-0.5 rounded">{b.time}</span>
+          
+          {/* Right: Symptoms Queue & Logger */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Quick Symptoms Log */}
+            <div className="rounded-2xl border border-white/5 bg-white/[0.01] p-6 space-y-4">
+              <h2 className="font-extrabold text-sm text-white uppercase tracking-wider flex items-center gap-2">
+                <AlertTriangle size={16} className="text-amber-400" /> Patient Symptoms Queue
+              </h2>
+              <div className="divide-y divide-white/5">
+                {merchantBookings.filter(b => b.status === 'CONFIRMED' || b.status === 'CHECKED_IN').map((b) => (
+                  <div key={b.id} className="py-3 first:pt-0 last:pb-0 space-y-1">
+                    <div className="flex justify-between items-center">
+                      <span className="font-bold text-xs text-white">{b.customerName}</span>
+                      <span className="text-[9px] font-mono text-slate-400 bg-white/5 px-2 py-0.5 rounded">{b.time}</span>
+                    </div>
+                    <p className="text-[10px] text-slate-400 italic">"{b.symptoms || 'No custom symptom details logged yet.'}"</p>
                   </div>
-                  <p className="text-[10px] text-slate-400 italic">"{b.symptoms || 'No custom symptom details logged yet.'}"</p>
+                ))}
+              </div>
+            </div>
+
+            {/* Prescription Logger */}
+            <div className="rounded-2xl border border-white/5 bg-white/[0.01] p-6 space-y-4">
+              <h2 className="font-extrabold text-sm text-white uppercase tracking-wider flex items-center gap-2">
+                <Award size={16} className="text-[#d4af37]" /> Prescription Quick-Log
+              </h2>
+              <p className="text-[11px] text-slate-400">Write prescription instructions and update symptoms logs directly for scheduled patients.</p>
+
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                if (!prescriptionPatientId) return;
+                const patientBooking = merchantBookings.find(b => b.id === prescriptionPatientId);
+                if (patientBooking) {
+                  // Update booking symptoms locally
+                  patientBooking.symptoms = prescriptionSymptom;
+                  
+                  // Add prescription to local journal
+                  const newRx = {
+                    id: `rx-${Date.now()}`,
+                    patientName: patientBooking.customerName,
+                    symptoms: prescriptionSymptom,
+                    meds: medicationName,
+                    dosage: medicationDosage,
+                    interval: medicationInterval,
+                    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                  };
+                  setLocalPrescriptions([newRx, ...localPrescriptions]);
+                  
+                  // Clear fields
+                  setPrescriptionSymptom('');
+                  setMedicationName('');
+                  setMedicationDosage('');
+                  alert('Prescription successfully logged to patient journal!');
+                }
+              }} className="space-y-3 pt-2">
+                <div className="space-y-1">
+                  <label className="text-[10px] uppercase font-bold text-slate-400">Select Patient</label>
+                  <select
+                    value={prescriptionPatientId}
+                    onChange={(e) => {
+                      setPrescriptionPatientId(e.target.value);
+                      const booking = bookings.find(b => b.id === e.target.value);
+                      if (booking) {
+                        setPrescriptionSymptom(booking.symptoms || '');
+                      }
+                    }}
+                    className="w-full rounded-xl border border-white/10 bg-white/[0.02] px-3 py-1.5 text-xs text-white outline-none focus:border-[#d4af37]"
+                    required
+                  >
+                    <option value="" disabled className="bg-slate-900 text-slate-400">-- Choose Patient --</option>
+                    {merchantBookings.filter(b => b.status === 'CONFIRMED' || b.status === 'CHECKED_IN').map(b => (
+                      <option key={b.id} value={b.id} className="bg-slate-900 text-white">{b.customerName} ({b.time})</option>
+                    ))}
+                  </select>
                 </div>
-              ))}
+
+                {prescriptionPatientId && (
+                  <>
+                    <div className="space-y-1">
+                      <label className="text-[10px] uppercase font-bold text-slate-400">Patient Symptoms</label>
+                      <input
+                        type="text"
+                        value={prescriptionSymptom}
+                        onChange={(e) => setPrescriptionSymptom(e.target.value)}
+                        placeholder="e.g. Sharp pain in lower molar"
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.02] px-3 py-1.5 text-xs text-white outline-none focus:border-[#d4af37]"
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[10px] uppercase font-bold text-slate-400">Medication Prescribed</label>
+                      <input
+                        type="text"
+                        value={medicationName}
+                        onChange={(e) => setMedicationName(e.target.value)}
+                        placeholder="e.g. Paracetamol + Amoxicillin"
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.02] px-3 py-1.5 text-xs text-white outline-none focus:border-[#d4af37]"
+                        required
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-[10px] uppercase font-bold text-slate-400">Dosage Strength</label>
+                        <input
+                          type="text"
+                          value={medicationDosage}
+                          onChange={(e) => setMedicationDosage(e.target.value)}
+                          placeholder="e.g. 500mg / 10ml"
+                          className="w-full rounded-xl border border-white/10 bg-white/[0.02] px-3 py-1.5 text-xs text-white outline-none focus:border-[#d4af37]"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] uppercase font-bold text-slate-400">Dosage Interval</label>
+                        <select
+                          value={medicationInterval}
+                          onChange={(e) => setMedicationInterval(e.target.value)}
+                          className="w-full rounded-xl border border-white/10 bg-white/[0.02] px-3 py-1.5 text-xs text-white outline-none focus:border-[#d4af37] bg-slate-900"
+                        >
+                          <option value="Once Daily">Once Daily</option>
+                          <option value="Twice Daily">Twice Daily</option>
+                          <option value="Thrice Daily">Thrice Daily</option>
+                          <option value="Before Sleep">Before Sleep</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="w-full py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider text-white bg-gradient-to-r from-[#8b6508] to-[#d4af37] hover:brightness-105 transition-all shadow-md cursor-pointer mt-2"
+                    >
+                      Log Diagnosis & RX
+                    </button>
+                  </>
+                )}
+              </form>
             </div>
           </div>
         </div>
@@ -423,6 +612,231 @@ export default function DashboardPage() {
                       Notes: "{b.notes.replace('Guest notes: ', '')}"
                     </p>
                   )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {getVerticalFromCategory(currentMerchant.category) === 'Cinema' && (
+        <div className="grid gap-6 lg:grid-cols-5">
+          {/* Movie Catalog & Showtimes list */}
+          <div className="lg:col-span-3 rounded-2xl border border-white/5 bg-white/[0.01] p-6 space-y-4">
+            <h2 className="font-extrabold text-sm text-white uppercase tracking-wider flex items-center gap-2">
+              <Film size={16} className="text-[#d4af37]" /> Active Screenings & Showtimes
+            </h2>
+            <p className="text-[11px] text-slate-400">Current movie listings and showtimes managed by theatre admin. Updates sync directly to user booking page.</p>
+
+            <div className="space-y-4 pt-2">
+              {merchantServices.map((movie) => (
+                <div key={movie.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-4 flex gap-4">
+                  {movie.moviePoster ? (
+                    <img src={movie.moviePoster} alt={movie.name} className="w-16 h-24 object-cover rounded-lg border border-white/10 shrink-0 shadow-md" />
+                  ) : (
+                    <div className="w-16 h-24 rounded-lg bg-white/5 border border-dashed border-white/10 flex items-center justify-center shrink-0">
+                      <Film size={20} className="text-slate-600" />
+                    </div>
+                  )}
+                  <div className="space-y-1.5 flex-1 min-w-0">
+                    <div className="flex justify-between items-start gap-2">
+                      <h3 className="font-extrabold text-xs text-white truncate">{movie.name}</h3>
+                      <span className="text-[9px] uppercase font-black text-[#fceea7] bg-[#8b6508]/15 border border-[#8b6508]/20 px-2 py-0.5 rounded-full shrink-0">
+                        {movie.movieRating || 'UA'}
+                      </span>
+                    </div>
+                    <div className="text-[10px] text-slate-400 space-y-1">
+                      <div>Language: <span className="text-white font-medium">{movie.movieLanguage || 'English'}</span></div>
+                      <div>Hall / Audi: <span className="text-[#d4af37] font-medium">{movie.hallNumber || 'Screen 1'}</span></div>
+                      <div>Runtime: <span className="text-white font-medium">{movie.duration} mins</span></div>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {(movie.movieShowtimes || '10:00 AM, 02:00 PM').split(',').map((st: string) => (
+                        <span key={st} className="text-[9px] font-mono text-slate-400 bg-white/5 px-2 py-0.5 rounded border border-white/5">{st.trim()}</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {merchantServices.length === 0 && (
+                <div className="text-center py-10 rounded-xl border border-dashed border-white/5 text-slate-500 text-xs">
+                  No movies in schedule. Use Catalog Manager to add movies.
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Quick Movie Updater */}
+          <div className="lg:col-span-2 rounded-2xl border border-white/5 bg-white/[0.01] p-6 space-y-4">
+            <h2 className="font-extrabold text-sm text-white uppercase tracking-wider flex items-center gap-2">
+              <Sparkles size={16} className="text-[#d4af37]" /> Update Movie Posters & Details
+            </h2>
+            <p className="text-[11px] text-slate-400">Quickly select a movie to update its poster URL, showtimes, and hall assignments.</p>
+
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              if (!editMovieId) return;
+              const target = services.find(s => s.id === editMovieId);
+              if (target) {
+                updateService({
+                  ...target,
+                  moviePoster: moviePosterInput || target.moviePoster,
+                  movieShowtimes: movieShowtimesInput || target.movieShowtimes,
+                  movieRating: movieRatingInput || target.movieRating,
+                  movieLanguage: movieLanguageInput || target.movieLanguage,
+                  hallNumber: movieHallInput || target.hallNumber
+                });
+                alert('Movie details updated successfully!');
+              }
+            }} className="space-y-3.5 pt-2">
+              <div className="space-y-1">
+                <label className="text-[10px] uppercase font-bold text-slate-400">Select Movie</label>
+                <select
+                  value={editMovieId}
+                  onChange={(e) => {
+                    setEditMovieId(e.target.value);
+                    const sel = services.find(s => s.id === e.target.value);
+                    if (sel) {
+                      setMoviePosterInput(sel.moviePoster || '');
+                      setMovieShowtimesInput(sel.movieShowtimes || '');
+                      setMovieRatingInput(sel.movieRating || 'UA');
+                      setMovieLanguageInput(sel.movieLanguage || 'English');
+                      setMovieHallInput(sel.hallNumber || 'Screen 1');
+                    }
+                  }}
+                  className="w-full rounded-xl border border-white/10 bg-white/[0.02] px-3.5 py-2 text-xs text-white outline-none focus:border-[#d4af37]"
+                  required
+                >
+                  <option value="" disabled className="bg-slate-900 text-slate-400">-- Choose Movie --</option>
+                  {merchantServices.map(m => (
+                    <option key={m.id} value={m.id} className="bg-slate-900 text-white">{m.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              {editMovieId && (
+                <>
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase font-bold text-slate-400">Poster Image URL</label>
+                    <input
+                      type="url"
+                      value={moviePosterInput}
+                      onChange={(e) => setMoviePosterInput(e.target.value)}
+                      placeholder="https://..."
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.02] px-3.5 py-2 text-xs text-white outline-none focus:border-[#d4af37]"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase font-bold text-slate-400">Showtimes (comma-separated)</label>
+                    <input
+                      type="text"
+                      value={movieShowtimesInput}
+                      onChange={(e) => setMovieShowtimesInput(e.target.value)}
+                      placeholder="e.g. 10:00 AM, 02:00 PM"
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.02] px-3.5 py-2 text-xs text-white outline-none focus:border-[#d4af37]"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-[10px] uppercase font-bold text-slate-400">Rating</label>
+                      <select
+                        value={movieRatingInput}
+                        onChange={(e) => setMovieRatingInput(e.target.value)}
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.02] px-3.5 py-2 text-xs text-white outline-none focus:border-[#d4af37] bg-slate-900"
+                      >
+                        <option value="U">U</option>
+                        <option value="UA">UA</option>
+                        <option value="A">A</option>
+                      </select>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] uppercase font-bold text-slate-400">Hall Assignment</label>
+                      <input
+                        type="text"
+                        value={movieHallInput}
+                        onChange={(e) => setMovieHallInput(e.target.value)}
+                        placeholder="e.g. Screen 1"
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.02] px-3.5 py-2 text-xs text-white outline-none focus:border-[#d4af37]"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider text-white bg-gradient-to-r from-[#8b6508] to-[#d4af37] hover:brightness-105 transition-all shadow-md cursor-pointer mt-2"
+                  >
+                    Save Movie Parameters
+                  </button>
+                </>
+              )}
+            </form>
+          </div>
+        </div>
+      )}
+
+      {getVerticalFromCategory(currentMerchant.category) === 'Wellness' && (
+        <div className="grid gap-6 lg:grid-cols-5">
+          {/* Room & Treatment Schedule */}
+          <div className="lg:col-span-3 rounded-2xl border border-white/5 bg-white/[0.01] p-6 space-y-4">
+            <h2 className="font-extrabold text-sm text-white uppercase tracking-wider flex items-center gap-2">
+              <Sparkles size={16} className="text-[#d4af37]" /> Spa Therapy Suite Status
+            </h2>
+            <p className="text-[11px] text-slate-400">Live room occupancy and assigned therapist details. Cross-check room ventilation and oils setup before clients check-in.</p>
+            
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              {[
+                { id: 'Room A (Lotus)', status: 'Occupied', therapist: 'Ananya Sen', client: 'Karan Johar' },
+                { id: 'Room B (Orchid)', status: 'Occupied', therapist: 'Michael Chang', client: 'Mira Rajput' },
+                { id: 'Room C (Zen)', status: 'Available', therapist: 'None', client: 'None' },
+                { id: 'Sauna Suite', status: 'Completed', therapist: 'David Raj', client: 'Arjun Kapoor' }
+              ].map((room) => {
+                const isOccupied = room.status === 'Occupied';
+                const isCompleted = room.status === 'Completed';
+                const bgClass = isOccupied 
+                  ? 'border-[#8b6508]/30 bg-[#8b6508]/5 text-white' 
+                  : isCompleted 
+                  ? 'border-emerald-500/10 bg-emerald-500/5 text-slate-300' 
+                  : 'border-white/5 bg-white/[0.02] text-slate-500';
+                return (
+                  <div key={room.id} className={`p-4 rounded-xl border space-y-2 ${bgClass}`}>
+                    <div className="flex justify-between items-center">
+                      <span className="font-black text-xs">{room.id}</span>
+                      <span className={`px-1.5 py-0.5 rounded text-[8px] font-black uppercase ${isOccupied ? 'bg-[#8b6508]/20 text-[#fceea7]' : isCompleted ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white/5 text-slate-500'}`}>
+                        {room.status}
+                      </span>
+                    </div>
+                    {room.client !== 'None' && (
+                      <div className="text-[10px] space-y-0.5 text-slate-400">
+                        <div>Client: <strong className="text-white">{room.client}</strong></div>
+                        <div>Therapist: <strong className="text-[#d4af37]">{room.therapist}</strong></div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Client Aroma Oils & Preferences */}
+          <div className="lg:col-span-2 rounded-2xl border border-white/5 bg-white/[0.01] p-6 space-y-4">
+            <h2 className="font-extrabold text-sm text-white uppercase tracking-wider flex items-center gap-2">
+              <Users size={16} className="text-[#d4af37]" /> Aromatherapy preferences
+            </h2>
+            <p className="text-[11px] text-slate-400">Essential aromatic oils and massage therapy options requested by booked clients.</p>
+            
+            <div className="space-y-3 pt-2 divide-y divide-white/5">
+              {merchantBookings.map((b) => (
+                <div key={b.id} className="py-2.5 first:pt-0 last:pb-0 space-y-1">
+                  <div className="flex justify-between items-center">
+                    <span className="font-bold text-xs text-white">{b.customerName}</span>
+                    <span className="text-[9px] font-mono text-[#fceea7] bg-[#8b6508]/15 px-2 py-0.5 rounded border border-[#8b6508]/25">{b.time}</span>
+                  </div>
+                  <div className="text-[10px] text-slate-400 space-y-0.5">
+                    <div>Oil: <strong className="text-white">{b.aromaOil || 'Lavender'}</strong></div>
+                    <div>Therapy: <strong className="text-slate-300">{b.massageType || 'Swedish Relaxation'}</strong></div>
+                  </div>
                 </div>
               ))}
             </div>

@@ -249,7 +249,7 @@ export function TopNav() {
               href="/"
               className="flex items-center hover:scale-102 active:scale-98 transition-all duration-300 shrink-0"
             >
-              <img src="/logo.png" alt="BokSpot" className="h-10 md:h-12 object-contain shadow-lg" />
+              <img src="/logo.png?v=3" alt="BokSpot" className="h-10 md:h-12 object-contain" />
             </Link>
 
             <div className="relative hidden lg:inline-block" ref={locationRef}>
@@ -479,13 +479,13 @@ export function TopNav() {
                 </div>
 
                 {/* Username in the middle */}
-                <span className="text-[color:var(--color-on-surface)] text-[12px] font-bold tracking-wide select-none">
+                <span className="text-inherit text-[12px] font-bold tracking-wide select-none">
                   {userName}
                 </span>
 
                 {/* Chevron pointing down/up on the right */}
                 <span 
-                  className="material-symbols-outlined text-[15px] text-[color:var(--color-on-surface)] transition-transform duration-200" 
+                  className="material-symbols-outlined text-[15px] text-inherit transition-transform duration-200" 
                   style={{ transform: profileOpen ? 'rotate(180deg)' : 'none' }}
                 >
                   keyboard_arrow_down

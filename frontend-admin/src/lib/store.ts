@@ -243,6 +243,26 @@ export const PRESET_MERCHANTS: MerchantUser[] = [
     aboutText: 'Urban Haircut Co provides quick, premium grooming, haircuts, and beard stylings for the modern busy professional.',
     vendorId: '2026050003',
     email: 'urban@bnxmail.com'
+  },
+  { 
+    id: 'mer-7', 
+    username: 'cinema', 
+    merchantName: 'PVR IMAX Cinema', 
+    category: 'Movie Tickets / Theatre', 
+    logoLetter: 'C',
+    aboutText: 'PVR IMAX Cinema offers a premium cinematic experience with state-of-the-art projection, laser audio, and luxury reclining lounge chairs. Enjoy the latest blockbusters and dynamic film showtimes.',
+    vendorId: '2026050007',
+    email: 'cinema@bnxmail.com'
+  },
+  { 
+    id: 'mer-8', 
+    username: 'wellness', 
+    merchantName: 'Nirvana Wellness Spa', 
+    category: 'Spa & Wellness', 
+    logoLetter: 'W',
+    aboutText: 'Nirvana Wellness Spa is a luxury sanctuary providing professional aromatherapy, hot stone massage therapies, custom body treatments, and steam bath wellness routines designed to rejuvenate mind and body.',
+    vendorId: '2026050008',
+    email: 'wellness@bnxmail.com'
   }
 ];
 
@@ -271,7 +291,17 @@ const INITIAL_SERVICES: CatalogService[] = [
   { id: 'svc-gp2', name: 'Gel Nail Art & Extensions', merchant: 'Glitz Parlour', price: 1500, duration: 60, category: 'Salon / Spa Appointment', active: true, rating: 4.7, bookingsCount: 89, description: 'Premium gel extensions with custom hand-drawn nail art and rhinestone styling.', productsUsed: 'OPI Gel Polishes' },
 
   // Salon Extra - Urban Haircut Co
-  { id: 'svc-uh1', name: 'Modern Scissor Cut & Trim', merchant: 'Urban Haircut Co', price: 350, duration: 30, category: 'Salon / Spa Appointment', active: true, rating: 4.5, bookingsCount: 110, description: 'Classic grooming, shampoo, precise beard line styling with a hot towel finish.', productsUsed: 'Urban Beard Balm' }
+  { id: 'svc-uh1', name: 'Modern Scissor Cut & Trim', merchant: 'Urban Haircut Co', price: 350, duration: 30, category: 'Salon / Spa Appointment', active: true, rating: 4.5, bookingsCount: 110, description: 'Classic grooming, shampoo, precise beard line styling with a hot towel finish.', productsUsed: 'Urban Beard Balm' },
+  
+  // Cinema / Movies
+  { id: 'svc-m1', name: 'Avengers: Secret Wars', merchant: 'PVR IMAX Cinema', price: 350, duration: 180, category: 'Movie Tickets / Theatre', active: true, rating: 4.8, bookingsCount: 142, description: 'Marvel Studios cinematic culmination event in IMAX 3D.', moviePoster: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=500&auto=format&fit=crop&q=60', movieShowtimes: '10:30 AM, 02:15 PM, 06:00 PM, 09:30 PM', movieLanguage: 'English (IMAX 3D)', movieRating: 'UA', hallNumber: 'Screen 1 (IMAX)' },
+  { id: 'svc-m2', name: 'Interstellar', merchant: 'PVR IMAX Cinema', price: 250, duration: 169, category: 'Movie Tickets / Theatre', active: true, rating: 4.9, bookingsCount: 98, description: 'Christopher Nolans interstellar space travel masterpiece.', moviePoster: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=500&auto=format&fit=crop&q=60', movieShowtimes: '11:00 AM, 04:30 PM, 08:00 PM', movieLanguage: 'English (2D)', movieRating: 'U', hallNumber: 'Screen 3' },
+  { id: 'svc-m3', name: 'The Dark Knight', merchant: 'PVR IMAX Cinema', price: 300, duration: 152, category: 'Movie Tickets / Theatre', active: true, rating: 4.9, bookingsCount: 64, description: 'Legendary crime thriller with Heath Ledgers iconic Joker.', moviePoster: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=500&auto=format&fit=crop&q=60', movieShowtimes: '01:30 PM, 07:15 PM, 10:45 PM', movieLanguage: 'English (IMAX 2D)', movieRating: 'UA', hallNumber: 'Screen 2' },
+
+  // Wellness / Spa
+  { id: 'svc-w1', name: 'Aromatherapy Massage', merchant: 'Nirvana Wellness Spa', price: 2200, duration: 60, category: 'Spa & Wellness', active: true, rating: 4.8, bookingsCount: 78, description: 'Full body relaxation massage with organic lavender essential oils.', treatmentType: 'Massage', stylistName: 'Ananya Sen' },
+  { id: 'svc-w2', name: 'Swedish Deep Tissue Massage', merchant: 'Nirvana Wellness Spa', price: 2800, duration: 90, category: 'Spa & Wellness', active: true, rating: 4.9, bookingsCount: 92, description: 'Deep tissue massage targeting muscle tension with eucalyptus oils.', treatmentType: 'Therapy', stylistName: 'Michael Chang' },
+  { id: 'svc-w3', name: 'Hot Stone Therapy', merchant: 'Nirvana Wellness Spa', price: 3200, duration: 75, category: 'Spa & Wellness', active: true, rating: 4.7, bookingsCount: 45, description: 'Rejuvenating massage using smooth heated basalt stones on key body energy paths.', treatmentType: 'Therapy', stylistName: 'David Raj' }
 ];
 
 const INITIAL_BOOKINGS: PersistedBooking[] = [
@@ -524,6 +554,121 @@ const INITIAL_BOOKINGS: PersistedBooking[] = [
     customerEmail: 'rahul.d@wall.com',
     customerPhone: '+91 98888 77777',
     notes: 'Needs quick dry cut.'
+  },
+  
+  // Cinema Bookings
+  {
+    id: 'bk-m1',
+    ref: 'BK-MV0101',
+    serviceId: 'svc-m1',
+    serviceName: 'Avengers: Secret Wars',
+    merchantName: 'PVR IMAX Cinema',
+    category: 'Movie Tickets / Theatre',
+    date: '2026-06-28',
+    time: '06:00 PM',
+    amount: 700,
+    status: 'CONFIRMED',
+    customerName: 'Rahul Sharma',
+    customerEmail: 'rahul.s@gmail.com',
+    customerPhone: '+91 98450 11223',
+    seatCount: 2,
+    hallNumber: 'Screen 1 (IMAX)',
+    notes: 'IMAX 3D tickets booked. Prefers center seats.'
+  },
+  {
+    id: 'bk-m2',
+    ref: 'BK-MV0102',
+    serviceId: 'svc-m2',
+    serviceName: 'Interstellar',
+    merchantName: 'PVR IMAX Cinema',
+    category: 'Movie Tickets / Theatre',
+    date: '2026-06-27',
+    time: '11:00 AM',
+    amount: 250,
+    status: 'COMPLETED',
+    customerName: 'Priya Patel',
+    customerEmail: 'priya.p@gmail.com',
+    customerPhone: '+91 98450 44556',
+    seatCount: 1,
+    hallNumber: 'Screen 3',
+    notes: '2D ticket booked.'
+  },
+  {
+    id: 'bk-m3',
+    ref: 'BK-MV0103',
+    serviceId: 'svc-m3',
+    serviceName: 'The Dark Knight',
+    merchantName: 'PVR IMAX Cinema',
+    category: 'Movie Tickets / Theatre',
+    date: '2026-06-28',
+    time: '07:15 PM',
+    amount: 900,
+    status: 'CHECKED_IN',
+    customerName: 'Vikram Malhotra',
+    customerEmail: 'vikram.m@gmail.com',
+    customerPhone: '+91 98450 77889',
+    seatCount: 3,
+    hallNumber: 'Screen 2',
+    notes: 'IMAX 2D tickets booked.'
+  },
+
+  // Wellness / Spa Bookings
+  {
+    id: 'bk-w1',
+    ref: 'BK-WL0201',
+    serviceId: 'svc-w1',
+    serviceName: 'Aromatherapy Massage',
+    merchantName: 'Nirvana Wellness Spa',
+    category: 'Spa & Wellness',
+    date: '2026-06-28',
+    time: '10:00 AM',
+    amount: 2200,
+    status: 'CONFIRMED',
+    customerName: 'Karan Johar',
+    customerEmail: 'karan.j@gmail.com',
+    customerPhone: '+91 98450 99887',
+    aromaOil: 'Lavender',
+    massageType: 'Swedish',
+    roomNumber: 'Room A (Lotus)',
+    notes: 'Prefers medium pressure and calming atmosphere.'
+  },
+  {
+    id: 'bk-w2',
+    ref: 'BK-WL0202',
+    serviceId: 'svc-w2',
+    serviceName: 'Swedish Deep Tissue Massage',
+    merchantName: 'Nirvana Wellness Spa',
+    category: 'Spa & Wellness',
+    date: '2026-06-28',
+    time: '11:30 AM',
+    amount: 2800,
+    status: 'CHECKED_IN',
+    customerName: 'Mira Rajput',
+    customerEmail: 'mira.r@gmail.com',
+    customerPhone: '+91 98450 66554',
+    aromaOil: 'Eucalyptus',
+    massageType: 'Deep Tissue',
+    roomNumber: 'Room B (Orchid)',
+    notes: 'Requires high pressure on lower back.'
+  },
+  {
+    id: 'bk-w3',
+    ref: 'BK-WL0203',
+    serviceId: 'svc-w3',
+    serviceName: 'Hot Stone Therapy',
+    merchantName: 'Nirvana Wellness Spa',
+    category: 'Spa & Wellness',
+    date: '2026-06-27',
+    time: '04:00 PM',
+    amount: 3200,
+    status: 'COMPLETED',
+    customerName: 'Arjun Kapoor',
+    customerEmail: 'arjun.k@gmail.com',
+    customerPhone: '+91 98450 33221',
+    aromaOil: 'Jasmine',
+    massageType: 'Hot Stone',
+    roomNumber: 'Sauna Suite',
+    notes: 'Hot stone treatment completed.'
   }
 ];
 
@@ -633,7 +778,9 @@ export const SUB_ACCOUNTS: SubAccount[] = [
   { subId: 'S303', merchantId: 'mer-3', passwordHash: 'pass303' },
   { subId: 'R404', merchantId: 'mer-4', passwordHash: 'pass404' },
   { subId: 'G505', merchantId: 'mer-5', passwordHash: 'pass505' },
-  { subId: 'U606', merchantId: 'mer-6', passwordHash: 'pass606' }
+  { subId: 'U606', merchantId: 'mer-6', passwordHash: 'pass606' },
+  { subId: 'C707', merchantId: 'mer-7', passwordHash: 'pass707' },
+  { subId: 'W808', merchantId: 'mer-8', passwordHash: 'pass808' }
 ];
 
 export const VENDOR_ACCOUNTS = [

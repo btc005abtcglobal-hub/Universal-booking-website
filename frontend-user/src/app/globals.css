@@ -936,3 +936,17 @@
     stroke: #0a3161 !important;
   }
 
+  /* Force customer header navigation links to be white same as the second image */
+  .custom-navbar .custom-nav-link-active,
+  .light .custom-navbar .custom-nav-link-active {
+    color: #ffffff !important;
+  }
+  .custom-navbar .custom-nav-link-inactive,
+  .light .custom-navbar .custom-nav-link-inactive {
+    color: rgba(255, 255, 255, 0.72) !important;
+  }
+  .custom-navbar .custom-nav-link-inactive:hover,
+  .light .custom-navbar .custom-nav-link-inactive:hover {
+    color: #ffffff !important;
+  }
+

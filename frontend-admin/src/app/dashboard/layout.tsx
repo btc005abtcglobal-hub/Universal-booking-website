@@ -296,7 +296,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Main Container */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        <header className="sticky top-0 z-40 flex h-16 items-center justify-between vendor-navbar backdrop-blur-md px-6 lg:px-8">
+        <header className="sticky top-0 z-40 flex h-16 items-center justify-between vendor-navbar backdrop-blur-md pl-6 lg:pl-8 pr-0">
           <div className="flex-1 flex items-center gap-3">
             <button onClick={() => setSidebarOpen(true)} className="lg:hidden rounded-lg p-2 hover:bg-white/5 text-slate-300"><Menu className="h-5 w-5" /></button>
           </div>
@@ -359,7 +359,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
 
           
-          <div className="flex-1 flex items-center justify-end gap-4">
+          <div className="flex-1 flex items-center justify-end gap-4 pr-4 lg:pr-6">
             {/* Stateful Notifications Popover */}
             <div className="relative" ref={popoverRef}>
               <button 
@@ -538,8 +538,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </div>
               )}
             </div>
+          </div>
 
-            {/* Utility Drawer Button */}
+          {/* Utility Drawer Button Box (50px wide column to align with right sidebar) */}
+          <div className="w-[50px] shrink-0 h-full flex items-center justify-center border-l border-white/10">
             <button
               onClick={() => setUtilityDrawerOpen(!utilityDrawerOpen)}
               className={`relative transition-all cursor-pointer w-8 h-8 flex items-center justify-center ${
@@ -549,7 +551,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               }`}
               title="Bokspot Utilities"
             >
-              <img src="/utility-icon.png" alt="Utilities" className="w-[22px] h-[22px] object-contain" />
+              <img src="/utility-icon.png?v=3" alt="Utilities" className="w-[22px] h-[22px] object-contain" />
             </button>
           </div>
         </header>

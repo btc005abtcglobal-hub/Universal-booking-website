@@ -242,7 +242,7 @@ export function TopNav() {
   return (
     <>
       <header className="custom-navbar">
-        <div className="flex justify-between items-center w-full px-6 lg:px-12 py-1.5 lg:py-2 max-w-full">
+        <div className="flex justify-between items-center w-full pl-6 lg:pl-12 pr-0 py-1.5 lg:py-2 max-w-full">
           {/* Left Column: Logo & Brand + Location Selector (Desktop) */}
           <div className="flex-1 flex justify-start items-center gap-6">
             <Link
@@ -364,7 +364,7 @@ export function TopNav() {
           </div>
 
           {/* Right Column: Actions Capsule */}
-          <div className="flex-1 flex justify-end items-center gap-3">
+          <div className="flex-1 flex justify-end items-center gap-3 pr-4 lg:pr-6">
             {/* Desktop Actions Capsule (>= lg) */}
             {/* Desktop Actions (Separated Glass Circles) */}
             <div className="hidden lg:flex items-center gap-2 mr-10">
@@ -641,7 +641,10 @@ export function TopNav() {
               </div>
             </div>
 
-            {/* Utility Drawer Button */}
+          </div>
+
+          {/* Utility Drawer Button Box (50px wide column to align with right sidebar) */}
+          <div className="w-[50px] shrink-0 h-full flex items-center justify-center border-l border-white/10">
             <button
               onClick={() => setUtilityDrawerOpen(!utilityDrawerOpen)}
               className={`w-8 h-8 flex items-center justify-center hover:scale-110 active:scale-90 cursor-pointer transition-all ${
@@ -651,7 +654,7 @@ export function TopNav() {
               }`}
               title="Bokspot Utilities"
             >
-              <img src="/utility-icon.png" alt="Utilities" className="w-[22px] h-[22px] object-contain" />
+              <img src="/utility-icon.png?v=3" alt="Utilities" className="w-[22px] h-[22px] object-contain" />
             </button>
           </div>
         </div>

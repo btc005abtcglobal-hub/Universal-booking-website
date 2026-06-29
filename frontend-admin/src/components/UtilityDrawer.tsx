@@ -283,11 +283,11 @@ export function UtilityDrawer({ isOpen, onClose, isVendor = false }: UtilityDraw
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          initial={{ x: '100%' }}
+          initial={{ x: '120%' }}
           animate={{ x: 0 }}
-          exit={{ x: '100%' }}
+          exit={{ x: '120%' }}
           transition={{ type: 'spring', damping: 26, stiffness: 220 }}
-          className="fixed right-0 top-16 bottom-0 z-[50] flex flex-row overflow-hidden shadow-2xl pointer-events-auto"
+          className="fixed right-4 top-[80px] bottom-4 z-[50] flex flex-row overflow-hidden rounded-2xl border border-slate-200/60 dark:border-slate-800/80 shadow-2xl pointer-events-auto bg-slate-50 dark:bg-[#0b0e14]/90 backdrop-blur-md"
         >
           {/* Slide-out Left Content Panel (320px) */}
           <AnimatePresence mode="wait">

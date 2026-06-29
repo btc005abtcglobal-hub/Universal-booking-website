@@ -17,7 +17,7 @@ const AVATAR_PRESETS = [
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { logout } = useUserStore();
+  const { user, setUser, logout } = useUserStore();
   const { theme, setTheme } = useUIStore();
 
   const [mounted, setMounted] = useState(false);
@@ -25,11 +25,13 @@ export default function ProfilePage() {
     setMounted(true);
   }, []);
 
-  // Load and bind user information from state
-  const [fullName, setFullName] = useState('Ramesh Kumar');
-  const [email, setEmail] = useState('ramesh.kumar@betasoftnet.com');
-  const [phone, setPhone] = useState('+91 99887 76655');
+  // Form states
+  const [username, setUsername] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [avatar, setAvatar] = useState('jetsetter');
+  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
 
   // Preference Settings
@@ -48,16 +50,38 @@ export default function ProfilePage() {
   const [toastMessage, setToastMessage] = useState('');
   const [hasChanges, setHasChanges] = useState(false);
 
+  // Sync state once user mounts
+  useEffect(() => {
+    if (mounted) {
+      if (!user) {
+        router.push('/login');
+        return;
+      }
+      setUsername(user.username || '');
+      setFullName(user.fullName || '');
+      setEmail(user.email || '');
+      setPhone(user.phone || '');
+      setAvatar(user.avatarPreset || 'jetsetter');
+      setProfilePhoto(user.profilePhoto || null);
+
+      if (user.preferences) {
+        if (user.preferences.seat) setSeatPref(user.preferences.seat);
+        if (user.preferences.dietary) setDietaryPref(user.preferences.dietary);
+        if (user.preferences.travelClass) setTravelClass(user.preferences.travelClass);
+      }
+    }
+  }, [mounted, user, router]);
+
   // Detect form modifications to activate Save button
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || !user) return;
     setHasChanges(true);
-  }, [fullName, email, phone, avatar, seatPref, dietaryPref, travelClass, promoEmails, smsAlerts, twoFactor, mounted]);
+  }, [username, fullName, email, phone, avatar, profilePhoto, seatPref, dietaryPref, travelClass, promoEmails, smsAlerts, twoFactor, mounted]);
 
   // Reset flag on initial mount/load
   useEffect(() => {
     if (mounted) {
-      setHasChanges(false);
+      setTimeout(() => setHasChanges(false), 200);
     }
   }, [mounted]);
 
@@ -69,9 +93,22 @@ export default function ProfilePage() {
     );
   }
 
+  // Handle local photo upload
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePhoto(reader.result as string);
+        setHasChanges(true);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName.trim() || !email.trim() || !phone.trim()) {
+    if (!username.trim() || !fullName.trim() || !email.trim() || !phone.trim()) {
       setToastMessage('Please fill in all details');
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -80,6 +117,21 @@ export default function ProfilePage() {
 
     setIsSaving(true);
     setTimeout(() => {
+      setUser({
+        ...user,
+        username: username.toLowerCase().trim(),
+        fullName: fullName.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        avatarPreset: avatar,
+        emoji: AVATAR_PRESETS.find(p => p.id === avatar)?.emoji || '🧑',
+        profilePhoto: profilePhoto,
+        preferences: {
+          seat: seatPref,
+          dietary: dietaryPref,
+          travelClass: travelClass
+        }
+      });
       setIsSaving(false);
       setHasChanges(false);
       setToastMessage('Profile settings updated successfully!');
@@ -112,7 +164,7 @@ export default function ProfilePage() {
               <Sliders className="h-8 w-8 text-[color:var(--color-primary)]" />
             </h1>
             <p className="mt-3 max-w-2xl text-[14px] leading-6 text-[color:var(--color-on-surface-variant)]">
-              Manage personal details, specify luxury travel preferences, and control notifications.
+              Manage personal credentials, upload profile photos, specify service preferences, and customize styling.
             </p>
           </div>
 
@@ -127,33 +179,72 @@ export default function ProfilePage() {
                 
                 {/* Large Circle Avatar Preset */}
                 <div className="relative group mb-4">
-                  <div className={`h-24 w-24 rounded-full bg-gradient-to-br ${currentPreset.color} flex items-center justify-center text-white text-4xl shadow-xl border-2 border-[color:var(--color-primary)]/40 relative z-10 transition-transform duration-300 group-hover:scale-102`}>
-                    {currentPreset.emoji}
+                  <div className="h-24 w-24 rounded-full flex items-center justify-center text-white text-4xl shadow-xl border-2 border-[color:var(--color-primary)]/45 relative overflow-hidden bg-gradient-to-br from-slate-200 to-slate-350 dark:from-slate-800 dark:to-slate-900 z-10 transition-transform duration-300 group-hover:scale-[1.02]">
+                    {profilePhoto ? (
+                      <img src={profilePhoto} alt="Profile Photo" className="h-full w-full object-cover animate-fade-in" />
+                    ) : (
+                      <div className={`w-full h-full bg-gradient-to-br ${currentPreset.color} flex items-center justify-center text-4xl`}>
+                        {currentPreset.emoji}
+                      </div>
+                    )}
                   </div>
-                  <button 
-                    onClick={() => setShowAvatarPicker(!showAvatarPicker)}
+                  <label 
                     className="absolute bottom-0 right-0 h-8 w-8 rounded-full bg-[color:var(--color-primary)] text-[color:var(--color-on-primary)] hover:bg-[color:var(--color-primary-fixed-dim)] flex items-center justify-center shadow-lg border-2 border-[color:var(--color-surface-container)] cursor-pointer z-20 transition-all active:scale-90"
-                    title="Change Avatar Preset"
+                    title="Upload Profile Photo"
                   >
                     <Camera className="h-4.5 w-4.5" />
-                  </button>
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      onChange={handlePhotoUpload} 
+                      className="hidden" 
+                    />
+                  </label>
                 </div>
 
                 <h2 className="text-xl font-black text-[color:var(--color-on-surface)]">{fullName || 'Guest User'}</h2>
-                <p className="text-xs text-[color:var(--color-on-surface-variant)] mt-1 font-mono">{email}</p>
+                <p className="text-xs text-[color:var(--color-on-surface-variant)] mt-1 font-mono">@{username || 'username'}</p>
+
+                {/* Simulated URL Paste for extra premium convenience */}
+                <div className="w-full mt-4 flex flex-col gap-1 text-left">
+                  <label className="text-[9px] uppercase tracking-wider text-[color:var(--color-outline)] font-bold">Or Paste Profile Image URL</label>
+                  <input 
+                    type="text" 
+                    placeholder="https://images.unsplash.com/..." 
+                    value={profilePhoto && !profilePhoto.startsWith('data:') ? profilePhoto : ''}
+                    onChange={(e) => {
+                      setProfilePhoto(e.target.value || null);
+                      setHasChanges(true);
+                    }}
+                    className="w-full bg-[color:var(--color-surface-dim)] border border-[color:var(--color-outline-variant)]/30 rounded-xl px-3 py-1.5 text-[10px] text-[color:var(--color-on-surface)] outline-none hover:border-[color:var(--color-primary)]/20 focus:border-[color:var(--color-primary)]/40 font-mono"
+                  />
+                </div>
+
+                {/* Preset Avatar Select Button */}
+                <button
+                  type="button"
+                  onClick={() => setShowAvatarPicker(!showAvatarPicker)}
+                  className="mt-4 w-full bg-[color:var(--color-surface-dim)] hover:bg-[color:var(--color-on-surface)]/[0.05] border border-[color:var(--color-outline-variant)]/30 text-on-surface rounded-xl py-2 text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  <span>Select Emoji Preset</span>
+                  <span>{showAvatarPicker ? '▲' : '▼'}</span>
+                </button>
 
                 {/* Inline Avatar Presets Selector Modal/Pill */}
                 {showAvatarPicker && (
-                  <div className="mt-4 w-full bg-[color:var(--color-surface-dim)]/90 border border-[color:var(--color-outline-variant)]/40 rounded-2xl p-3 grid grid-cols-4 gap-2 animate-fade-up z-30">
+                  <div className="mt-2 w-full bg-[color:var(--color-surface-dim)]/90 border border-[color:var(--color-outline-variant)]/40 rounded-2xl p-3 grid grid-cols-4 gap-2 animate-fade-up z-30">
                     {AVATAR_PRESETS.map((preset) => (
                       <button
                         key={preset.id}
+                        type="button"
                         onClick={() => {
                           setAvatar(preset.id);
+                          setProfilePhoto(null); // Clear custom photo if preset selected
                           setShowAvatarPicker(false);
+                          setHasChanges(true);
                         }}
                         className={`flex flex-col items-center justify-center p-2 rounded-xl border text-[10px] font-bold gap-1 cursor-pointer transition-all ${
-                          avatar === preset.id
+                          avatar === preset.id && !profilePhoto
                             ? 'bg-[color:var(--color-primary)]/15 border-[color:var(--color-primary)] text-[color:var(--color-primary)]'
                             : 'bg-[color:var(--color-on-surface)]/[0.05] border-transparent text-[color:var(--color-on-surface-variant)] hover:bg-[color:var(--color-on-surface)]/[0.1] hover:text-[color:var(--color-on-surface)]'
                         }`}
@@ -165,7 +256,7 @@ export default function ProfilePage() {
                   </div>
                 )}
 
-                {/* Loyalty points and bookings stats */}
+                {/* Loyalty stats */}
                 <div className="grid grid-cols-3 gap-2 w-full mt-6 pt-5 border-t border-[color:var(--color-outline-variant)]/30 text-left">
                   <div className="flex flex-col">
                     <span className="text-[9px] uppercase tracking-wider text-[color:var(--color-outline)] font-bold">Bookings</span>
@@ -196,13 +287,13 @@ export default function ProfilePage() {
                   </div>
                   <h3 className="text-lg font-black text-[color:var(--color-on-surface)] mt-2">Gold Status Member</h3>
                   <p className="text-[11px] text-[color:var(--color-on-surface-variant)] mt-1.5">
-                    Unlock private airport lounges, complimentary yacht deck upgrades, and fast checkout priorities.
+                    Unlock VIP lounge gates, complimentary service upgrades, and priority ticket check-ins.
                   </p>
 
                   <div className="mt-4 space-y-1.5">
                     <div className="flex justify-between text-[10px] text-[color:var(--color-outline)] font-bold uppercase">
                       <span>Tier Progress</span>
-                      <span>12 / 15 rides to Platinum</span>
+                      <span>12 / 15 bookings to Platinum</span>
                     </div>
                     {/* Progress Bar */}
                     <div className="h-1.5 w-full bg-[color:var(--color-surface-dim)] border border-[color:var(--color-outline-variant)]/30 rounded-full overflow-hidden">
@@ -228,6 +319,23 @@ export default function ProfilePage() {
                   
                   {/* Inputs Row */}
                   <div className="grid gap-4 md:grid-cols-2">
+                    {/* Username */}
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[10px] uppercase tracking-wider text-[color:var(--color-outline)] font-bold">
+                        Username
+                      </label>
+                      <div className="flex items-center gap-3 rounded-xl border border-[color:var(--color-outline-variant)]/40 bg-[color:var(--color-surface-dim)] px-3.5 py-2.5">
+                        <span className="text-xs text-[color:var(--color-outline)] font-semibold font-mono">@</span>
+                        <input 
+                          type="text" 
+                          required
+                          value={username}
+                          onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, ''))}
+                          className="flex-grow bg-transparent outline-none text-xs text-[color:var(--color-on-surface)] placeholder-[color:var(--color-outline)] focus:ring-0 font-mono" 
+                        />
+                      </div>
+                    </div>
+
                     {/* Full Name */}
                     <div className="flex flex-col gap-1.5">
                       <label className="text-[10px] uppercase tracking-wider text-[color:var(--color-outline)] font-bold">
@@ -240,11 +348,13 @@ export default function ProfilePage() {
                           required
                           value={fullName}
                           onChange={(e) => setFullName(e.target.value)}
-                          className="flex-1 bg-transparent outline-none text-xs text-[color:var(--color-on-surface)] placeholder-[color:var(--color-outline)] focus:ring-0" 
+                          className="flex-grow bg-transparent outline-none text-xs text-[color:var(--color-on-surface)] placeholder-[color:var(--color-outline)] focus:ring-0" 
                         />
                       </div>
                     </div>
+                  </div>
 
+                  <div className="grid gap-4 md:grid-cols-2">
                     {/* Email */}
                     <div className="flex flex-col gap-1.5">
                       <label className="text-[10px] uppercase tracking-wider text-[color:var(--color-outline)] font-bold">
@@ -257,26 +367,26 @@ export default function ProfilePage() {
                           required
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          className="flex-1 bg-transparent outline-none text-xs text-[color:var(--color-on-surface)] placeholder-[color:var(--color-outline)] focus:ring-0" 
+                          className="flex-grow bg-transparent outline-none text-xs text-[color:var(--color-on-surface)] placeholder-[color:var(--color-outline)] focus:ring-0" 
                         />
                       </div>
                     </div>
-                  </div>
 
-                  {/* Phone Input */}
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[10px] uppercase tracking-wider text-[color:var(--color-outline)] font-bold">
-                      Mobile Number
-                    </label>
-                    <div className="flex items-center gap-3 rounded-xl border border-[color:var(--color-outline-variant)]/40 bg-[color:var(--color-surface-dim)] px-3.5 py-2.5">
-                      <Phone size={16} className="text-[color:var(--color-outline)]" />
-                      <input 
-                        type="text" 
-                        required
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        className="flex-1 bg-transparent outline-none text-xs text-[color:var(--color-on-surface)] placeholder-[color:var(--color-outline)] focus:ring-0" 
-                      />
+                    {/* Phone Input */}
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[10px] uppercase tracking-wider text-[color:var(--color-outline)] font-bold">
+                        Mobile Number
+                      </label>
+                      <div className="flex items-center gap-3 rounded-xl border border-[color:var(--color-outline-variant)]/40 bg-[color:var(--color-surface-dim)] px-3.5 py-2.5">
+                        <Phone size={16} className="text-[color:var(--color-outline)]" />
+                        <input 
+                          type="text" 
+                          required
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          className="flex-grow bg-transparent outline-none text-xs text-[color:var(--color-on-surface)] placeholder-[color:var(--color-outline)] focus:ring-0" 
+                        />
+                      </div>
                     </div>
                   </div>
 

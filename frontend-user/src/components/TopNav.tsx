@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { Search, Heart, ShoppingBag, Sparkles, MapPin, Map, X, User, Sun, Moon, Laptop } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useLocationStore, useUIStore } from '../lib/store';
+import { useLocationStore, useUIStore, useUserStore } from '../lib/store';
 import { LiveClock } from './LiveClock';
 import { ALL_SEARCHABLE_SERVICES } from '../lib/searchData';
 import { UtilityDrawer } from './UtilityDrawer';
@@ -54,9 +54,11 @@ export function TopNav({
   const [markerPos, setMarkerPos] = useState<{ x: string; y: string } | null>(null);
   const [dismissed, setDismissed] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [userName, setUserName] = useState('sssandy_1');
-  const [userEmoji, setUserEmoji] = useState('🧑');
-  const [userEmail, setUserEmail] = useState('sssandy_1@bnxmail.com');
+  const { user, logout } = useUserStore();
+  const userName = user?.username || 'Guest';
+  const userEmoji = user?.emoji || '🧑';
+  const userEmail = user?.email || '';
+  const userPhoto = user?.profilePhoto || null;
   // UI toggle states
   const [searchOpen, setSearchOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -477,140 +479,155 @@ export function TopNav({
             </div>
 
             {/* Desktop Profile Dropdown */}
-            <div className="hidden lg:flex items-center gap-2 relative" ref={profileRef}>
-              <button
-                onClick={() => setProfileOpen(!profileOpen)}
-                className="custom-nav-btn pl-1 pr-3 h-8 rounded-full flex items-center gap-2 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
-                aria-label="Toggle profile menu"
-                title="Profile Settings"
+            {!user ? (
+              <Link
+                href="/login"
+                className="custom-nav-btn px-4 h-8 rounded-full flex items-center justify-center shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-[11px] font-extrabold tracking-wider bg-white/10 hover:bg-white/20 text-white cursor-pointer"
               >
-                {/* Solid white circle with a small outline user icon on the left */}
-                <div className="h-6 w-6 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm profile-avatar-circle">
-                  <User size={14} strokeWidth={2.5} className="text-[#0a3161]" />
-                </div>
-
-                {/* Username in the middle */}
-                <span className="text-inherit text-[12px] font-bold tracking-wide select-none">
-                  {userName}
-                </span>
-
-                {/* Chevron pointing down/up on the right */}
-                <span 
-                  className="material-symbols-outlined text-[15px] text-inherit transition-transform duration-200" 
-                  style={{ transform: profileOpen ? 'rotate(180deg)' : 'none' }}
+                Sign In
+              </Link>
+            ) : (
+              <div className="hidden lg:flex items-center gap-2 relative" ref={profileRef}>
+                <button
+                  onClick={() => setProfileOpen(!profileOpen)}
+                  className="custom-nav-btn pl-1 pr-3 h-8 rounded-full flex items-center gap-2 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                  aria-label="Toggle profile menu"
+                  title="Profile Settings"
                 >
-                  keyboard_arrow_down
-                </span>
-              </button>
-              {profileOpen && (
-                <div className="absolute right-0 top-full mt-3 w-64 bg-surface-container rounded-2xl shadow-2xl border border-outline-variant/30 z-20 overflow-hidden backdrop-blur-md animate-fade-up">
-                  {/* User Profile Header */}
-                  <div className="px-5 py-4 bg-surface-container-high/40 border-b border-outline-variant/20 flex items-center justify-between gap-3">
-                    <div className="flex flex-col min-w-0 text-left">
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-outline">Signed in as</span>
-                      <span className="font-extrabold text-[13px] text-on-surface mt-1 truncate max-w-[165px]" title={userEmail}>
-                        {userEmail}
-                      </span>
-                      <span className="text-[11px] text-on-surface-variant flex items-center gap-1.5 mt-1 font-medium">
-                        <span>🇮🇳</span> India
-                      </span>
-                    </div>
-                    {/* Switch Account Button */}
-                    <button 
-                      className="p-2 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-primary transition-all cursor-pointer flex items-center justify-center shrink-0 border border-outline-variant/20 shadow-sm hover:scale-105 active:scale-95"
-                      title="Switch Account"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">switch_account</span>
-                    </button>
+                  {/* Solid white circle with a small outline user icon on the left */}
+                  <div className="h-6 w-6 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm overflow-hidden profile-avatar-circle">
+                    {userPhoto ? (
+                      <img src={userPhoto} alt={userName} className="h-full w-full object-cover animate-fade-in" />
+                    ) : (
+                      <span className="text-xs">{userEmoji}</span>
+                    )}
                   </div>
-                  
-                  {/* Dropdown Options */}
-                  <ul className="py-2">
-                    <li>
-                      <Link href="/profile#settings" className="flex items-center justify-between px-5 py-3 text-on-surface hover:bg-surface-container-highest transition-colors text-sm group">
-                        <div className="flex items-center gap-3">
-                          <span className="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-primary transition-colors">person</span>
-                          <span className="font-semibold text-[13px]">Account Profile</span>
-                        </div>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/profile#language" className="flex items-center justify-between px-5 py-3 text-on-surface hover:bg-surface-container-highest transition-colors text-sm group">
-                        <div className="flex items-center gap-3">
-                          <span className="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-primary transition-colors">language</span>
-                          <span className="font-semibold text-[13px]">Language</span>
-                        </div>
-                        <span className="text-xs text-outline font-medium">English</span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/profile#currency" className="flex items-center justify-between px-5 py-3 text-on-surface hover:bg-surface-container-highest transition-colors text-sm group">
-                        <div className="flex items-center gap-3">
-                          <span className="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-primary transition-colors">payments</span>
-                          <span className="font-semibold text-[13px]">Currency</span>
-                        </div>
-                        <span className="text-xs text-outline font-medium">INR (₹)</span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/profile#country" className="flex items-center justify-between px-5 py-3 text-on-surface hover:bg-surface-container-highest transition-colors text-sm group">
-                        <div className="flex items-center gap-3">
-                          <span className="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-primary transition-colors">flag</span>
-                          <span className="font-semibold text-[13px]">Country</span>
-                        </div>
-                        <span className="text-xs text-outline font-medium">India</span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/profile#trust" className="flex items-center justify-between px-5 py-3 text-on-surface hover:bg-surface-container-highest transition-colors text-sm group">
-                        <div className="flex items-center gap-3">
-                          <span className="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-primary transition-colors">verified_user</span>
-                          <span className="font-semibold text-[13px]">Beta Trust</span>
-                        </div>
-                        <span className="text-xs text-emerald-500 font-extrabold tracking-wide">85%</span>
-                      </Link>
-                    </li>
-                    <li className="px-5 py-3.5 bg-surface-container-high/30 border-t border-outline-variant/10">
-                      <div className="flex flex-col gap-2">
-                        <span className="text-[10px] uppercase font-bold tracking-wider text-outline text-left">Display Theme</span>
-                        <div className="grid grid-cols-3 gap-1 bg-surface-container p-1 rounded-xl border border-outline-variant/20">
-                          {(['light', 'dark', 'system'] as const).map((t) => {
-                            const isThemeActive = theme === t;
-                            return (
-                              <button
-                                key={t}
-                                onClick={() => setTheme(t)}
-                                className={`py-1.5 rounded-lg text-[10px] font-bold transition-all uppercase tracking-wider capitalize cursor-pointer flex items-center justify-center gap-1 ${
-                                  isThemeActive
-                                    ? 'bg-primary text-on-primary shadow-sm'
-                                    : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high'
-                                }`}
-                              >
-                                {t === 'light' ? <Sun className="h-3 w-3" /> : t === 'dark' ? <Moon className="h-3 w-3" /> : <Laptop className="h-3 w-3" />}
-                                <span>{t}</span>
-                              </button>
-                            );
-                          })}
-                        </div>
+
+                  {/* Username in the middle */}
+                  <span className="text-inherit text-[12px] font-bold tracking-wide select-none">
+                    {userName}
+                  </span>
+
+                  {/* Chevron pointing down/up on the right */}
+                  <span 
+                    className="material-symbols-outlined text-[15px] text-inherit transition-transform duration-200" 
+                    style={{ transform: profileOpen ? 'rotate(180deg)' : 'none' }}
+                  >
+                    keyboard_arrow_down
+                  </span>
+                </button>
+                {profileOpen && (
+                  <div className="absolute right-0 top-full mt-3 w-64 bg-surface-container rounded-2xl shadow-2xl border border-outline-variant/30 z-20 overflow-hidden backdrop-blur-md animate-fade-up">
+                    {/* User Profile Header */}
+                    <div className="px-5 py-4 bg-surface-container-high/40 border-b border-outline-variant/20 flex items-center justify-between gap-3">
+                      <div className="flex flex-col min-w-0 text-left">
+                        <span className="text-[10px] uppercase font-bold tracking-wider text-outline">Signed in as</span>
+                        <span className="font-extrabold text-[13px] text-on-surface mt-1 truncate max-w-[165px]" title={userEmail}>
+                          {userEmail}
+                        </span>
+                        <span className="text-[11px] text-on-surface-variant flex items-center gap-1.5 mt-1 font-medium">
+                          <span>🇮🇳</span> India
+                        </span>
                       </div>
-                    </li>
-                  </ul>
-                  
-                  {/* Bottom Divider & Sign Out */}
-                  <div className="border-t border-outline-variant/20 px-2.5 py-2.5 bg-surface-container-low/20">
-                    <button
-                      onClick={() => {
-                        setProfileOpen(false);
-                        // Handle logout
-                      }}
-                      className="w-full flex items-center gap-3 px-3.5 py-2.5 text-[#ff4d4f] hover:bg-[#ff4d4f]/10 transition-colors rounded-xl text-sm font-bold cursor-pointer"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">logout</span>Sign out
-                    </button>
+                      {/* Switch Account Button */}
+                      <button 
+                        className="p-2 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-primary transition-all cursor-pointer flex items-center justify-center shrink-0 border border-outline-variant/20 shadow-sm hover:scale-105 active:scale-95"
+                        title="Switch Account"
+                        onClick={() => router.push('/login')}
+                      >
+                        <span className="material-symbols-outlined text-[16px]">sync_alt</span>
+                      </button>
+                    </div>
+                    
+                    {/* Dropdown Options */}
+                    <ul className="py-2">
+                      <li>
+                        <Link href="/profile#settings" className="flex items-center justify-between px-5 py-3 text-on-surface hover:bg-surface-container-highest transition-colors text-sm group">
+                          <div className="flex items-center gap-3">
+                            <span className="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-primary transition-colors">person</span>
+                            <span className="font-semibold text-[13px]">Account Profile</span>
+                          </div>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/profile#language" className="flex items-center justify-between px-5 py-3 text-on-surface hover:bg-surface-container-highest transition-colors text-sm group">
+                          <div className="flex items-center gap-3">
+                            <span className="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-primary transition-colors">language</span>
+                            <span className="font-semibold text-[13px]">Language</span>
+                          </div>
+                          <span className="text-xs text-outline font-medium">English</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/profile#currency" className="flex items-center justify-between px-5 py-3 text-on-surface hover:bg-surface-container-highest transition-colors text-sm group">
+                          <div className="flex items-center gap-3">
+                            <span className="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-primary transition-colors">payments</span>
+                            <span className="font-semibold text-[13px]">Currency</span>
+                          </div>
+                          <span className="text-xs text-outline font-medium">INR (₹)</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/profile#country" className="flex items-center justify-between px-5 py-3 text-on-surface hover:bg-surface-container-highest transition-colors text-sm group">
+                          <div className="flex items-center gap-3">
+                            <span className="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-primary transition-colors">flag</span>
+                            <span className="font-semibold text-[13px]">Country</span>
+                          </div>
+                          <span className="text-xs text-outline font-medium">India</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/profile#trust" className="flex items-center justify-between px-5 py-3 text-on-surface hover:bg-surface-container-highest transition-colors text-sm group">
+                          <div className="flex items-center gap-3">
+                            <span className="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-primary transition-colors">verified_user</span>
+                            <span className="font-semibold text-[13px]">Beta Trust</span>
+                          </div>
+                          <span className="text-xs text-emerald-500 font-extrabold tracking-wide">85%</span>
+                        </Link>
+                      </li>
+                      <li className="px-5 py-3.5 bg-surface-container-high/30 border-t border-outline-variant/10">
+                        <div className="flex flex-col gap-2">
+                          <span className="text-[10px] uppercase font-bold tracking-wider text-outline text-left">Display Theme</span>
+                          <div className="grid grid-cols-3 gap-1 bg-surface-container p-1 rounded-xl border border-outline-variant/20">
+                            {(['light', 'dark', 'system'] as const).map((t) => {
+                              const isThemeActive = theme === t;
+                              return (
+                                <button
+                                  key={t}
+                                  onClick={() => setTheme(t)}
+                                  className={`py-1.5 rounded-lg text-[10px] font-bold transition-all uppercase tracking-wider capitalize cursor-pointer flex items-center justify-center gap-1 ${
+                                    isThemeActive
+                                      ? 'bg-primary text-on-primary shadow-sm'
+                                      : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high'
+                                  }`}
+                                >
+                                  {t === 'light' ? <Sun className="h-3 w-3" /> : t === 'dark' ? <Moon className="h-3 w-3" /> : <Laptop className="h-3 w-3" />}
+                                  <span>{t}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                    
+                    {/* Bottom Divider & Sign Out */}
+                    <div className="border-t border-outline-variant/20 px-2.5 py-2.5 bg-surface-container-low/20">
+                      <button
+                        onClick={() => {
+                          setProfileOpen(false);
+                          logout();
+                          router.push('/');
+                        }}
+                        className="w-full flex items-center gap-3 px-3.5 py-2.5 text-[#ff4d4f] hover:bg-[#ff4d4f]/10 transition-colors rounded-xl text-sm font-bold cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-[18px]">logout</span>Sign out
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
 
             {/* Mobile Actions Capsule (< lg) */}
             <div className="lg:hidden flex items-center bg-[color:var(--color-surface-container)]/60 border border-[color:var(--color-outline-variant)]/30 rounded-full pl-4 pr-1.5 py-1 shadow-md backdrop-blur-md gap-2.5 custom-nav-mobile-capsule">

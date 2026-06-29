@@ -3,19 +3,29 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Shield, CreditCard, Clock, MapPin, ArrowLeft, ChevronRight, AlertCircle, Sparkles } from 'lucide-react';
-import { useBookingFlowStore } from '../../../lib/store';
+import { useBookingFlowStore, useUserStore } from '../../../lib/store';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function CheckoutPage() {
   const router = useRouter();
   const { selectedService, selectedSlot, addBooking, notes } = useBookingFlowStore();
+  const { user } = useUserStore();
 
   const [name, setName] = useState('User Name');
   const [email, setEmail] = useState('user@example.com');
   const [phone, setPhone] = useState('+91 98765 43210');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Pre-populate details from logged in user
+  useEffect(() => {
+    if (user) {
+      setName(user.fullName || '');
+      setEmail(user.email || '');
+      setPhone(user.phone || '');
+    }
+  }, [user]);
 
   // Time remaining count down state
   const [timeLeft, setTimeLeft] = useState(585); // 9 mins 45 secs

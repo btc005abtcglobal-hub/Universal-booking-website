@@ -17,8 +17,16 @@ interface UserState {
 export const useUserStore = create<UserState>()(
   persist(
     (set) => ({
-      user: null,
-      token: null,
+      user: {
+        username: 'sssandy_1',
+        fullName: 'Ramesh Kumar',
+        email: 'sssandy_1@bnxmail.com',
+        phone: '+91 99887 76655',
+        emoji: '🧑',
+        avatarColor: 'from-amber-400 to-yellow-600',
+        profilePhoto: null
+      },
+      token: 'mock-session-token-sssandy_1',
       setUser: (user) => set({ user }),
       setToken: (token) => {
         if (typeof window !== 'undefined') localStorage.setItem('auth_token', token);

@@ -33,7 +33,19 @@ const getNearestCityName = (lat: number, lng: number): string => {
   return nearestCity.name;
 };
 
-export function TopNav() {
+interface TopNavProps {
+  utilityDrawerOpen?: boolean;
+  setUtilityDrawerOpen?: (open: boolean) => void;
+  activeUtilityTab?: 'calendar' | 'calc' | 'tasks' | 'contacts' | null;
+  setActiveUtilityTab?: (tab: 'calendar' | 'calc' | 'tasks' | 'contacts' | null) => void;
+}
+
+export function TopNav({
+  utilityDrawerOpen = false,
+  setUtilityDrawerOpen = () => {},
+  activeUtilityTab = null,
+  setActiveUtilityTab = () => {},
+}: TopNavProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { city, setCity, setLocation, setStatus, status, latitude, longitude } = useLocationStore();
@@ -50,7 +62,6 @@ export function TopNav() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [profileOpenMobile, setProfileOpenMobile] = useState(false);
   const [locationDropdownOpen, setLocationDropdownOpen] = useState(false);
-  const [utilityDrawerOpen, setUtilityDrawerOpen] = useState(false);
   // Refs for dropdown positioning / click‑outside handling
   const profileRef = useRef<HTMLDivElement>(null);
   const profileRefMobile = useRef<HTMLDivElement>(null);
@@ -814,7 +825,7 @@ export function TopNav() {
           </div>
         </div>
       )}
-      <UtilityDrawer isOpen={utilityDrawerOpen} onClose={() => setUtilityDrawerOpen(false)} />
+      <UtilityDrawer isOpen={utilityDrawerOpen} onClose={() => setUtilityDrawerOpen(false)} activeTab={activeUtilityTab} setActiveTab={setActiveUtilityTab} />
     </>
   );
 }

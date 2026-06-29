@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { TopNav } from './TopNav';
 import { BottomNav } from './BottomNav';
 
@@ -44,6 +44,8 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   const pathname = usePathname();
   const router = useRouter();
   const lastPathRef = useRef<string>(pathname);
+  const [utilityDrawerOpen, setUtilityDrawerOpen] = useState(false);
+  const [activeUtilityTab, setActiveUtilityTab] = useState<'calendar' | 'calc' | 'tasks' | 'contacts' | null>(null);
 
   // We exclude administrative dashboard portals /sales and /superadmin
   const isExcluded = pathname?.startsWith('/sales') || pathname?.startsWith('/superadmin');
@@ -79,10 +81,17 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   }
 
   return (
-    <>
-      <TopNav />
+    <div className={`transition-all duration-300 ${
+      utilityDrawerOpen ? (activeUtilityTab ? 'lg:pr-[370px]' : 'lg:pr-[50px]') : ''
+    }`}>
+      <TopNav 
+        utilityDrawerOpen={utilityDrawerOpen}
+        setUtilityDrawerOpen={setUtilityDrawerOpen}
+        activeUtilityTab={activeUtilityTab}
+        setActiveUtilityTab={setActiveUtilityTab}
+      />
       {children}
       <BottomNav />
-    </>
+    </div>
   );
 }

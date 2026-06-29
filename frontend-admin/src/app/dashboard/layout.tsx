@@ -38,6 +38,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { currentMerchant, logoutMerchant, switchStore, loginRole, theme, setTheme, supervisorId } = useVendorStore();
   const [utilityDrawerOpen, setUtilityDrawerOpen] = useState(false);
+  const [activeUtilityTab, setActiveUtilityTab] = useState<'calendar' | 'calc' | 'tasks' | 'contacts' | null>(null);
   const [isMounted, setIsMounted] = useState(false);
   const [hasHydrated, setHasHydrated] = useState(false);
   
@@ -557,7 +558,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </header>
  
         <main className={`flex-1 overflow-y-auto bg-bg-primary p-6 lg:p-8 custom-scrollbar transition-all duration-300 flex flex-col justify-between ${
-          utilityDrawerOpen ? 'lg:pr-[74px]' : ''
+          utilityDrawerOpen ? (activeUtilityTab ? 'lg:pr-[370px]' : 'lg:pr-[50px]') : ''
         }`}>
           <div className="flex-1 pb-8">
             {children}
@@ -579,7 +580,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </footer>
         </main>
       </div>
-      <UtilityDrawer isOpen={utilityDrawerOpen} onClose={() => setUtilityDrawerOpen(false)} isVendor={true} />
+      <UtilityDrawer isOpen={utilityDrawerOpen} onClose={() => setUtilityDrawerOpen(false)} isVendor={true} activeTab={activeUtilityTab} setActiveTab={setActiveUtilityTab} />
     </div>
   );
 }

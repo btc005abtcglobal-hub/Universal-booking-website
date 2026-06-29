@@ -5,7 +5,7 @@ import {
   X, Calculator, Sparkles, Plus, Trash2, ArrowLeftRight, 
   ChevronLeft, ChevronRight, ExternalLink, Check, User, 
   Search, MoreVertical, Lightbulb, CheckSquare, Trash,
-  CalendarDays, Settings
+  CalendarDays, Settings, RotateCcw, Share2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useVendorStore } from '../lib/store';
@@ -14,6 +14,8 @@ interface UtilityDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   isVendor?: boolean;
+  activeTab?: 'calendar' | 'calc' | 'tasks' | 'contacts' | null;
+  setActiveTab?: (tab: 'calendar' | 'calc' | 'tasks' | 'contacts' | null) => void;
 }
 
 interface CompareItem {
@@ -23,9 +25,18 @@ interface CompareItem {
   valB: number;
 }
 
-export function UtilityDrawer({ isOpen, onClose, isVendor = false }: UtilityDrawerProps) {
+export function UtilityDrawer({ 
+  isOpen, 
+  onClose, 
+  isVendor = false,
+  activeTab: propActiveTab,
+  setActiveTab: propSetActiveTab
+}: UtilityDrawerProps) {
   const { bookings, currentMerchant } = useVendorStore();
-  const [activeTab, setActiveTab] = useState<'calendar' | 'calc' | 'tasks' | 'contacts' | null>(null);
+  const [localActiveTab, setLocalActiveTab] = useState<'calendar' | 'calc' | 'tasks' | 'contacts' | null>(null);
+  
+  const activeTab = propActiveTab !== undefined ? propActiveTab : localActiveTab;
+  const setActiveTab = propSetActiveTab !== undefined ? propSetActiveTab : setLocalActiveTab;
 
   // Time state for the live red line
   const [now, setNow] = useState(new Date());
@@ -283,11 +294,11 @@ export function UtilityDrawer({ isOpen, onClose, isVendor = false }: UtilityDraw
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          initial={{ x: '120%' }}
+          initial={{ x: '100%' }}
           animate={{ x: 0 }}
-          exit={{ x: '120%' }}
+          exit={{ x: '100%' }}
           transition={{ type: 'spring', damping: 26, stiffness: 220 }}
-          className="fixed right-4 top-[80px] bottom-4 z-[50] flex flex-row overflow-hidden rounded-2xl border border-slate-200/60 dark:border-slate-800/80 shadow-2xl pointer-events-auto bg-slate-50 dark:bg-[#0b0e14]/90 backdrop-blur-md"
+          className="fixed right-0 top-16 bottom-0 z-[40] flex flex-row overflow-hidden border-l border-slate-200 dark:border-slate-850 shadow-2xl pointer-events-auto bg-slate-50 dark:bg-[#0b0e14]/90 backdrop-blur-md"
         >
           {/* Slide-out Left Content Panel (320px) */}
           <AnimatePresence mode="wait">
@@ -513,18 +524,45 @@ export function UtilityDrawer({ isOpen, onClose, isVendor = false }: UtilityDraw
                 {activeTab === 'calc' && (
                   <div className="h-full flex flex-col overflow-hidden text-slate-800 dark:text-slate-200 font-sans">
                     <div className="p-3 bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-850 flex items-center justify-between shrink-0">
-                      <div className="flex items-center gap-1.5">
-                        <Lightbulb size={13} className="text-amber-500" />
-                        <span className="text-[9px] font-extrabold text-slate-500 uppercase tracking-widest block">
-                          KEEP CALCULATOR
+                      <div className="flex items-center gap-1.5 select-none">
+                        <span className="text-emerald-500 font-bold text-sm">#</span>
+                        <span className="text-[10px] font-extrabold text-slate-800 dark:text-slate-100 uppercase tracking-widest block font-sans">
+                          BETA CALC
                         </span>
                       </div>
-                      <button
-                        onClick={() => setActiveTab(null)}
-                        className="p-1 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-500"
-                      >
-                        <X size={13} />
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button 
+                          onClick={() => setCalcHistory([])} 
+                          className="p-1 rounded-md hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-650"
+                          title="Reset History"
+                        >
+                          <RotateCcw size={12} />
+                        </button>
+                        <button 
+                          className="p-1 rounded-md hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-650"
+                          title="Share Tape"
+                        >
+                          <Share2 size={12} />
+                        </button>
+                        <button 
+                          onClick={() => {
+                            setCalcInput('');
+                            setCalcResult(null);
+                            setCalcOperator('');
+                          }} 
+                          className="p-1 rounded-md hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-650"
+                          title="Clear Output"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                        <button
+                          onClick={() => setActiveTab(null)}
+                          className="p-1 rounded-md hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-700"
+                          title="Close"
+                        >
+                          <X size={12} />
+                        </button>
+                      </div>
                     </div>
 
                     <div className="flex-1 overflow-y-auto p-3.5 space-y-3.5 custom-scrollbar text-left">
@@ -613,135 +651,178 @@ export function UtilityDrawer({ isOpen, onClose, isVendor = false }: UtilityDraw
                           </form>
                         </div>
                       ) : (
-                        <>
-                          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/10 p-3 text-[10.5px] text-slate-500 font-mono space-y-1 min-h-[96px] flex flex-col justify-end">
-                            <span className="font-sans font-black uppercase text-[8px] tracking-wider text-slate-400 mb-auto">Tape History</span>
-                            {calcHistory.length === 0 ? (
-                              <div className="text-center py-4 italic text-slate-400 dark:text-slate-600">No records</div>
-                            ) : (
-                              calcHistory.map((h, i) => (
-                                <div key={i} className="text-right truncate text-slate-600 dark:text-slate-400">{h}</div>
-                              ))
-                            )}
+                        <div className="flex flex-col gap-3">
+                          {/* Set Base Display Header */}
+                          <div className="flex justify-between items-center bg-slate-100/50 dark:bg-slate-950/20 px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-850 select-none">
+                            <span className="text-[10px] uppercase font-black tracking-wider text-slate-400">SET BASE</span>
+                            <span className="text-[16px] font-black text-slate-800 dark:text-white font-mono leading-none">
+                              {calcInput || '0'}
+                            </span>
                           </div>
 
-                          <div className="p-3 bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-right font-mono">
-                            <div className="text-slate-400 text-[10px] h-4 leading-none">
-                              {calcResult !== null ? `${calcResult} ${calcOperator}` : ''}
-                            </div>
-                            <div className="text-xl font-black text-slate-800 dark:text-white mt-1 leading-none truncate">
-                              {calcInput || '0'}
-                            </div>
+                          {/* 4 outline segment pill buttons */}
+                          <div className="grid grid-cols-4 gap-1.5 py-0.5">
+                            <button
+                              type="button"
+                              onClick={handleAddGst}
+                              className="py-1 rounded-lg border border-emerald-500/30 bg-transparent text-emerald-500 hover:bg-emerald-500/10 text-[9px] font-black uppercase transition-all flex items-center justify-center gap-0.5"
+                            >
+                              % GST
+                            </button>
+                            <button
+                              type="button"
+                              onClick={handleAddDiscount}
+                              className="py-1 rounded-lg border border-amber-500/30 bg-transparent text-amber-500 hover:bg-amber-500/10 text-[9px] font-black uppercase transition-all flex items-center justify-center gap-0.5"
+                            >
+                              % Discount
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setCurrencySymbol((prev) => (prev === '₹' ? '$' : '₹'))}
+                              className="py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-transparent text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 text-[9px] font-black uppercase transition-all flex items-center justify-center gap-0.5"
+                            >
+                              % INR
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setCompareMode(!compareMode)}
+                              className={`py-1 rounded-lg border text-[9px] font-black uppercase transition-all flex items-center justify-center gap-0.5 ${
+                                compareMode
+                                  ? 'bg-blue-600 border-none text-white shadow'
+                                  : 'border-slate-300 dark:border-slate-700 bg-transparent text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50'
+                              }`}
+                            >
+                              ↑↓ Compare
+                            </button>
                           </div>
-                        </>
+                        </div>
                       )}
 
-                      <div className="grid grid-cols-4 gap-1.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 p-1 rounded-xl">
-                        <button
-                          type="button"
-                          onClick={handleAddGst}
-                          className="py-1 rounded-lg border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-800 text-[9px] font-black uppercase text-slate-500 dark:text-slate-300"
-                        >
-                          +18% GST
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleAddDiscount}
-                          className="py-1 rounded-lg border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-800 text-[9px] font-black uppercase text-slate-500 dark:text-slate-300"
-                        >
-                          -10% Disc
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setCurrencySymbol((prev) => (prev === '₹' ? '$' : '₹'))}
-                          className="py-1 rounded-lg border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-800 text-[9px] font-black uppercase text-slate-500 dark:text-slate-300"
-                        >
-                          {currencySymbol === '₹' ? 'INR (₹)' : 'USD ($)'}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setCompareMode(!compareMode)}
-                          className={`py-1 rounded-lg border text-[9px] font-black uppercase transition-all ${
-                            compareMode
-                              ? 'bg-blue-600 border-none text-white shadow'
-                              : 'border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-300'
-                          }`}
-                        >
-                          Compare
-                        </button>
-                      </div>
-
-                      <div className="grid grid-cols-4 gap-2">
-                        {['↺', '⌫', '/', '*'].map((k) => (
+                      {/* Calculator numeric grid */}
+                      {!compareMode && (
+                        <div className="grid grid-cols-4 gap-2 pt-1">
+                          {/* Row 1: C, ⌫, ÷, × */}
                           <button
-                            key={k}
                             type="button"
-                            onClick={() => handleCalcBtn(k)}
-                            className={`h-9 rounded-xl font-mono text-xs font-black border transition-all active:scale-95 flex items-center justify-center ${
-                              k === '↺'
-                                ? 'border-red-500/20 bg-red-500/10 text-red-500 hover:bg-red-500/20'
-                                : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-[#fceea7]'
-                            }`}
+                            onClick={() => handleCalcBtn('C')}
+                            className="h-9 rounded-xl font-mono text-xs font-black border border-red-500/20 bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-all active:scale-95 flex items-center justify-center"
                           >
-                            {k === '/' ? '÷' : k === '*' ? '×' : k}
+                            C
                           </button>
-                        ))}
-
-                        {['7', '8', '9', '-'].map((k) => (
                           <button
-                            key={k}
                             type="button"
-                            onClick={() => handleCalcBtn(k)}
-                            className="h-9 rounded-xl font-mono text-xs font-bold border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
+                            onClick={() => handleCalcBtn('⌫')}
+                            className="h-9 rounded-xl font-mono text-xs font-bold border border-slate-250 dark:border-slate-750 bg-slate-100 dark:bg-slate-800 text-slate-650 dark:text-slate-350 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center justify-center"
                           >
-                            {k}
+                            ⌫
                           </button>
-                        ))}
-
-                        {['4', '5', '6', '+'].map((k) => (
                           <button
-                            key={k}
                             type="button"
-                            onClick={() => handleCalcBtn(k)}
-                            className="h-9 rounded-xl font-mono text-xs font-bold border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
+                            onClick={() => handleCalcBtn('/')}
+                            className="h-9 rounded-xl font-mono text-xs font-black border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition-all active:scale-95 flex items-center justify-center"
                           >
-                            {k}
+                            ÷
                           </button>
-                        ))}
+                          <button
+                            type="button"
+                            onClick={() => handleCalcBtn('*')}
+                            className="h-9 rounded-xl font-mono text-xs font-black border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition-all active:scale-95 flex items-center justify-center"
+                          >
+                            ×
+                          </button>
 
-                        <div className="col-span-3 grid grid-cols-3 gap-2">
-                          {['1', '2', '3'].map((k) => (
+                          {/* Row 2: 7, 8, 9, - */}
+                          {['7', '8', '9'].map((k) => (
                             <button
                               key={k}
                               type="button"
                               onClick={() => handleCalcBtn(k)}
-                              className="h-9 rounded-xl font-mono text-xs font-bold border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
+                              className="h-9 rounded-xl font-mono text-xs font-bold border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95"
                             >
                               {k}
                             </button>
                           ))}
+                          <button
+                            type="button"
+                            onClick={() => handleCalcBtn('-')}
+                            className="h-9 rounded-xl font-mono text-xs font-black border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition-all active:scale-95 flex items-center justify-center"
+                          >
+                            -
+                          </button>
 
-                          {['C', '0', '.'].map((k) => (
+                          {/* Row 3: 4, 5, 6, + */}
+                          {['4', '5', '6'].map((k) => (
                             <button
                               key={k}
                               type="button"
                               onClick={() => handleCalcBtn(k)}
-                              className="h-9 rounded-xl font-mono text-xs font-bold border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950 text-slate-500 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800"
+                              className="h-9 rounded-xl font-mono text-xs font-bold border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95"
                             >
                               {k}
                             </button>
                           ))}
+                          <button
+                            type="button"
+                            onClick={() => handleCalcBtn('+')}
+                            className="h-9 rounded-xl font-mono text-xs font-black border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition-all active:scale-95 flex items-center justify-center"
+                          >
+                            +
+                          </button>
+
+                          {/* Row 4 & 5: 1,2,3 / SCI,0,. and '=' spanning 2 rows */}
+                          <div className="col-span-3 grid grid-cols-3 gap-2">
+                            {['1', '2', '3'].map((k) => (
+                              <button
+                                key={k}
+                                type="button"
+                                onClick={() => handleCalcBtn(k)}
+                                className="h-9 rounded-xl font-mono text-xs font-bold border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95"
+                              >
+                                {k}
+                              </button>
+                            ))}
+
+                            <button
+                              type="button"
+                              className="h-9 rounded-xl font-sans text-[8.5px] font-black border border-slate-250 dark:border-slate-800 bg-slate-100 dark:bg-slate-950 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-all active:scale-95 uppercase"
+                            >
+                              SCI
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleCalcBtn('0')}
+                              className="h-9 rounded-xl font-mono text-xs font-bold border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95"
+                            >
+                              0
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleCalcBtn('.')}
+                              className="h-9 rounded-xl font-mono text-xs font-bold border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95"
+                            >
+                              .
+                            </button>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => handleCalcBtn('=')}
+                            className="col-span-1 h-20 rounded-xl bg-emerald-500 hover:bg-emerald-600 border border-emerald-500 text-white font-mono text-sm font-black transition-all active:scale-95 flex items-center justify-center"
+                          >
+                            =
+                          </button>
                         </div>
+                      )}
 
-                        <button
-                          type="button"
-                          onClick={() => handleCalcBtn('=')}
-                          className="col-span-1 h-20 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-mono text-sm font-black transition-all active:scale-95 flex items-center justify-center"
-                        >
-                          =
-                        </button>
-                      </div>
-                    </div>
+                      {/* TAPE RUNNING TOTAL footer */}
+                      {!compareMode && (
+                        <div className="flex justify-between items-center px-3.5 py-2.5 bg-slate-100/50 dark:bg-slate-950/20 rounded-xl border border-slate-200 dark:border-slate-850 font-sans text-xs select-none mt-2">
+                          <span className="text-[9px] uppercase font-black tracking-wider text-slate-400">TAPE RUNNING TOTAL</span>
+                          <span className="font-extrabold text-[13px] text-emerald-600 dark:text-emerald-400 font-mono">
+                            {currencySymbol}{(calcResult !== null ? calcResult : parseFloat(calcInput || '0')).toFixed(2)}
+                          </span>
+                        </div>
+                      )}                  </div>
                   </div>
                 )}
 

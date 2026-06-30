@@ -797,7 +797,7 @@ export default function HomePage() {
       <main className="page-content px-4 md:px-8 lg:pr-8">
         <div className="mx-auto max-w-7xl">
           {/* Row 1: Main Categories & Dashboard pill */}
-          <div className="flex items-center justify-between flex-wrap gap-4 mb-2 pt-1">
+          <div className="flex items-center justify-between flex-wrap gap-4 mb-2 pt-3.5">
             <div className="flex items-center gap-5 overflow-x-auto py-1 custom-scrollbar shrink-0 max-w-full lg:max-w-[70%] scroll-smooth">
               {[
                 { label: 'Travel', emoji: '✈️', href: '/travel-transport' },
@@ -819,21 +819,21 @@ export default function HomePage() {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setDashboardOpen(true)}
-                className="custom-nav-btn pl-1 pr-3.5 h-8 rounded-full flex items-center gap-2 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all text-xs font-bold cursor-pointer shrink-0"
+                className="custom-nav-btn pl-1 pr-3 h-7 rounded-full flex items-center gap-1.5 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all text-[11px] font-bold cursor-pointer shrink-0"
               >
-                <div className="h-6 w-6 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
-                  <span className="material-symbols-outlined text-[15px] text-[#0a3161]">dashboard</span>
+                <div className="h-5 w-5 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
+                  <span className="material-symbols-outlined text-[13px] text-[#0a3161]">dashboard</span>
                 </div>
-                <span className="text-inherit text-[12px] font-bold tracking-wide select-none">DASHBOARD</span>
+                <span className="text-inherit text-[11px] font-bold tracking-wide select-none">DASHBOARD</span>
               </button>
               <Link
                 href="/vendor/register"
-                className="custom-nav-btn pl-1 pr-3.5 h-8 rounded-full flex items-center gap-2 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all text-xs font-bold cursor-pointer shrink-0"
+                className="custom-nav-btn pl-1 pr-3 h-7 rounded-full flex items-center gap-1.5 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all text-[11px] font-bold cursor-pointer shrink-0"
               >
-                <div className="h-6 w-6 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
-                  <span className="material-symbols-outlined text-[15px] text-[#0a3161]">storefront</span>
+                <div className="h-5 w-5 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
+                  <span className="material-symbols-outlined text-[13px] text-[#0a3161]">storefront</span>
                 </div>
-                <span className="text-inherit text-[12px] font-bold tracking-wide select-none">VENDOR</span>
+                <span className="text-inherit text-[11px] font-bold tracking-wide select-none">VENDOR</span>
               </Link>
             </div>
           </div>

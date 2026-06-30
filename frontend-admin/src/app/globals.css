@@ -372,3 +372,29 @@ body {
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2) !important;
 }
 
+/* Fix profile dropdown menu option colors - make them high contrast dark black in light mode */
+.profile-dropdown-card span,
+.profile-dropdown-card button,
+.profile-dropdown-card a {
+  color: var(--text-primary) !important;
+}
+
+.light .profile-dropdown-card {
+  background-color: #ffffff !important;
+  border-color: rgba(139, 101, 8, 0.25) !important;
+}
+
+.light .profile-dropdown-card span,
+.light .profile-dropdown-card button,
+.light .profile-dropdown-card a {
+  color: #000000 !important;
+}
+
+.light .profile-dropdown-card .text-slate-500 {
+  color: #555555 !important;
+}
+
+.light .profile-dropdown-card a:hover,
+.light .profile-dropdown-card button:hover {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}

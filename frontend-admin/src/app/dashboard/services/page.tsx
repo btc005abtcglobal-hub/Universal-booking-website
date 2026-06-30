@@ -18,6 +18,29 @@ export default function ServicesPage() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingItem, setEditingItem] = useState<CatalogService | null>(null);
 
+  // Theatre seats modal state
+  const [showSeatsModal, setShowSeatsModal] = useState(false);
+  const [selectedMovie, setSelectedMovie] = useState<CatalogService | null>(null);
+  const [selectedShowtime, setSelectedShowtime] = useState('');
+  const [newSelectedSeats, setNewSelectedSeats] = useState<string[]>([]);
+  const [bookedSeatsDb, setBookedSeatsDb] = useState<Record<string, string[]>>({
+    'svc-m1_10:30 AM': ['A3', 'A4', 'B8', 'B9', 'C11', 'C12', 'E4', 'E5', 'F6', 'H1', 'H2'],
+    'svc-m1_02:15 PM': ['C4', 'C5', 'D8', 'E12', 'F1', 'F2', 'F3', 'G10', 'H11'],
+    'svc-m1_06:00 PM': ['A1', 'A2', 'B4', 'B5', 'B6', 'C7', 'C8', 'D4', 'D5', 'F12', 'G1', 'G2', 'H5'],
+    'svc-m1_09:30 PM': ['B1', 'B2', 'C1', 'C2', 'E8', 'E9', 'H14'],
+    'svc-m2_11:00 AM': ['A5', 'B5', 'C5', 'D5', 'E5', 'F5'],
+    'svc-m2_04:30 PM': ['D8', 'D9', 'E8', 'E9'],
+    'svc-m3_01:30 PM': ['A12', 'B12', 'C12', 'D12'],
+  });
+
+  const handleOpenSeats = (movie: CatalogService) => {
+    setSelectedMovie(movie);
+    const times = (movie.movieShowtimes || '10:30 AM, 02:15 PM, 06:00 PM, 09:30 PM').split(',');
+    setSelectedShowtime(times[0].trim());
+    setNewSelectedSeats([]);
+    setShowSeatsModal(true);
+  };
+
   // Toast notification state
   const [toast, setToast] = useState<{ show: boolean; message: string }>({
     show: false,
@@ -415,6 +438,15 @@ export default function ServicesPage() {
                 
                 <td className="px-5 py-4 pr-6 text-right">
                   <div className="flex items-center justify-end gap-1">
+                    {vertical === 'Cinema' && (
+                      <button 
+                        onClick={() => handleOpenSeats(s)}
+                        className="rounded-lg p-1.5 hover:bg-[#8b6508]/20 text-[#fceea7] hover:text-[#8b6508] transition-all flex items-center justify-center cursor-pointer mr-1"
+                        title="View Seating Layout"
+                      >
+                        <Ticket size={14} />
+                      </button>
+                    )}
                     <button 
                       onClick={() => handleOpenEdit(s)}
                       className="rounded-lg p-1.5 hover:bg-white/5 text-slate-400 hover:text-[#d4af37] transition-colors"
@@ -1120,6 +1152,229 @@ export default function ServicesPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* BookMyShow-style Seating Layout Modal */}
+      {showSeatsModal && selectedMovie && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="max-w-4xl w-full bg-[#0a0d16] border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col my-8">
+            {/* Header */}
+            <div className="px-6 py-4.5 border-b border-white/5 bg-white/[0.01] flex items-center justify-between">
+              <div className="space-y-1 flex-1 text-left">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] uppercase font-black text-[#fceea7] bg-[#8b6508]/20 border border-[#8b6508]/30 px-2 py-0.5 rounded">
+                    {selectedMovie.movieRating || 'UA'}
+                  </span>
+                  <h3 className="font-extrabold text-sm text-white">{selectedMovie.name}</h3>
+                </div>
+                <p className="text-[10px] text-slate-500 font-mono">Auditorium: {selectedMovie.hallNumber || 'Screen 1'} • Ticket Price: ₹350 (Gold Row A-C) / ₹180 (Silver Row D-H)</p>
+              </div>
+              <button 
+                onClick={() => setShowSeatsModal(false)}
+                className="rounded-xl border border-white/10 p-2 text-slate-400 hover:text-white hover:bg-white/5 cursor-pointer"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Showtime Selection Row */}
+            <div className="px-6 py-3 border-b border-white/5 bg-white/[0.02] flex items-center gap-4.5 flex-wrap">
+              <span className="text-[10px] uppercase font-bold text-slate-400 font-sans">Select Showtime:</span>
+              <div className="flex gap-2">
+                {(selectedMovie.movieShowtimes || '10:30 AM, 02:15 PM, 06:00 PM, 09:30 PM').split(',').map((t) => {
+                  const showtime = t.trim();
+                  const isActive = selectedShowtime === showtime;
+                  return (
+                    <button
+                      key={showtime}
+                      onClick={() => {
+                        setSelectedShowtime(showtime);
+                        setNewSelectedSeats([]);
+                      }}
+                      className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        isActive 
+                          ? 'bg-[#8b6508] text-white border border-[#8b6508]/40 shadow-md' 
+                          : 'bg-white/5 text-slate-400 border border-transparent hover:bg-white/10 hover:text-white'
+                      }`}
+                    >
+                      {showtime}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Main Interactive Map & Seat Selection */}
+            <div className="p-8 flex flex-col items-center justify-center bg-[#070a10]">
+              {/* Screen Arc Indicator */}
+              <div className="w-full flex flex-col items-center mb-10">
+                <div className="w-[75%] h-3 bg-gradient-to-b from-sky-500/20 to-transparent border-t-2 border-sky-400/50 rounded-b-[50%] flex items-center justify-center shadow-[0_-8px_24px_rgba(56,189,248,0.25)]">
+                  <span className="text-[8px] uppercase tracking-[0.25em] font-extrabold text-sky-300/80 mt-1 animate-pulse">SCREEN THIS WAY</span>
+                </div>
+              </div>
+
+              {/* Seating Grid (Rows A to H, Cols 1 to 14) */}
+              <div className="space-y-2.5 w-full max-w-xl">
+                {['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].map((row) => {
+                  const isPremium = ['A', 'B', 'C'].includes(row);
+                  const price = isPremium ? 350 : 180;
+                  return (
+                    <div key={row} className="flex items-center gap-3 justify-center">
+                      {/* Left Row Indicator */}
+                      <span className="w-4 text-center text-[10px] font-black text-slate-500 font-mono">{row}</span>
+
+                      {/* Seats */}
+                      <div className="flex gap-1.5">
+                        {Array.from({ length: 14 }).map((_, colIdx) => {
+                          const seatNum = colIdx + 1;
+                          const seatId = `${row}${seatNum}`;
+                          const dbKey = `${selectedMovie.id}_${selectedShowtime}`;
+                          
+                          const isFilled = bookedSeatsDb[dbKey]?.includes(seatId);
+                          const isSelected = newSelectedSeats.includes(seatId);
+
+                          // Central aisle gap after seat 7
+                          const showAisle = colIdx === 7;
+
+                          return (
+                            <div key={seatId} className="flex items-center">
+                              {showAisle && <div className="w-6 shrink-0" />}
+                              <button
+                                type="button"
+                                disabled={isFilled}
+                                onClick={() => {
+                                  if (newSelectedSeats.includes(seatId)) {
+                                    setNewSelectedSeats(prev => prev.filter(s => s !== seatId));
+                                  } else {
+                                    setNewSelectedSeats(prev => [...prev, seatId]);
+                                  }
+                                }}
+                                className={`w-6 h-6 rounded text-[8px] font-bold font-mono transition-all flex items-center justify-center select-none ${
+                                  isFilled
+                                    ? 'bg-slate-800 text-slate-600 border border-white/5 cursor-not-allowed'
+                                    : isSelected
+                                      ? 'bg-green-500 text-white border border-green-400 shadow-[0_0_10px_rgba(34,197,94,0.4)] cursor-pointer'
+                                      : isPremium
+                                        ? 'border border-amber-500/30 text-amber-400 bg-amber-500/5 hover:bg-amber-500/20 hover:border-amber-400 cursor-pointer'
+                                        : 'border border-slate-600/40 text-slate-300 bg-slate-500/5 hover:bg-slate-500/20 hover:border-slate-400 cursor-pointer'
+                                }`}
+                                title={`${seatId} (${isPremium ? 'Premium Gold' : 'Regular Silver'} · ₹${price})`}
+                              >
+                                {seatNum}
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Right Row Indicator */}
+                      <span className="w-4 text-center text-[10px] font-black text-slate-500 font-mono">{row}</span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Grid Legend Row */}
+              <div className="flex gap-6 mt-8 text-[10px] font-bold text-slate-400 font-sans flex-wrap justify-center border-t border-white/5 pt-6 w-full max-w-xl">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-4 h-4 rounded bg-slate-800 border border-white/5 flex items-center justify-center text-[7px] text-slate-600 font-mono">1</div>
+                  <span>Sold / Filled</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-4 h-4 rounded bg-green-500 border border-green-400 shadow-[0_0_6px_rgba(34,197,94,0.3)]" />
+                  <span>Selected</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-4 h-4 rounded border border-amber-500/40 bg-amber-500/5 text-amber-400 text-[7px] font-mono flex items-center justify-center">1</div>
+                  <span>Premium (₹350)</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-4 h-4 rounded border border-slate-600/40 bg-slate-500/5 text-slate-300 text-[7px] font-mono flex items-center justify-center">1</div>
+                  <span>Regular (₹180)</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Panel Summary & DB Actions */}
+            <div className="px-6 py-4.5 border-t border-white/5 bg-white/[0.01] flex items-center justify-between flex-wrap gap-4">
+              {/* Seating database statistics */}
+              <div className="text-left font-sans space-y-1">
+                <div className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Showtime Occupancy Stats</div>
+                <div className="text-xs text-slate-300 font-semibold text-left">
+                  Filled: <span className="text-white font-extrabold">
+                    {(() => {
+                      const dbKey = `${selectedMovie.id}_${selectedShowtime}`;
+                      const count = bookedSeatsDb[dbKey]?.length || 0;
+                      const total = 112; // 8 rows * 14 columns
+                      return `${count} / ${total} seats (${Math.round((count / total) * 100)}% Occupancy)`;
+                    })()}
+                  </span>
+                </div>
+              </div>
+
+              {/* Selection Summary and database save action */}
+              <div className="flex items-center gap-4">
+                {newSelectedSeats.length > 0 && (
+                  <div className="text-right font-sans">
+                    <span className="text-[9px] uppercase font-bold text-green-400 block tracking-wide">Ready to Register</span>
+                    <span className="text-xs text-white block mt-0.5">
+                      Selected: <strong>{newSelectedSeats.sort().join(', ')}</strong> (₹
+                      {newSelectedSeats.reduce((sum, s) => {
+                        const isPremium = ['A', 'B', 'C'].includes(s.charAt(0));
+                        return sum + (isPremium ? 350 : 180);
+                      }, 0)}
+                      )
+                    </span>
+                  </div>
+                )}
+                
+                <div className="flex gap-2">
+                  {/* Reset reservations */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (confirm('Are you sure you want to clear all seat reservations for this showtime in the theatre database?')) {
+                        const dbKey = `${selectedMovie.id}_${selectedShowtime}`;
+                        setBookedSeatsDb(prev => ({
+                          ...prev,
+                          [dbKey]: []
+                        }));
+                        setNewSelectedSeats([]);
+                        showToast(`Seating database cleared for ${selectedMovie.name} (${selectedShowtime}).`);
+                      }
+                    }}
+                    className="px-4 py-2 border border-white/10 rounded-xl text-xs font-bold text-red-400 hover:bg-red-500/10 cursor-pointer"
+                  >
+                    Reset Seats
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={newSelectedSeats.length === 0}
+                    onClick={() => {
+                      const dbKey = `${selectedMovie.id}_${selectedShowtime}`;
+                      const current = bookedSeatsDb[dbKey] || [];
+                      const updated = [...current, ...newSelectedSeats];
+                      setBookedSeatsDb(prev => ({
+                        ...prev,
+                        [dbKey]: updated
+                      }));
+                      showToast(`Successfully booked ${newSelectedSeats.length} seats: ${newSelectedSeats.sort().join(', ')}`);
+                      setNewSelectedSeats([]);
+                    }}
+                    className={`px-5 py-2 rounded-xl text-xs font-bold text-white transition-all cursor-pointer ${
+                      newSelectedSeats.length === 0
+                        ? 'bg-slate-800 text-slate-500 border border-white/5 cursor-not-allowed'
+                        : 'bg-green-600 hover:bg-green-700 shadow-md shadow-green-600/10'
+                    }`}
+                  >
+                    Update Seat Database
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

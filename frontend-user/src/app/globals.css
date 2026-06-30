@@ -911,29 +911,25 @@
     stroke: #0a3161 !important;
   }
 
-  /* Final explicit overrides to fix Location and Profile button visibility in Light Mode */
+  /* Final explicit overrides to fix Location and Profile button visibility in Light and Dark Mode */
+  .custom-navbar .custom-nav-btn,
   .light .custom-navbar .custom-nav-btn,
+  .custom-navbar .custom-nav-btn *,
   .light .custom-navbar .custom-nav-btn * {
-    color: #8B7000 !important;
-    stroke: #8B7000 !important;
+    color: #ffffff !important;
+    stroke: #ffffff !important;
   }
 
+  .custom-navbar .custom-nav-btn,
   .light .custom-navbar .custom-nav-btn {
-    background-color: #fdf8e2 !important;
-    border: 1px solid rgba(139, 112, 0, 0.3) !important;
+    background-color: rgba(0, 0, 0, 0.25) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
   }
 
+  .custom-navbar .custom-nav-btn:hover,
   .light .custom-navbar .custom-nav-btn:hover {
-    background-color: #f9f0ca !important;
-    border-color: rgba(139, 112, 0, 0.5) !important;
-  }
-
-  /* Keep the profile avatar circle itself white and its inside icon dark blue as designed */
-  .light .custom-navbar .custom-nav-btn .profile-avatar-circle,
-  .light .custom-navbar .custom-nav-btn .profile-avatar-circle * {
-    background-color: #ffffff !important;
-    color: #0a3161 !important;
-    stroke: #0a3161 !important;
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
   }
 
   /* Force customer header navigation links to be white same as the second image */

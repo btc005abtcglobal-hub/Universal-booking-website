@@ -343,9 +343,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </button>
           
           <Link href="/dashboard" className="hidden lg:flex items-center hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shrink-0">
-            <div className="flex-shrink-0 bg-white px-3 py-1.5 rounded-lg flex items-center justify-center shadow-sm">
-              <img src="/logo.png?v=3" alt="BokSpot Logo" className="h-5.5 w-auto" />
-            </div>
+            <img src="/logo.png?v=3" alt="BokSpot Logo" className="h-10 lg:h-12 object-contain" />
           </Link>
         </div>
 
